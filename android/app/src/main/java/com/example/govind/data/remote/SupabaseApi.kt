@@ -6,6 +6,13 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 
 interface SupabaseApi {
+
+    @GET("rest/v1/products")
+    suspend fun getFreshBoardProducts(
+        @Query("select") select: String = "*",
+        @Query("active") active: String = "eq.true",
+        @Query("on_fresh_board") onFreshBoard: String = "eq.true"
+    ): List<Product>
     
     @GET("rest/v1/categories")
     suspend fun getCategories(

@@ -68,7 +68,7 @@ fun HomeScreen(
                     .fillMaxSize()
                     .padding(paddingValues)
             ) {
-                item { TodaysFreshRatePromotion(onProductClick = onNavigateToProduct) }
+                item { TodaysFreshRatePromotion(products = uiState.freshBoardProducts, onProductClick = onNavigateToProduct) }
                 item { FourCoreCategories(categories = uiState.categories, onCategoryClick = { /* TODO filter by category */ }) }
                 item { SuperSaverKitchenPack() }
                 item { DailyFreshSpecialCombo() }
@@ -149,17 +149,8 @@ fun HomeTopBar(onSearchClick: () -> Unit) {
 }
 
 @Composable
-fun TodaysFreshRatePromotion(onProductClick: (String) -> Unit) {
-    val items = listOf(
-        Pair("Tomato", "\u20B935/kg"),
-        Pair("Potato", "\u20B942/kg"),
-        Pair("Onion", "\u20B948/kg"),
-        Pair("Methi", "\u20B930/bunch"),
-        Pair("Apple", "\u20B9180/kg"),
-        Pair("Banana", "\u20B940/dozen"),
-        Pair("Coriander", "\u20B915/bunch"),
-        Pair("Green Chilli", "\u20B960/kg")
-    )
+fun TodaysFreshRatePromotion(products: List<com.example.govind.data.model.Product>, onProductClick: (String) -> Unit) {
+    if (products.isEmpty()) return
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -179,22 +170,22 @@ fun TodaysFreshRatePromotion(onProductClick: (String) -> Unit) {
                 modifier = Modifier.padding(bottom = 12.dp)
             )
             
-            items.forEach { item ->
+            products.forEach { product ->
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { onProductClick(item.first.lowercase()) }
+                        .clickable { onProductClick(product.id) }
                         .padding(vertical = 4.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = item.first,
+                        text = product.name,
                         color = Color.White,
                         style = MaterialTheme.typography.bodyMedium
                     )
                     Text(
-                        text = item.second,
+                        text = "\u20B9${product.sellingPrice}/${product.unit}",
                         color = Color.White,
                         style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.Bold
@@ -602,4 +593,6 @@ fun ProductCard(
         }
     }
 }
+
+
 

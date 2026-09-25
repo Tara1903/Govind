@@ -53,8 +53,13 @@ class SupabaseGovindRepositoryImpl @Inject constructor(
     
     override fun isUserLoggedIn(): Boolean = sessionManager.isLoggedIn
     override fun getUserId(): String? = sessionManager.userId
+    override fun isLoggedIn(): Boolean = sessionManager.isLoggedIn
 
     // Products
+    override fun getFreshBoardProducts(): Flow<List<Product>> = flow {
+        emit(api.getFreshBoardProducts())
+    }
+
     override fun getCategories(): Flow<List<Category>> = flow { emit(api.getCategories()) }
     override fun getFeaturedProducts(): Flow<List<Product>> = flow { emit(api.getFeaturedProducts()) }
     override fun getProductsByCategory(categoryId: String): Flow<List<Product>> = flow { emit(api.getProductsByCategory("eq.$categoryId")) }

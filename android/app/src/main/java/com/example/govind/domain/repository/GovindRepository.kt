@@ -6,6 +6,7 @@ import com.example.govind.data.model.Cart
 import kotlinx.coroutines.flow.Flow
 
 interface GovindRepository {
+    fun getFreshBoardProducts(): Flow<List<Product>>
     fun getCategories(): Flow<List<Category>>
     fun getFeaturedProducts(): Flow<List<Product>>
     fun getProductsByCategory(categoryId: String): Flow<List<Product>>
@@ -30,4 +31,5 @@ interface GovindRepository {
     suspend fun logout()
     fun isUserLoggedIn(): Boolean
     fun getUserId(): String?
+    fun isLoggedIn(): Boolean
 }

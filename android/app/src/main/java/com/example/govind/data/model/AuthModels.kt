@@ -11,8 +11,8 @@ data class AuthRequest(
 
 @Serializable
 data class AuthResponse(
-    @SerialName("access_token") val accessToken: String,
-    @SerialName("refresh_token") val refreshToken: String,
+    @SerialName("access_token") val accessToken: String? = null,
+    @SerialName("refresh_token") val refreshToken: String? = null,
     val user: User
 )
 

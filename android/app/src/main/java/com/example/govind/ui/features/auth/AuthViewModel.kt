@@ -28,7 +28,11 @@ class AuthViewModel @Inject constructor(
             _uiState.value = AuthUiState(isLoading = true)
             val res = repository.login(email, pass)
             if (res.isSuccess) {
-                _uiState.value = AuthUiState(isSuccess = true)
+                if (repository.isLoggedIn()) {
+                    _uiState.value = AuthUiState(isSuccess = true)
+                } else {
+                    _uiState.value = AuthUiState(error = "Please check your email to verify your account.")
+                }
             } else {
                 _uiState.value = AuthUiState(error = res.exceptionOrNull()?.message ?: "Login failed")
             }
@@ -40,10 +44,16 @@ class AuthViewModel @Inject constructor(
             _uiState.value = AuthUiState(isLoading = true)
             val res = repository.signUp(email, pass)
             if (res.isSuccess) {
-                _uiState.value = AuthUiState(isSuccess = true)
+                if (repository.isLoggedIn()) {
+                    _uiState.value = AuthUiState(isSuccess = true)
+                } else {
+                    _uiState.value = AuthUiState(error = "Please check your email to verify your account.")
+                }
             } else {
                 _uiState.value = AuthUiState(error = res.exceptionOrNull()?.message ?: "Signup failed")
             }
         }
     }
 }
+
+

@@ -15,6 +15,7 @@ import javax.inject.Inject
 
 data class HomeUiState(
     val isLoading: Boolean = true,
+    val freshBoardProducts: List<Product> = emptyList(),
     val categories: List<Category> = emptyList(),
     val featuredProducts: List<Product> = emptyList(),
     val error: String? = null
@@ -37,6 +38,10 @@ class HomeViewModel @Inject constructor(
             _uiState.value = _uiState.value.copy(isLoading = true)
             
             try {
+                repository.getFreshBoardProducts().collect { freshProducts ->
+                    _uiState.value = _uiState.value.copy(freshBoardProducts = freshProducts)
+                }
+
                 repository.getCategories().collect { categories ->
                     _uiState.value = _uiState.value.copy(categories = categories)
                 }
