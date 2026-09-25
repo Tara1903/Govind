@@ -52,7 +52,7 @@ fun HomeScreen(
         topBar = {
             HomeTopBar(onSearchClick = onNavigateToSearch)
         },
-        containerColor = MaterialTheme.colorScheme.background
+        containerColor = com.example.govind.theme.GovindTheme.colors.warmWhite
     ) { paddingValues ->
         if (uiState.isLoading) {
             Box(modifier = Modifier.fillMaxSize().padding(paddingValues), contentAlignment = Alignment.Center) {
@@ -602,3 +602,4 @@ fun ProductCard(
         }
     }
 }
+

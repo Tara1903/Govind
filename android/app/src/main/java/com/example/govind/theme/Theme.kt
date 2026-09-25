@@ -1,5 +1,6 @@
 package com.example.govind.theme
 
+import androidx.compose.runtime.CompositionLocalProvider
 import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -54,6 +55,7 @@ private val LightColorScheme = lightColorScheme(
     error = Orange
 )
 
+
 @Composable
 fun GovindTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
@@ -78,11 +80,14 @@ fun GovindTheme(
         }
     }
 
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = Typography,
-        shapes = Shapes,
-        content = content
-    )
+    CompositionLocalProvider(
+        LocalGovindColors provides defaultGovindColors
+    ) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = Typography,
+            shapes = Shapes,
+            content = content
+        )
+    }
 }
-

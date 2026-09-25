@@ -18,7 +18,8 @@ data class CartEntity(
     val imageUrl: String?,
     val categoryId: String?,
     val unit: String,
-    val quantity: Int
+    val quantity: Int,
+    val experienceType: String = "FRESH"
 ) {
     fun toCartItem(): CartItem {
         return CartItem(
@@ -52,7 +53,8 @@ data class CartEntity(
                 imageUrl = item.product.imageUrl,
                 categoryId = item.product.categoryId,
                 unit = item.product.unit,
-                quantity = item.quantity
+                quantity = item.quantity,
+                experienceType = "FRESH"
             )
         }
     }

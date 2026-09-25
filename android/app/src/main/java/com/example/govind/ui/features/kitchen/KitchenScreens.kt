@@ -63,7 +63,7 @@ fun KitchenHomeScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(com.example.govind.theme.GovindTheme.colors.softCream)
             .verticalScroll(scrollState)
             .padding(16.dp)
     ) {
@@ -249,7 +249,7 @@ fun KitchenMenuItem(item: MenuItem) {
         modifier = Modifier
             .fillMaxWidth()
             .height(140.dp)
-            .background(Color.White)
+            .background(com.example.govind.theme.GovindTheme.colors.softCream)
             .padding(vertical = 8.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
@@ -325,13 +325,13 @@ fun KitchenMenuScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(com.example.govind.theme.GovindTheme.colors.softCream)
     ) {
         // App Bar
         TopAppBar(
             title = { Text("Govind Menu", fontWeight = FontWeight.Bold) },
             colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = Color.White,
+                containerColor = com.example.govind.theme.GovindTheme.colors.softCream,
                 titleContentColor = kitchenAccentColor
             )
         )
@@ -340,7 +340,7 @@ fun KitchenMenuScreen() {
         ScrollableTabRow(
             selectedTabIndex = categories.indexOf(selectedCategory).takeIf { it >= 0 } ?: 0,
             edgePadding = 16.dp,
-            containerColor = Color.White,
+            containerColor = com.example.govind.theme.GovindTheme.colors.softCream,
             divider = {},
             indicator = {},
             modifier = Modifier.padding(bottom = 8.dp)

@@ -15,7 +15,8 @@ export default function ProductsPage() {
   const [isEditing, setIsEditing] = useState(false);
   const [currentProduct, setCurrentProduct] = useState<any>(null);
   const [formData, setFormData] = useState({
-    name: '', price: '', stock_quantity: '', active: true, category_id: ''
+    name: '', price: '', stock_quantity: '', active: true, category_id: '',
+    on_fresh_board: false, product_type: 'SINGLE', bundle_items: ''
   });
 
   const [categories, setCategories] = useState<any[]>([]);
@@ -54,6 +55,9 @@ export default function ProductsPage() {
       stock_quantity: product.stock_quantity,
       active: product.active,
       category_id: product.category_id || '',
+      on_fresh_board: product.on_fresh_board || false,
+      product_type: product.product_type || 'SINGLE',
+      bundle_items: product.bundle_items ? JSON.stringify(product.bundle_items) : '',
     });
     setIsEditing(true);
   };
@@ -61,7 +65,8 @@ export default function ProductsPage() {
   const handleAdd = () => {
     setCurrentProduct(null);
     setFormData({
-      name: '', price: '', stock_quantity: '0', active: true, category_id: ''
+      name: '', price: '', stock_quantity: '0', active: true, category_id: '',
+      on_fresh_board: false, product_type: 'SINGLE', bundle_items: ''
     });
     setIsEditing(true);
   };
@@ -74,6 +79,18 @@ export default function ProductsPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+
+    let parsedBundleItems = null;
+    if (formData.bundle_items && formData.bundle_items.trim() !== '') {
+      try {
+        parsedBundleItems = JSON.parse(formData.bundle_items);
+      } catch (e) {
+        alert("Invalid JSON in Bundle Items");
+        setLoading(false);
+        return;
+      }
+    }
+
     if (currentProduct) {
       // Update
       await supabase.from('products').update({
@@ -82,6 +99,9 @@ export default function ProductsPage() {
         stock_quantity: parseInt(formData.stock_quantity, 10),
         active: formData.active,
         category_id: formData.category_id || null,
+        on_fresh_board: formData.on_fresh_board,
+        product_type: formData.product_type,
+        bundle_items: parsedBundleItems,
       }).eq('id', currentProduct.id);
     } else {
       // Insert
@@ -96,6 +116,9 @@ export default function ProductsPage() {
         stock_quantity: parseInt(formData.stock_quantity, 10),
         active: formData.active,
         category_id: formData.category_id || null,
+        on_fresh_board: formData.on_fresh_board,
+        product_type: formData.product_type,
+        bundle_items: parsedBundleItems,
       }]);
     }
     setIsEditing(false);
@@ -135,11 +158,40 @@ export default function ProductsPage() {
                 <label className="block text-sm font-medium mb-1">Stock</label>
                 <input required type="number" className="w-full border px-3 py-2 rounded" value={formData.stock_quantity} onChange={e => setFormData({...formData, stock_quantity: e.target.value})} />
               </div>
+              
+              <div>
+                <label className="block text-sm font-medium mb-1">Product Type</label>
+                <select className="w-full border px-3 py-2 rounded" value={formData.product_type} onChange={e => setFormData({...formData, product_type: e.target.value})}>
+                  <option value="SINGLE">Single</option>
+                  <option value="PACK">Pack</option>
+                  <option value="COMBO">Combo</option>
+                </select>
+              </div>
+
+              {(formData.product_type === 'PACK' || formData.product_type === 'COMBO') && (
+                <div>
+                  <label className="block text-sm font-medium mb-1">Bundle Items (JSON)</label>
+                  <textarea 
+                    className="w-full border px-3 py-2 rounded h-24 font-mono text-sm" 
+                    placeholder='[{"product_id": "...", "qty": 1}]'
+                    value={formData.bundle_items} 
+                    onChange={e => setFormData({...formData, bundle_items: e.target.value})} 
+                  />
+                  <p className="text-xs text-gray-500 mt-1">Must be valid JSON array of objects.</p>
+                </div>
+              )}
+
               <div className="flex items-center">
                 <input type="checkbox" id="active" checked={formData.active} onChange={e => setFormData({...formData, active: e.target.checked})} className="mr-2" />
                 <label htmlFor="active" className="text-sm font-medium">Active</label>
               </div>
-              <div className="flex gap-2">
+              
+              <div className="flex items-center">
+                <input type="checkbox" id="on_fresh_board" checked={formData.on_fresh_board} onChange={e => setFormData({...formData, on_fresh_board: e.target.checked})} className="mr-2" />
+                <label htmlFor="on_fresh_board" className="text-sm font-medium">Show on Fresh Board</label>
+              </div>
+
+              <div className="flex gap-2 pt-2">
                 <Button type="submit">Save</Button>
                 <Button type="button" variant="ghost" onClick={handleCancel}>Cancel</Button>
               </div>
@@ -160,9 +212,11 @@ export default function ProductsPage() {
                   <TableHeader>
                     <TableRow>
                       <TableHead>Name</TableHead>
+                      <TableHead>Type</TableHead>
                       <TableHead>Category</TableHead>
                       <TableHead>Price</TableHead>
                       <TableHead>Stock</TableHead>
+                      <TableHead>Fresh Board</TableHead>
                       <TableHead>Status</TableHead>
                       <TableHead className="text-right">Action</TableHead>
                     </TableRow>
@@ -171,9 +225,11 @@ export default function ProductsPage() {
                     {products.map((product) => (
                       <TableRow key={product.id}>
                         <TableCell className="font-medium">{product.name}</TableCell>
+                        <TableCell>{product.product_type || 'SINGLE'}</TableCell>
                         <TableCell>{product.category?.name || 'N/A'}</TableCell>
                         <TableCell>₹{product.price}</TableCell>
                         <TableCell>{product.stock_quantity}</TableCell>
+                        <TableCell>{product.on_fresh_board ? 'Yes' : 'No'}</TableCell>
                         <TableCell>
                           <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${
                             product.active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'

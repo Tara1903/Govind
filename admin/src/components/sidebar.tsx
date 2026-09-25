@@ -20,6 +20,7 @@ const navItems = [
   { name: "Dashboard", href: "/", icon: LayoutDashboard },
   { name: "Orders", href: "/orders", icon: ShoppingCart },
   { name: "Products", href: "/products", icon: Package },
+  { name: "Fresh Board", href: "/fresh-board", icon: Package },
   { name: "Daily Rate List", href: "/daily-rates", icon: Tags },
   { name: "Punjabi Menu", href: "/punjabi-menu", icon: Menu },
   { name: "Categories", href: "/categories", icon: Tags },
