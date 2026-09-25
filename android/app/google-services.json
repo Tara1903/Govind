@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "943783803754",
+    "project_id": "govind-826d0",
+    "storage_bucket": "govind-826d0.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:943783803754:android:e79c2ebeaa039e5e7f0313",
+        "android_client_info": {
+          "package_name": "com.example.govind"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB3zDxLo_BkfUaWley2IrZxYR6b9e4kHlQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
