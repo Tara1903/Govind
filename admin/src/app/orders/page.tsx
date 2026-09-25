@@ -1,22 +1,49 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { createClient } from "../../../utils/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 
-const mockOrders = [
-  { id: "ORD-1001", customer: "John Doe", total: "₹450", status: "CONFIRMED", date: "2026-09-18" },
-  { id: "ORD-1002", customer: "Jane Smith", total: "₹1,200", status: "PENDING", date: "2026-09-18" },
-  { id: "ORD-1003", customer: "Ravi Kumar", total: "₹340", status: "OUT_FOR_DELIVERY", date: "2026-09-17" },
-  { id: "ORD-1004", customer: "Priya Sharma", total: "₹890", status: "DELIVERED", date: "2026-09-17" },
-];
-
 export default function OrdersPage() {
+  const supabase = createClient();
+  const [orders, setOrders] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  
+  // Statuses list
+  const statuses = ['PENDING', 'CONFIRMED', 'PREPARING', 'READY_FOR_DELIVERY', 'OUT_FOR_DELIVERY', 'DELIVERED', 'CANCELLED'];
+
+  useEffect(() => {
+    fetchOrders();
+  }, []);
+
+  async function fetchOrders() {
+    setLoading(true);
+    const { data, error } = await supabase
+      .from('orders')
+      .select(`
+        *,
+        profiles(name, phone)
+      `)
+      .order('created_at', { ascending: false });
+
+    if (!error && data) {
+      setOrders(data);
+    }
+    setLoading(false);
+  }
+
+  const updateStatus = async (orderId: string, newStatus: string) => {
+    await supabase.from('orders').update({ order_status: newStatus }).eq('id', orderId);
+    fetchOrders();
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-3xl font-bold tracking-tight">Orders</h2>
-        <Button>Export</Button>
+        <Button onClick={fetchOrders}>Refresh</Button>
       </div>
       
       <Card>
@@ -24,40 +51,58 @@ export default function OrdersPage() {
           <CardTitle>Recent Orders</CardTitle>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Order ID</TableHead>
-                <TableHead>Customer</TableHead>
-                <TableHead>Date</TableHead>
-                <TableHead>Total</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Action</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {mockOrders.map((order) => (
-                <TableRow key={order.id}>
-                  <TableCell className="font-medium">{order.id}</TableCell>
-                  <TableCell>{order.customer}</TableCell>
-                  <TableCell>{order.date}</TableCell>
-                  <TableCell>{order.total}</TableCell>
-                  <TableCell>
-                    <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold ${
-                      order.status === 'DELIVERED' ? 'bg-green-100 text-green-800' :
-                      order.status === 'PENDING' ? 'bg-yellow-100 text-yellow-800' :
-                      'bg-blue-100 text-blue-800'
-                    }`}>
-                      {order.status}
-                    </span>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <Button variant="ghost" size="sm">View</Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          {loading ? (
+            <p>Loading orders...</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Order ID</TableHead>
+                    <TableHead>Customer</TableHead>
+                    <TableHead>Date</TableHead>
+                    <TableHead>Total</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead className="text-right">Action</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {orders.length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={6} className="text-center py-4">No orders found.</TableCell>
+                    </TableRow>
+                  )}
+                  {orders.map((order) => (
+                    <TableRow key={order.id}>
+                      <TableCell className="font-medium text-xs font-mono">{order.id.split('-')[0]}...</TableCell>
+                      <TableCell>{order.profiles?.name || 'Guest'} ({order.profiles?.phone || 'N/A'})</TableCell>
+                      <TableCell>{new Date(order.created_at).toLocaleString()}</TableCell>
+                      <TableCell>₹{order.total}</TableCell>
+                      <TableCell>
+                        <select 
+                          className={`text-xs font-semibold rounded px-2 py-1 border ${
+                            order.order_status === 'DELIVERED' ? 'bg-green-100 text-green-800' :
+                            order.order_status === 'CANCELLED' ? 'bg-red-100 text-red-800' :
+                            order.order_status === 'PENDING' ? 'bg-yellow-100 text-yellow-800' :
+                            'bg-blue-100 text-blue-800'
+                          }`}
+                          value={order.order_status}
+                          onChange={(e) => updateStatus(order.id, e.target.value)}
+                        >
+                          {statuses.map(s => (
+                            <option key={s} value={s}>{s}</option>
+                          ))}
+                        </select>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Button variant="ghost" size="sm">View Details</Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
