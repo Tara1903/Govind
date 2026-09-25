@@ -537,37 +537,18 @@ fun ProductCard(
                         }, label = "qty"
                     ) { hasQuantity ->
                         if (hasQuantity) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier
-                                    .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(8.dp))
-                                    .padding(horizontal = 4.dp, vertical = 2.dp)
-                            ) {
-                                IconButton(
-                                    onClick = { 
-                                        quantity--
-                                        onAddClick(-1) 
-                                    },
-                                    modifier = Modifier.size(24.dp)
-                                ) {
-                                    Text("-", color = Color.White, fontWeight = FontWeight.Bold)
-                                }
-                                Text(
-                                    text = quantity.toString(),
-                                    color = Color.White,
-                                    fontWeight = FontWeight.Bold,
-                                    modifier = Modifier.padding(horizontal = 8.dp)
-                                )
-                                IconButton(
-                                    onClick = { 
-                                        quantity++
-                                        onAddClick(1)
-                                    },
-                                    modifier = Modifier.size(24.dp)
-                                ) {
-                                    Icon(Icons.Default.Add, contentDescription = "Increase", tint = Color.White, modifier = Modifier.size(16.dp))
-                                }
-                            }
+                            com.example.govind.ui.shared.GovindQuantityControl(
+                                quantity = quantity,
+                                onIncrement = { 
+                                    quantity++
+                                    onAddClick(1) 
+                                },
+                                onDecrement = { 
+                                    quantity--
+                                    onAddClick(-1) 
+                                },
+                                isCartTheme = false
+                            )
                         } else {
                             Button(
                                 onClick = { 
@@ -580,8 +561,8 @@ fun ProductCard(
                                     .width(64.dp),
                                 shape = RoundedCornerShape(12.dp),
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                                    contentColor = MaterialTheme.colorScheme.primary
+                                    containerColor = com.example.govind.theme.GovindTheme.colors.softGreen,
+                                    contentColor = com.example.govind.theme.GovindTheme.colors.govindGreen
                                 )
                             ) {
                                 Text("ADD", fontWeight = FontWeight.Bold)
@@ -593,6 +574,7 @@ fun ProductCard(
         }
     }
 }
+
 
 
 

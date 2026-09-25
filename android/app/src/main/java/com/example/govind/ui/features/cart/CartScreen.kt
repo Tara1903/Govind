@@ -1,14 +1,14 @@
 package com.example.govind.ui.features.cart
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -17,7 +17,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
@@ -25,6 +24,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import com.example.govind.data.model.CartItem
+import com.example.govind.theme.GovindTheme
+import com.example.govind.ui.shared.GovindQuantityControl
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -38,49 +39,52 @@ fun CartScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Your Cart", fontWeight = FontWeight.Bold) },
+                title = { Text("Your Basket", fontWeight = FontWeight.Bold, color = GovindTheme.colors.textPrimary) },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back", tint = GovindTheme.colors.textPrimary)
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background)
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = GovindTheme.colors.warmWhite)
             )
         },
-        containerColor = MaterialTheme.colorScheme.background,
+        containerColor = GovindTheme.colors.warmWhite,
         bottomBar = {
-            if (!uiState.isLoading && uiState.cart?.items?.isNotEmpty() == true) {
+            if (!uiState.isLoading && !uiState.cart?.items.isNullOrEmpty()) {
                 Surface(
-                    color = MaterialTheme.colorScheme.surface,
-                    shadowElevation = 24.dp,
+                    color = GovindTheme.colors.pureWhite,
+                    shadowElevation = 16.dp,
                     shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
                 ) {
                     Row(
                         modifier = Modifier
                             .navigationBarsPadding()
                             .fillMaxWidth()
-                            .padding(horizontal = 24.dp, vertical = 16.dp),
+                            .padding(horizontal = 24.dp, vertical = 20.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         val subtotal = uiState.cart!!.items.sumOf { (it.product.price ?: it.product.sellingPrice) * it.quantity }
                         val sellingTotal = uiState.cart!!.items.sumOf { it.product.sellingPrice * it.quantity }
                         val discount = subtotal - sellingTotal
-                        val toPay = sellingTotal + 40.0
+                        val delivery = if (sellingTotal > 150) 0.0 else 40.0
+                        val toPay = sellingTotal + delivery
                         
                         Column {
                             Text(
-                                text = "?" + toPay,
-                                style = MaterialTheme.typography.titleLarge,
+                                text = "\u20B9${toPay}",
+                                style = MaterialTheme.typography.headlineSmall,
                                 fontWeight = FontWeight.ExtraBold,
-                                color = MaterialTheme.colorScheme.onBackground
+                                color = GovindTheme.colors.govindGreen
                             )
-                            Text(
-                                text = "TOTAL",
-                                style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.primary,
-                                fontWeight = FontWeight.Bold
-                            )
+                            if (discount > 0) {
+                                Text(
+                                    text = "Saved \u20B9${discount}",
+                                    style = MaterialTheme.typography.labelMedium,
+                                    color = GovindTheme.colors.govindOrange,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
                         }
                         Button(
                             onClick = onNavigateToCheckout,
@@ -89,9 +93,9 @@ fun CartScreen(
                                 .padding(start = 24.dp)
                                 .height(56.dp),
                             shape = RoundedCornerShape(16.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                            colors = ButtonDefaults.buttonColors(containerColor = GovindTheme.colors.govindGreen)
                         ) {
-                            Text("Proceed to Pay", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                            Text("Checkout", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = GovindTheme.colors.pureWhite)
                         }
                     }
                 }
@@ -100,45 +104,24 @@ fun CartScreen(
     ) { paddingValues ->
         if (uiState.isLoading) {
             Box(modifier = Modifier.fillMaxSize().padding(paddingValues), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+                CircularProgressIndicator(color = GovindTheme.colors.govindGreen)
             }
         } else if (uiState.cart?.items.isNullOrEmpty()) {
-            Box(modifier = Modifier.fillMaxSize().padding(paddingValues), contentAlignment = Alignment.Center) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text("Your cart is empty", style = MaterialTheme.typography.headlineSmall, color = MaterialTheme.colorScheme.onSurfaceVariant, fontWeight = FontWeight.Bold)
-                    Spacer(modifier = Modifier.height(24.dp))
-                    Button(
-                        onClick = onNavigateBack,
-                        shape = RoundedCornerShape(12.dp)
-                    ) {
-                        Text("Start Shopping", fontWeight = FontWeight.Bold)
-                    }
-                }
-            }
+            EmptyCartState(onNavigateBack, paddingValues)
         } else {
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues),
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                contentPadding = PaddingValues(bottom = 32.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
+                
                 item {
-                    Surface(
-                        color = Color(0xFFE8F5E9),
-                        shape = RoundedCornerShape(12.dp),
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-                            Icon(imageVector = Icons.Default.Add, contentDescription = null, tint = Color(0xFF2E7D32))
-                            Spacer(modifier = Modifier.width(12.dp))
-                            Text("Delivery in 10 minutes", color = Color(0xFF2E7D32), fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
-                        }
-                    }
                     Spacer(modifier = Modifier.height(8.dp))
                 }
-                
-                items(uiState.cart!!.items) { item ->
+
+                items(uiState.cart!!.items, key = { it.id }) { item ->
                     CartItemCard(
                         item = item,
                         onIncrement = { viewModel.increaseQuantity(item.id, item.quantity) },
@@ -148,53 +131,86 @@ fun CartScreen(
 
                 item {
                     val items = uiState.cart!!.items
+                    val sellingTotal = items.sumOf { it.product.sellingPrice * it.quantity }
+                    if (sellingTotal <= 150) {
+                        val needed = 150.0 - sellingTotal
+                        Surface(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = 8.dp),
+                            color = GovindTheme.colors.softOrange,
+                            shape = RoundedCornerShape(12.dp)
+                        ) {
+                            Text(
+                                text = "Add \u20B9$needed more for FREE Delivery",
+                                color = GovindTheme.colors.govindOrange,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.padding(16.dp),
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+                    } else {
+                        Surface(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = 8.dp),
+                            color = GovindTheme.colors.softFresh,
+                            shape = RoundedCornerShape(12.dp)
+                        ) {
+                            Text(
+                                text = "Yay! You got FREE Delivery",
+                                color = GovindTheme.colors.freshGreen,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.padding(16.dp),
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+                    }
+                }
+
+                item {
+                    val items = uiState.cart!!.items
                     val subtotal = items.sumOf { (it.product.price ?: it.product.sellingPrice) * it.quantity }
                     val sellingTotal = items.sumOf { it.product.sellingPrice * it.quantity }
                     val discount = subtotal - sellingTotal
-                    val delivery = 40.0
+                    val delivery = if (sellingTotal > 150) 0.0 else 40.0
                     val grandTotal = sellingTotal + delivery
 
                     Spacer(modifier = Modifier.height(24.dp))
-                    Text("Bill Details", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.ExtraBold)
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        text = "Order Summary", 
+                        style = MaterialTheme.typography.titleMedium, 
+                        fontWeight = FontWeight.ExtraBold,
+                        color = GovindTheme.colors.textPrimary,
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
                     
                     Surface(
                         shape = RoundedCornerShape(20.dp),
-                        color = MaterialTheme.colorScheme.surface,
-                        shadowElevation = 2.dp,
-                        modifier = Modifier.fillMaxWidth()
+                        color = GovindTheme.colors.pureWhite,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp)
                     ) {
                         Column(modifier = Modifier.padding(20.dp)) {
-                            BillRow("Subtotal", "?" + subtotal)
+                            BillRow("Items total", "\u20B9$subtotal")
                             Spacer(modifier = Modifier.height(12.dp))
                             if (discount > 0) {
-                                BillRow("Discount", "-?" + discount, color = MaterialTheme.colorScheme.primary)
+                                BillRow("Savings", "-\u20B9$discount", color = GovindTheme.colors.govindOrange)
                                 Spacer(modifier = Modifier.height(12.dp))
                             }
-                            BillRow("Delivery", "?" + delivery)
+                            BillRow(
+                                label = "Delivery Charge", 
+                                value = if (delivery == 0.0) "FREE" else "\u20B9$delivery", 
+                                color = if (delivery == 0.0) GovindTheme.colors.freshGreen else GovindTheme.colors.textPrimary
+                            )
                             Spacer(modifier = Modifier.height(20.dp))
-                            HorizontalDivider(color = MaterialTheme.colorScheme.surfaceVariant)
+                            HorizontalDivider(color = GovindTheme.colors.border)
                             Spacer(modifier = Modifier.height(20.dp))
                             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                                Text("Grand Total", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.ExtraBold)
-                                Text("?" + grandTotal, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.ExtraBold)
-                            }
-                            
-                            if (discount > 0) {
-                                Spacer(modifier = Modifier.height(16.dp))
-                                Surface(
-                                    color = Color(0xFFE8F5E9),
-                                    shape = RoundedCornerShape(8.dp),
-                                    modifier = Modifier.fillMaxWidth()
-                                ) {
-                                    Text(
-                                        text = "You Save ?" + discount + " on this order!",
-                                        color = Color(0xFF2E7D32),
-                                        fontWeight = FontWeight.Bold,
-                                        modifier = Modifier.padding(12.dp),
-                                        style = MaterialTheme.typography.bodyMedium
-                                    )
-                                }
+                                Text("Grand Total", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.ExtraBold, color = GovindTheme.colors.textPrimary)
+                                Text("\u20B9$grandTotal", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.ExtraBold, color = GovindTheme.colors.textPrimary)
                             }
                         }
                     }
@@ -205,10 +221,45 @@ fun CartScreen(
 }
 
 @Composable
-fun BillRow(label: String, value: String, color: Color = MaterialTheme.colorScheme.onSurfaceVariant) {
+fun EmptyCartState(onNavigateBack: () -> Unit, paddingValues: PaddingValues) {
+    Box(modifier = Modifier.fillMaxSize().padding(paddingValues), contentAlignment = Alignment.Center) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(32.dp)) {
+            // Using a subtle surface instead of giant illustration
+            Surface(
+                shape = RoundedCornerShape(100.dp),
+                color = GovindTheme.colors.softGreen,
+                modifier = Modifier.size(120.dp)
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Text("🥬", style = MaterialTheme.typography.displayLarge)
+                }
+            }
+            Spacer(modifier = Modifier.height(32.dp))
+            Text(
+                text = "Your basket is waiting for something fresh.",
+                style = MaterialTheme.typography.titleMedium, 
+                color = GovindTheme.colors.textPrimary,
+                fontWeight = FontWeight.Bold,
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+            )
+            Spacer(modifier = Modifier.height(32.dp))
+            Button(
+                onClick = onNavigateBack,
+                shape = RoundedCornerShape(16.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = GovindTheme.colors.govindGreen),
+                modifier = Modifier.height(56.dp).fillMaxWidth()
+            ) {
+                Text("Continue Shopping", fontWeight = FontWeight.Bold, color = GovindTheme.colors.pureWhite)
+            }
+        }
+    }
+}
+
+@Composable
+fun BillRow(label: String, value: String, color: Color = GovindTheme.colors.textSecondary) {
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-        Text(label, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        Text(value, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold, color = color)
+        Text(label, style = MaterialTheme.typography.bodyMedium, color = GovindTheme.colors.textSecondary)
+        Text(value, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold, color = color)
     }
 }
 
@@ -218,92 +269,74 @@ fun CartItemCard(
     onIncrement: () -> Unit,
     onDecrement: () -> Unit
 ) {
-    Row(
+    Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(20.dp))
-            .background(MaterialTheme.colorScheme.surface)
-            .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically
+            .padding(horizontal = 16.dp, vertical = 4.dp),
+        shape = RoundedCornerShape(20.dp),
+        color = GovindTheme.colors.pureWhite
     ) {
-        Box(
-            modifier = Modifier
-                .size(80.dp)
-                .clip(RoundedCornerShape(12.dp))
-                .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
+        Row(
+            modifier = Modifier.padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            if (item.product.imageUrl != null) {
-                AsyncImage(
-                    model = item.product.imageUrl,
-                    contentDescription = item.product.name,
-                    contentScale = ContentScale.Fit,
-                    modifier = Modifier.fillMaxSize().padding(12.dp)
-                )
-            }
-        }
-        
-        Spacer(modifier = Modifier.width(16.dp))
-        
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = item.product.name,
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onBackground,
-                fontWeight = FontWeight.Bold,
-                maxLines = 1
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = item.product.unit,
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            Spacer(modifier = Modifier.height(12.dp))
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    text = "?" + item.product.sellingPrice,
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    fontWeight = FontWeight.ExtraBold
-                )
-                if (item.product.price != null && item.product.price > item.product.sellingPrice) {
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = "?" + item.product.price,
-                        style = MaterialTheme.typography.labelSmall.copy(textDecoration = TextDecoration.LineThrough),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+            Box(
+                modifier = Modifier
+                    .size(80.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(GovindTheme.colors.skeleton)
+            ) {
+                if (item.product.imageUrl != null) {
+                    AsyncImage(
+                        model = item.product.imageUrl,
+                        contentDescription = item.product.name,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.fillMaxSize()
                     )
                 }
             }
-        }
-        
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(8.dp))
-                .padding(horizontal = 4.dp, vertical = 2.dp)
-        ) {
-            IconButton(
-                onClick = onDecrement,
-                modifier = Modifier.size(24.dp)
-            ) {
-                Text("-", color = Color.White, fontWeight = FontWeight.Bold)
+            
+            Spacer(modifier = Modifier.width(16.dp))
+            
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = item.product.name,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = GovindTheme.colors.textPrimary,
+                    maxLines = 1
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = item.product.unit,
+                    style = MaterialTheme.typography.labelMedium,
+                    color = GovindTheme.colors.textSecondary
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = "\u20B9${item.product.sellingPrice}",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = GovindTheme.colors.textPrimary
+                    )
+                    if (item.product.price != null && item.product.price > item.product.sellingPrice) {
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "\u20B9${item.product.price}",
+                            style = MaterialTheme.typography.labelMedium.copy(textDecoration = TextDecoration.LineThrough),
+                            color = GovindTheme.colors.textMuted
+                        )
+                    }
+                }
             }
-            Text(
-                text = item.quantity.toString(),
-                color = Color.White,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(horizontal = 8.dp)
-            )
-            IconButton(
-                onClick = onIncrement,
-                modifier = Modifier.size(24.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = "Add",
-                    tint = Color.White,
-                    modifier = Modifier.size(16.dp)
+            
+            Column(horizontalAlignment = Alignment.End) {
+                GovindQuantityControl(
+                    quantity = item.quantity,
+                    onIncrement = onIncrement,
+                    onDecrement = onDecrement,
+                    isCartTheme = false
                 )
             }
         }
