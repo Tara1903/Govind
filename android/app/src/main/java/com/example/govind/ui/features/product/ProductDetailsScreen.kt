@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -38,7 +39,9 @@ fun ProductDetailsScreen(
                 navigationIcon = {
                     IconButton(
                         onClick = onNavigateBack,
-                        modifier = Modifier.background(MaterialTheme.colorScheme.surface.copy(alpha = 0.7f), shape = RoundedCornerShape(50))
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.8f), shape = RoundedCornerShape(50))
                     ) {
                         Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
                     }
@@ -46,13 +49,17 @@ fun ProductDetailsScreen(
                 actions = {
                     IconButton(
                         onClick = { },
-                        modifier = Modifier.background(MaterialTheme.colorScheme.surface.copy(alpha = 0.7f), shape = RoundedCornerShape(50))
+                        modifier = Modifier
+                            .padding(end = 8.dp)
+                            .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.8f), shape = RoundedCornerShape(50))
                     ) {
                         Icon(imageVector = Icons.Default.Share, contentDescription = "Share")
                     }
                     IconButton(
                         onClick = { },
-                        modifier = Modifier.background(MaterialTheme.colorScheme.surface.copy(alpha = 0.7f), shape = RoundedCornerShape(50))
+                        modifier = Modifier
+                            .padding(end = 8.dp)
+                            .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.8f), shape = RoundedCornerShape(50))
                     ) {
                         Icon(imageVector = Icons.Default.FavoriteBorder, contentDescription = "Favorite")
                     }
@@ -64,27 +71,29 @@ fun ProductDetailsScreen(
             if (product != null) {
                 Surface(
                     color = MaterialTheme.colorScheme.surface,
-                    shadowElevation = 8.dp
+                    shadowElevation = 24.dp,
+                    shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
                 ) {
                     Row(
                         modifier = Modifier
+                            .navigationBarsPadding()
                             .fillMaxWidth()
-                            .padding(16.dp),
+                            .padding(horizontal = 24.dp, vertical = 16.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Column {
                             Text(
-                                text = "₹${product.sellingPrice}",
+                                text = "?" + product.sellingPrice,
                                 style = MaterialTheme.typography.headlineMedium,
-                                fontWeight = FontWeight.Bold,
+                                fontWeight = FontWeight.ExtraBold,
                                 color = MaterialTheme.colorScheme.onBackground
                             )
                             if (product.price != null && product.price > product.sellingPrice) {
                                 Text(
-                                    text = "MRP ₹${product.price}",
+                                    text = "MRP ?" + product.price,
                                     style = MaterialTheme.typography.bodyMedium.copy(
-                                        textDecoration = androidx.compose.ui.text.style.TextDecoration.LineThrough
+                                        textDecoration = TextDecoration.LineThrough
                                     ),
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -108,7 +117,7 @@ fun ProductDetailsScreen(
     ) { paddingValues ->
         if (uiState.isLoading) {
             Box(modifier = Modifier.fillMaxSize().padding(paddingValues), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
+                CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
             }
         } else if (product != null) {
             Column(
@@ -119,36 +128,55 @@ fun ProductDetailsScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(300.dp)
-                        .background(Color.White)
+                        .height(350.dp)
+                        .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
                 ) {
                     AsyncImage(
                         model = product.imageUrl,
                         contentDescription = product.name,
                         contentScale = ContentScale.Fit,
-                        modifier = Modifier.fillMaxSize().padding(32.dp)
+                        modifier = Modifier.fillMaxSize().padding(48.dp)
                     )
+                    
+                    if (product.price != null && product.price > product.sellingPrice) {
+                        val discount = ((product.price - product.sellingPrice) / product.price * 100).toInt()
+                        Surface(
+                            color = MaterialTheme.colorScheme.error,
+                            shape = RoundedCornerShape(12.dp),
+                            modifier = Modifier
+                                .align(Alignment.BottomStart)
+                                .padding(24.dp)
+                        ) {
+                            Text(
+                                text = "$discount% OFF",
+                                color = Color.White,
+                                style = MaterialTheme.typography.titleSmall,
+                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
                 }
 
-                Column(modifier = Modifier.padding(16.dp)) {
+                Column(modifier = Modifier.padding(24.dp)) {
                     Text(
                         text = product.name,
-                        style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.headlineLarge,
+                        fontWeight = FontWeight.ExtraBold,
                         color = MaterialTheme.colorScheme.onBackground
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
                         text = product.unit,
-                        style = MaterialTheme.typography.titleMedium,
+                        style = MaterialTheme.typography.titleLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     
-                    Spacer(modifier = Modifier.height(24.dp))
+                    Spacer(modifier = Modifier.height(32.dp))
                     
-                    HorizontalDivider(color = MaterialTheme.colorScheme.outline)
+                    HorizontalDivider(color = MaterialTheme.colorScheme.surfaceVariant)
                     
-                    Spacer(modifier = Modifier.height(24.dp))
+                    Spacer(modifier = Modifier.height(32.dp))
                     
                     Text(
                         text = "Product Details",
@@ -156,11 +184,11 @@ fun ProductDetailsScreen(
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onBackground
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
                     Text(
-                        text = product.description ?: "Fresh and high quality product sourced directly from farms to your doorstep.",
+                        text = product.description ?: "Fresh and high quality product sourced directly from farms to your doorstep. Guaranteed freshness and hygiene.",
                         style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.9f),
                         lineHeight = androidx.compose.ui.unit.TextUnit(24f, androidx.compose.ui.unit.TextUnitType.Sp)
                     )
                     

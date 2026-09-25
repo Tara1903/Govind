@@ -31,3 +31,10 @@ data class Order(
     @SerialName("payment_status") val paymentStatus: String,
     @SerialName("order_status") val orderStatus: String
 )
+
+@Serializable
+data class RazorpayOrderResponse(
+    val id: String,
+    val amount: Int,
+    val currency: String
+)

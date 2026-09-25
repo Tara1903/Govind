@@ -28,17 +28,23 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideOkHttpClient(): OkHttpClient {
+    fun provideOkHttpClient(sessionManager: com.example.govind.data.local.SessionManager): OkHttpClient {
         val loggingInterceptor = HttpLoggingInterceptor().apply {
             level = if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.NONE
         }
 
         val authInterceptor = Interceptor { chain ->
-            val request = chain.request().newBuilder()
+            val requestBuilder = chain.request().newBuilder()
                 .addHeader("apikey", BuildConfig.SUPABASE_ANON_KEY)
-                .addHeader("Authorization", "Bearer ${BuildConfig.SUPABASE_ANON_KEY}")
-                .build()
-            chain.proceed(request)
+            
+            val token = sessionManager.accessToken
+            if (!token.isNullOrEmpty()) {
+                requestBuilder.addHeader("Authorization", "Bearer $token")
+            } else {
+                requestBuilder.addHeader("Authorization", "Bearer ${BuildConfig.SUPABASE_ANON_KEY}")
+            }
+                
+            chain.proceed(requestBuilder.build())
         }
 
         return OkHttpClient.Builder()

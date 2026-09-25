@@ -1,0 +1,9 @@
+
+*.apk
+*.log
+*.txt
+android/.kotlin/
+android/app/release.keystore
+skills-lock.json
+.agents/
+

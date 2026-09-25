@@ -21,6 +21,14 @@ fun OnboardingScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+        androidx.compose.foundation.Image(
+            painter = androidx.compose.ui.res.painterResource(id = com.example.govind.R.drawable.logo),
+            contentDescription = "Govind Logo",
+            modifier = Modifier.size(128.dp)
+        )
+        
+        Spacer(modifier = Modifier.height(24.dp))
+        
         Text(
             text = "Welcome to Govind",
             style = MaterialTheme.typography.headlineLarge,

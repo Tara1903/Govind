@@ -11,7 +11,6 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
@@ -28,29 +27,37 @@ private val DarkColorScheme = darkColorScheme(
     surface = Color(0xFF1E1E1E),
     onSurface = PureWhite,
     surfaceVariant = Color(0xFF2D2D2D),
-    onSurfaceVariant = Color(0xFFB3B3B3)
+    onSurfaceVariant = Color(0xFFB3B3B3),
+    error = Orange
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = FreshGreen,
+    primary = PrimaryDarkGreen,
     onPrimary = PureWhite,
-    primaryContainer = LightGreenBackground,
+    primaryContainer = SoftGreenTint,
     onPrimaryContainer = PrimaryDarkGreen,
-    secondary = Orange,
+    secondary = FreshGreen,
     onSecondary = PureWhite,
+    secondaryContainer = FreshGreenTint,
+    onSecondaryContainer = PrimaryDarkGreen,
+    tertiary = Orange,
+    onTertiary = PureWhite,
+    tertiaryContainer = SoftOrangeTint,
+    onTertiaryContainer = Orange,
     background = WarmWhite,
-    onBackground = TextPrimary,
+    onBackground = PrimaryText,
     surface = PureWhite,
-    onSurface = TextPrimary,
-    surfaceVariant = Color(0xFFF5F5F5),
-    onSurfaceVariant = TextSecondary,
-    outline = DividerColor
+    onSurface = PrimaryText,
+    surfaceVariant = WarmWhite,
+    onSurfaceVariant = SecondaryText,
+    outline = NeutralBorder,
+    error = Orange
 )
 
 @Composable
 fun GovindTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    dynamicColor: Boolean = false, // Disable dynamic colors to strictly enforce brand colors
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
@@ -66,7 +73,6 @@ fun GovindTheme(
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
-            // Edge-to-edge transparency is handled by enableEdgeToEdge in MainActivity
             WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
             WindowCompat.getInsetsController(window, view).isAppearanceLightNavigationBars = !darkTheme
         }
@@ -75,6 +81,8 @@ fun GovindTheme(
     MaterialTheme(
         colorScheme = colorScheme,
         typography = Typography,
+        shapes = Shapes,
         content = content
     )
 }
+

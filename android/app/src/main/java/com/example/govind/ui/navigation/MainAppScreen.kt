@@ -6,10 +6,12 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.List
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -28,6 +30,10 @@ import com.example.govind.ui.features.orders.OrdersScreen
 import com.example.govind.ui.features.product.ProductDetailsScreen
 import com.example.govind.ui.features.profile.ProfileScreen
 import com.example.govind.ui.features.splash.SplashScreen
+import com.example.govind.ui.features.kitchen.KitchenHomeScreen
+import com.example.govind.ui.features.kitchen.KitchenMenuScreen
+import com.example.govind.ui.features.wholesale.WholesaleHomeScreen
+import com.example.govind.ui.features.wholesale.WholesaleCatalogScreen
 
 sealed class BottomNavItem(
     val route: String,
@@ -35,9 +41,21 @@ sealed class BottomNavItem(
     val selectedIcon: ImageVector,
     val unselectedIcon: ImageVector
 ) {
+    // Fresh
     object Home : BottomNavItem(Screen.Home.route, "Home", Icons.Filled.Home, Icons.Outlined.Home)
-    object Search : BottomNavItem(Screen.Search.route, "Search", Icons.Filled.Search, Icons.Outlined.Search)
-    object Orders : BottomNavItem(Screen.Orders.route, "Orders", Icons.Filled.List, Icons.Outlined.List)
+    object Search : BottomNavItem(Screen.Search.route, "Shop", Icons.Filled.Search, Icons.Outlined.Search)
+    
+    // Kitchen
+    object KitchenHome : BottomNavItem(Screen.KitchenHome.route, "Home", Icons.Filled.Home, Icons.Outlined.Home)
+    object KitchenMenu : BottomNavItem(Screen.KitchenMenu.route, "Menu", Icons.AutoMirrored.Filled.List, Icons.AutoMirrored.Outlined.List)
+    
+    // Wholesale
+    object WholesaleHome : BottomNavItem(Screen.WholesaleHome.route, "Home", Icons.Filled.Home, Icons.Outlined.Home)
+    object WholesaleCatalog : BottomNavItem(Screen.WholesaleCatalog.route, "Catalog", Icons.AutoMirrored.Filled.List, Icons.AutoMirrored.Outlined.List)
+    
+    // Shared 
+    object Cart : BottomNavItem(Screen.Cart.route, "Cart", Icons.Filled.ShoppingCart, Icons.Outlined.ShoppingCart)
+    object Orders : BottomNavItem(Screen.Orders.route, "Orders", Icons.AutoMirrored.Filled.List, Icons.AutoMirrored.Outlined.List)
     object Profile : BottomNavItem(Screen.Profile.route, "Profile", Icons.Filled.Person, Icons.Outlined.Person)
 }
 
@@ -47,12 +65,31 @@ fun MainAppScreen() {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
 
-    val bottomBarDestinations = listOf(
-        BottomNavItem.Home,
-        BottomNavItem.Search,
-        BottomNavItem.Orders,
-        BottomNavItem.Profile
-    )
+    val currentExperience by AppState.currentExperience.collectAsState()
+
+    val bottomBarDestinations = when (currentExperience) {
+        GovindExperience.FRESH -> listOf(
+            BottomNavItem.Home,
+            BottomNavItem.Search,
+            BottomNavItem.Orders,
+            BottomNavItem.Cart,
+            BottomNavItem.Profile
+        )
+        GovindExperience.KITCHEN -> listOf(
+            BottomNavItem.KitchenHome,
+            BottomNavItem.KitchenMenu,
+            BottomNavItem.Orders,
+            BottomNavItem.Cart,
+            BottomNavItem.Profile
+        )
+        GovindExperience.WHOLESALE -> listOf(
+            BottomNavItem.WholesaleHome,
+            BottomNavItem.WholesaleCatalog,
+            BottomNavItem.Orders,
+            BottomNavItem.Cart,
+            BottomNavItem.Profile
+        )
+    }
 
     val showBottomBar = bottomBarDestinations.any { it.route == currentDestination?.route }
 
@@ -110,6 +147,11 @@ fun MainAppScreen() {
                         navController.navigate(Screen.Onboarding.route) {
                             popUpTo(Screen.Splash.route) { inclusive = true }
                         }
+                    },
+                    onNavigateToAuth = {
+                        navController.navigate(Screen.Auth.route) {
+                            popUpTo(Screen.Splash.route) { inclusive = true }
+                        }
                     }
                 )
             }
@@ -117,8 +159,18 @@ fun MainAppScreen() {
             composable(Screen.Onboarding.route) {
                 OnboardingScreen(
                     onFinish = {
-                        navController.navigate(Screen.Home.route) {
+                        navController.navigate(Screen.Auth.route) {
                             popUpTo(Screen.Onboarding.route) { inclusive = true }
+                        }
+                    }
+                )
+            }
+
+            composable(Screen.Auth.route) {
+                com.example.govind.ui.features.auth.AuthScreen(
+                    onAuthSuccess = {
+                        navController.navigate(Screen.Home.route) {
+                            popUpTo(Screen.Auth.route) { inclusive = true }
                         }
                     }
                 )
@@ -131,6 +183,22 @@ fun MainAppScreen() {
                     onNavigateToCart = { navController.navigate(Screen.Cart.route) },
                     onNavigateToProfile = { navController.navigate(Screen.Profile.route) }
                 )
+            }
+            
+            composable(Screen.KitchenHome.route) {
+                KitchenHomeScreen()
+            }
+            
+            composable(Screen.KitchenMenu.route) {
+                KitchenMenuScreen()
+            }
+            
+            composable(Screen.WholesaleHome.route) {
+                WholesaleHomeScreen()
+            }
+            
+            composable(Screen.WholesaleCatalog.route) {
+                WholesaleCatalogScreen()
             }
 
             composable(Screen.Search.route) {

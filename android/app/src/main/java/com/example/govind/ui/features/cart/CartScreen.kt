@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -46,24 +47,32 @@ fun CartScreen(
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background)
             )
         },
+        containerColor = MaterialTheme.colorScheme.background,
         bottomBar = {
             if (!uiState.isLoading && uiState.cart?.items?.isNotEmpty() == true) {
                 Surface(
                     color = MaterialTheme.colorScheme.surface,
-                    shadowElevation = 8.dp
+                    shadowElevation = 24.dp,
+                    shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
                 ) {
                     Row(
                         modifier = Modifier
+                            .navigationBarsPadding()
                             .fillMaxWidth()
-                            .padding(16.dp),
+                            .padding(horizontal = 24.dp, vertical = 16.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
+                        val subtotal = uiState.cart!!.items.sumOf { (it.product.price ?: it.product.sellingPrice) * it.quantity }
+                        val sellingTotal = uiState.cart!!.items.sumOf { it.product.sellingPrice * it.quantity }
+                        val discount = subtotal - sellingTotal
+                        val toPay = sellingTotal + 40.0
+                        
                         Column {
                             Text(
-                                text = "₹${uiState.totalAmount}",
+                                text = "?" + toPay,
                                 style = MaterialTheme.typography.titleLarge,
-                                fontWeight = FontWeight.Bold,
+                                fontWeight = FontWeight.ExtraBold,
                                 color = MaterialTheme.colorScheme.onBackground
                             )
                             Text(
@@ -79,7 +88,8 @@ fun CartScreen(
                                 .weight(1f)
                                 .padding(start = 24.dp)
                                 .height(56.dp),
-                            shape = RoundedCornerShape(16.dp)
+                            shape = RoundedCornerShape(16.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                         ) {
                             Text("Proceed to Pay", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                         }
@@ -90,15 +100,18 @@ fun CartScreen(
     ) { paddingValues ->
         if (uiState.isLoading) {
             Box(modifier = Modifier.fillMaxSize().padding(paddingValues), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
+                CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
             }
         } else if (uiState.cart?.items.isNullOrEmpty()) {
             Box(modifier = Modifier.fillMaxSize().padding(paddingValues), contentAlignment = Alignment.Center) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text("Your cart is empty", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Button(onClick = onNavigateBack) {
-                        Text("Start Shopping")
+                    Text("Your cart is empty", style = MaterialTheme.typography.headlineSmall, color = MaterialTheme.colorScheme.onSurfaceVariant, fontWeight = FontWeight.Bold)
+                    Spacer(modifier = Modifier.height(24.dp))
+                    Button(
+                        onClick = onNavigateBack,
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Text("Start Shopping", fontWeight = FontWeight.Bold)
                     }
                 }
             }
@@ -106,13 +119,22 @@ fun CartScreen(
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(paddingValues)
-                    .background(MaterialTheme.colorScheme.background),
+                    .padding(paddingValues),
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 item {
-                    Text("Delivery in 10 minutes", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
+                    Surface(
+                        color = Color(0xFFE8F5E9),
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+                            Icon(imageVector = Icons.Default.Add, contentDescription = null, tint = Color(0xFF2E7D32))
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Text("Delivery in 10 minutes", color = Color(0xFF2E7D32), fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
+                        }
+                    }
                     Spacer(modifier = Modifier.height(8.dp))
                 }
                 
@@ -125,27 +147,54 @@ fun CartScreen(
                 }
 
                 item {
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text("Bill Details", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                    val items = uiState.cart!!.items
+                    val subtotal = items.sumOf { (it.product.price ?: it.product.sellingPrice) * it.quantity }
+                    val sellingTotal = items.sumOf { it.product.sellingPrice * it.quantity }
+                    val discount = subtotal - sellingTotal
+                    val delivery = 40.0
+                    val grandTotal = sellingTotal + delivery
+
+                    Spacer(modifier = Modifier.height(24.dp))
+                    Text("Bill Details", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.ExtraBold)
                     Spacer(modifier = Modifier.height(16.dp))
                     
                     Surface(
-                        shape = RoundedCornerShape(16.dp),
+                        shape = RoundedCornerShape(20.dp),
                         color = MaterialTheme.colorScheme.surface,
+                        shadowElevation = 2.dp,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Column(modifier = Modifier.padding(16.dp)) {
-                            BillRow("Item Total", "₹${uiState.totalAmount}")
-                            Spacer(modifier = Modifier.height(8.dp))
-                            BillRow("Delivery Fee", "₹40.0")
-                            Spacer(modifier = Modifier.height(8.dp))
-                            BillRow("Handling Fee", "₹5.0")
-                            Spacer(modifier = Modifier.height(16.dp))
-                            HorizontalDivider(color = MaterialTheme.colorScheme.outline)
-                            Spacer(modifier = Modifier.height(16.dp))
+                        Column(modifier = Modifier.padding(20.dp)) {
+                            BillRow("Subtotal", "?" + subtotal)
+                            Spacer(modifier = Modifier.height(12.dp))
+                            if (discount > 0) {
+                                BillRow("Discount", "-?" + discount, color = MaterialTheme.colorScheme.primary)
+                                Spacer(modifier = Modifier.height(12.dp))
+                            }
+                            BillRow("Delivery", "?" + delivery)
+                            Spacer(modifier = Modifier.height(20.dp))
+                            HorizontalDivider(color = MaterialTheme.colorScheme.surfaceVariant)
+                            Spacer(modifier = Modifier.height(20.dp))
                             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                                Text("To Pay", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                                Text("₹${uiState.totalAmount + 45.0}", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                                Text("Grand Total", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.ExtraBold)
+                                Text("?" + grandTotal, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.ExtraBold)
+                            }
+                            
+                            if (discount > 0) {
+                                Spacer(modifier = Modifier.height(16.dp))
+                                Surface(
+                                    color = Color(0xFFE8F5E9),
+                                    shape = RoundedCornerShape(8.dp),
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Text(
+                                        text = "You Save ?" + discount + " on this order!",
+                                        color = Color(0xFF2E7D32),
+                                        fontWeight = FontWeight.Bold,
+                                        modifier = Modifier.padding(12.dp),
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
+                                }
                             }
                         }
                     }
@@ -156,10 +205,10 @@ fun CartScreen(
 }
 
 @Composable
-fun BillRow(label: String, value: String) {
+fun BillRow(label: String, value: String, color: Color = MaterialTheme.colorScheme.onSurfaceVariant) {
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-        Text(label, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        Text(value, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)
+        Text(label, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(value, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold, color = color)
     }
 }
 
@@ -172,23 +221,25 @@ fun CartItemCard(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(16.dp))
+            .clip(RoundedCornerShape(20.dp))
             .background(MaterialTheme.colorScheme.surface)
-            .padding(12.dp),
+            .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Box(
             modifier = Modifier
-                .size(72.dp)
+                .size(80.dp)
                 .clip(RoundedCornerShape(12.dp))
-                .background(Color.White)
+                .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
         ) {
-            AsyncImage(
-                model = item.product.imageUrl,
-                contentDescription = item.product.name,
-                contentScale = ContentScale.Fit,
-                modifier = Modifier.fillMaxSize().padding(8.dp)
-            )
+            if (item.product.imageUrl != null) {
+                AsyncImage(
+                    model = item.product.imageUrl,
+                    contentDescription = item.product.name,
+                    contentScale = ContentScale.Fit,
+                    modifier = Modifier.fillMaxSize().padding(12.dp)
+                )
+            }
         }
         
         Spacer(modifier = Modifier.width(16.dp))
@@ -198,40 +249,51 @@ fun CartItemCard(
                 text = item.product.name,
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onBackground,
+                fontWeight = FontWeight.Bold,
                 maxLines = 1
             )
+            Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = item.product.unit,
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = "₹${item.product.sellingPrice}",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onBackground,
-                fontWeight = FontWeight.Bold
-            )
+            Spacer(modifier = Modifier.height(12.dp))
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = "?" + item.product.sellingPrice,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    fontWeight = FontWeight.ExtraBold
+                )
+                if (item.product.price != null && item.product.price > item.product.sellingPrice) {
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "?" + item.product.price,
+                        style = MaterialTheme.typography.labelSmall.copy(textDecoration = TextDecoration.LineThrough),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
         }
         
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
-                .background(MaterialTheme.colorScheme.primaryContainer, RoundedCornerShape(8.dp))
-                .padding(horizontal = 8.dp, vertical = 4.dp)
+                .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(8.dp))
+                .padding(horizontal = 4.dp, vertical = 2.dp)
         ) {
             IconButton(
                 onClick = onDecrement,
                 modifier = Modifier.size(24.dp)
             ) {
-                // If it's a minus sign, normally we use a custom icon, here using a text or close for 1
-                Text("-", color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
+                Text("-", color = Color.White, fontWeight = FontWeight.Bold)
             }
             Text(
                 text = item.quantity.toString(),
-                color = MaterialTheme.colorScheme.primary,
+                color = Color.White,
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(horizontal = 12.dp)
+                modifier = Modifier.padding(horizontal = 8.dp)
             )
             IconButton(
                 onClick = onIncrement,
@@ -240,7 +302,7 @@ fun CartItemCard(
                 Icon(
                     imageVector = Icons.Default.Add,
                     contentDescription = "Add",
-                    tint = MaterialTheme.colorScheme.primary,
+                    tint = Color.White,
                     modifier = Modifier.size(16.dp)
                 )
             }

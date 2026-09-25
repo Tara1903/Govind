@@ -123,6 +123,22 @@ fun OrdersScreen(
                                 Text("Payment Method", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                                 Text(order.paymentMethod, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)
                             }
+                            Spacer(modifier = Modifier.height(16.dp))
+                            val context = androidx.compose.ui.platform.LocalContext.current
+                            OutlinedButton(
+                                onClick = {
+                                    val intent = android.content.Intent(android.content.Intent.ACTION_VIEW)
+                                    intent.data = android.net.Uri.parse("https://wa.me/919999999999?text=Help with Order ${order.id}")
+                                    try {
+                                        context.startActivity(intent)
+                                    } catch (e: Exception) {
+                                        android.widget.Toast.makeText(context, "WhatsApp not installed", android.widget.Toast.LENGTH_SHORT).show()
+                                    }
+                                },
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text("Need Help? Chat on WhatsApp")
+                            }
                         }
                     }
                 }

@@ -33,4 +33,47 @@ interface SupabaseApi {
         @Query("id") id: String,
         @Query("select") select: String = "*"
     ): List<Product>
+    
+    // Auth
+    @retrofit2.http.POST("auth/v1/signup")
+    suspend fun signUp(@retrofit2.http.Body request: com.example.govind.data.model.AuthRequest): com.example.govind.data.model.AuthResponse
+
+    @retrofit2.http.POST("auth/v1/token?grant_type=password")
+    suspend fun login(@retrofit2.http.Body request: com.example.govind.data.model.AuthRequest): com.example.govind.data.model.AuthResponse
+    
+    // Profiles
+    @GET("rest/v1/profiles")
+    suspend fun getProfile(
+        @Query("id") id: String,
+        @Query("select") select: String = "*"
+    ): List<com.example.govind.data.model.Profile>
+    
+    @retrofit2.http.POST("rest/v1/profiles")
+    suspend fun createProfile(@retrofit2.http.Body profile: com.example.govind.data.model.Profile)
+    
+    // Addresses
+    @GET("rest/v1/addresses")
+    suspend fun getAddresses(
+        @Query("profile_id") profileId: String,
+        @Query("select") select: String = "*"
+    ): List<com.example.govind.data.model.Address>
+    
+    // Orders
+    @GET("rest/v1/orders")
+    suspend fun getOrders(
+        @Query("customer_id") customerId: String,
+        @Query("select") select: String = "*",
+        @Query("order") order: String = "created_at.desc"
+    ): List<com.example.govind.data.model.Order>
+
+    @retrofit2.http.POST("rest/v1/rpc/create_order_and_decrement_stock")
+    suspend fun createOrderRpc(
+        @retrofit2.http.Body request: kotlinx.serialization.json.JsonObject
+    ): String
+
+    // Edge Functions (Razorpay checkout)
+    @retrofit2.http.POST("functions/v1/create-razorpay-order")
+    suspend fun createRazorpayOrder(
+        @retrofit2.http.Body request: Map<String, Double>
+    ): com.example.govind.data.model.RazorpayOrderResponse
 }

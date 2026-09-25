@@ -1,4 +1,9 @@
-package com.example.govind.ui.features.home
+
+import os
+
+file_path = "app/src/main/java/com/example/govind/ui/features/home/HomeScreen.kt"
+
+content = """package com.example.govind.ui.features.home
 
 import android.content.Context
 import android.content.Intent
@@ -16,7 +21,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.LocationOn
-
+import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material3.*
@@ -60,7 +65,7 @@ fun HomeScreen(
             }
         } else if (uiState.error != null) {
             Box(modifier = Modifier.fillMaxSize().padding(paddingValues), contentAlignment = Alignment.Center) {
-                Text(text = "Error: " + uiState.error + "", color = MaterialTheme.colorScheme.error)
+                Text(text = "Error: ${uiState.error}", color = MaterialTheme.colorScheme.error)
             }
         } else {
             LazyColumn(
@@ -69,7 +74,7 @@ fun HomeScreen(
                     .padding(paddingValues)
             ) {
                 item { TodaysFreshRatePromotion() }
-                item { FourCoreCategories(categories = uiState.categories, onCategoryClick = { /* TODO filter by category */ }) }
+                item { FourCoreCategories() }
                 item { SuperSaverKitchenPack() }
                 item { DailyFreshSpecialCombo() }
                 item {
@@ -105,12 +110,12 @@ fun HomeTopBar(onSearchClick: () -> Unit) {
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    androidx.compose.foundation.Image(
-                        painter = androidx.compose.ui.res.painterResource(id = com.example.govind.R.drawable.ic_launcher_squircle),
-                        contentDescription = "Govind Logo",
-                        modifier = Modifier.size(40.dp)
+                    Icon(
+                        imageVector = Icons.Default.LocationOn,
+                        contentDescription = "Location",
+                        tint = MaterialTheme.colorScheme.primary
                     )
-                    Spacer(modifier = Modifier.width(12.dp))
+                    Spacer(modifier = Modifier.width(8.dp))
                     Column {
                         Text(
                             text = "Delivery to Home",
@@ -196,25 +201,32 @@ fun TodaysFreshRatePromotion() {
 }
 
 @Composable
-fun FourCoreCategories(categories: List<com.example.govind.data.model.Category>, onCategoryClick: (String) -> Unit) {
+fun FourCoreCategories() {
+    val categories = listOf(
+        "Fresh\\nVegetables" to Color(0xFFE8F5E9),
+        "Fresh\\nFruits" to Color(0xFFFFF3E0),
+        "Healthy\\nSnacks" to Color(0xFFE3F2FD),
+        "Punjabi\\nFood" to Color(0xFFFCE4EC)
+    )
+
     Column(modifier = Modifier.padding(top = 8.dp, bottom = 16.dp)) {
         SectionHeader(title = "Shop by Category")
         LazyRow(
             contentPadding = PaddingValues(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            items(categories) { category ->
+            items(categories) { (name, color) ->
                 Card(
                     shape = RoundedCornerShape(20.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
-                    modifier = Modifier.size(100.dp).clickable { onCategoryClick(category.id) },
+                    colors = CardDefaults.cardColors(containerColor = color),
+                    modifier = Modifier.size(100.dp).clickable { /* TODO: navigate */ },
                     elevation = CardDefaults.cardElevation(0.dp)
                 ) {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         Text(
-                            text = category.name.replace(" ", "\n"),
+                            text = name.replace("\\\\n", "\\n"),
                             style = MaterialTheme.typography.titleSmall,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                            color = MaterialTheme.colorScheme.onBackground,
                             fontWeight = FontWeight.Bold,
                             textAlign = TextAlign.Center,
                             modifier = Modifier.padding(8.dp)
@@ -506,7 +518,7 @@ fun ProductCard(
                     Column {
                         if (product.price != null && product.price > product.sellingPrice) {
                             Text(
-                                text = "?" + product.price,
+                                text = "?${product.price}",
                                 style = MaterialTheme.typography.labelSmall.copy(
                                     textDecoration = TextDecoration.LineThrough
                                 ),
@@ -514,7 +526,7 @@ fun ProductCard(
                             )
                         }
                         Text(
-                            text = "?" + product.sellingPrice,
+                            text = "?${product.sellingPrice}",
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.onBackground,
                             fontWeight = FontWeight.ExtraBold
@@ -537,11 +549,12 @@ fun ProductCard(
                                 IconButton(
                                     onClick = { 
                                         quantity--
+                                        // Normally this updates global cart too, simple mock for now
                                         onAddClick(-1) 
                                     },
                                     modifier = Modifier.size(24.dp)
                                 ) {
-                                    Text("-", color = Color.White, fontWeight = FontWeight.Bold)
+                                    Icon(Icons.Default.Remove, contentDescription = "Decrease", tint = Color.White, modifier = Modifier.size(16.dp))
                                 }
                                 Text(
                                     text = quantity.toString(),
@@ -584,3 +597,10 @@ fun ProductCard(
         }
     }
 }
+"""
+
+with open(file_path, "w", encoding="utf-8") as f:
+    f.write(content)
+
+print("Updated HomeScreen.kt successfully")
+

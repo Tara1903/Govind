@@ -1,6 +1,5 @@
 package com.example.govind.di
 
-import com.example.govind.data.repository.MockGovindRepositoryImpl
 import com.example.govind.domain.repository.GovindRepository
 import dagger.Binds
 import dagger.Module

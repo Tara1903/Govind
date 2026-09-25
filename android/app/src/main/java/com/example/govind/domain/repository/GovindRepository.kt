@@ -23,4 +23,11 @@ interface GovindRepository {
     
     // Order history
     fun getOrders(): Flow<List<com.example.govind.data.model.Order>>
+    
+    // Auth operations
+    suspend fun signUp(email: String, password: String): Result<Unit>
+    suspend fun login(email: String, password: String): Result<Unit>
+    suspend fun logout()
+    fun isUserLoggedIn(): Boolean
+    fun getUserId(): String?
 }

@@ -27,14 +27,25 @@ android {
         versionCode = 1
         versionName = "1.0"
         
-        buildConfigField("String", "SUPABASE_URL", "\"${properties.getProperty("supabase.url") ?: "https://your-project.supabase.co"}\"")
-        buildConfigField("String", "SUPABASE_ANON_KEY", "\"${properties.getProperty("supabase.anon.key") ?: "your-anon-key"}\"")
+        buildConfigField("String", "SUPABASE_URL", "\"${properties.getProperty("SUPABASE_URL") ?: properties.getProperty("supabase.url") ?: "https://your-project.supabase.co"}\"")
+        buildConfigField("String", "SUPABASE_ANON_KEY", "\"${properties.getProperty("SUPABASE_ANON_KEY") ?: properties.getProperty("supabase.anon.key") ?: "your-anon-key"}\"")
+    }
+
+    signingConfigs {
+        create("release") {
+            storeFile = file("release.keystore")
+            storePassword = "govind1234"
+            keyAlias = "govind"
+            keyPassword = "govind1234"
+        }
     }
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            signingConfig = signingConfigs.getByName("release")
         }
     }
     compileOptions {
@@ -116,7 +127,16 @@ dependencies {
 
   // Firebase
   implementation(platform(libs.firebase.bom))
-  implementation(libs.firebase.auth)
-  implementation(libs.firebase.firestore)
-  implementation(libs.play.services.auth)
+  implementation(libs.firebase.messaging)
+  
+  // Room
+  implementation(libs.room.runtime)
+  implementation(libs.room.ktx)
+  kapt(libs.room.compiler)
+  
+  // Razorpay
+  implementation(libs.razorpay)
+  
+  // Preferences DataStore (if needed, but Room is enough for cart, auth session in SharedPreferences)
+  implementation("androidx.datastore:datastore-preferences:1.0.0")
 }

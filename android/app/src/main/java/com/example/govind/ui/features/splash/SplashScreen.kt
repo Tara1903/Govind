@@ -15,15 +15,22 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 
+import androidx.hilt.navigation.compose.hiltViewModel
+
 @Composable
 fun SplashScreen(
+    viewModel: SplashViewModel = hiltViewModel(),
     onNavigateToHome: () -> Unit,
-    onNavigateToOnboarding: () -> Unit
+    onNavigateToOnboarding: () -> Unit,
+    onNavigateToAuth: () -> Unit
 ) {
     LaunchedEffect(key1 = true) {
         delay(2000L) // Simulate some loading time
-        // TODO: Check if user is logged in or has seen onboarding
-        onNavigateToOnboarding()
+        if (viewModel.isLoggedIn()) {
+            onNavigateToHome()
+        } else {
+            onNavigateToOnboarding()
+        }
     }
 
     Box(
@@ -32,7 +39,10 @@ fun SplashScreen(
             .background(MaterialTheme.colorScheme.primary),
         contentAlignment = Alignment.Center
     ) {
-        // Placeholder for logo
-        Box(modifier = Modifier.size(120.dp).background(Color.White))
+        Image(
+            painter = painterResource(id = com.example.govind.R.drawable.logo),
+            contentDescription = "Govind Logo",
+            modifier = Modifier.size(128.dp)
+        )
     }
 }
