@@ -68,7 +68,7 @@ fun HomeScreen(
                     .fillMaxSize()
                     .padding(paddingValues)
             ) {
-                item { TodaysFreshRatePromotion() }
+                item { TodaysFreshRatePromotion(onProductClick = onNavigateToProduct) }
                 item { FourCoreCategories(categories = uiState.categories, onCategoryClick = { /* TODO filter by category */ }) }
                 item { SuperSaverKitchenPack() }
                 item { DailyFreshSpecialCombo() }
@@ -111,19 +111,7 @@ fun HomeTopBar(onSearchClick: () -> Unit) {
                         modifier = Modifier.size(40.dp)
                     )
                     Spacer(modifier = Modifier.width(12.dp))
-                    Column {
-                        Text(
-                            text = "Delivery to Home",
-                            style = MaterialTheme.typography.titleMedium,
-                            color = MaterialTheme.colorScheme.onBackground,
-                            fontWeight = FontWeight.ExtraBold
-                        )
-                        Text(
-                            text = "Flat 101, Govind Towers...",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
+                    com.example.govind.ui.shared.ExperienceSwitcherDropdown()
                 }
             }
             
@@ -161,36 +149,66 @@ fun HomeTopBar(onSearchClick: () -> Unit) {
 }
 
 @Composable
-fun TodaysFreshRatePromotion() {
+fun TodaysFreshRatePromotion(onProductClick: (String) -> Unit) {
+    val items = listOf(
+        Pair("Tomato", "\u20B935/kg"),
+        Pair("Potato", "\u20B942/kg"),
+        Pair("Onion", "\u20B948/kg"),
+        Pair("Methi", "\u20B930/bunch"),
+        Pair("Apple", "\u20B9180/kg"),
+        Pair("Banana", "\u20B940/dozen"),
+        Pair("Coriander", "\u20B915/bunch"),
+        Pair("Green Chilli", "\u20B960/kg")
+    )
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
-            .height(150.dp),
-        shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+            .padding(horizontal = 16.dp, vertical = 16.dp),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFF064520)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        Box(modifier = Modifier.fillMaxSize()) {
-            Column(
-                modifier = Modifier
-                    .padding(24.dp)
-                    .align(Alignment.CenterStart)
-            ) {
-                Text(
-                    text = "TODAY'S FRESH RATE",
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f),
-                    fontWeight = FontWeight.Bold
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = "Wholesale Prices on Vegetables!",
-                    style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.primary,
-                    fontWeight = FontWeight.ExtraBold
-                )
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Text(
+                text = "TODAY AT GOVIND",
+                style = MaterialTheme.typography.titleMedium,
+                color = Color(0xFFFEFCF5),
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(bottom = 12.dp)
+            )
+            
+            items.forEach { item ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { onProductClick(item.first.lowercase()) }
+                        .padding(vertical = 4.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = item.first,
+                        color = Color.White,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    Text(
+                        text = item.second,
+                        color = Color.White,
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
             }
+            
+            Spacer(modifier = Modifier.height(12.dp))
+            Text(
+                text = "Updated 10:42 AM",
+                style = MaterialTheme.typography.labelSmall,
+                color = Color(0xFFFEFCF5).copy(alpha = 0.7f),
+                modifier = Modifier.align(Alignment.End)
+            )
         }
     }
 }

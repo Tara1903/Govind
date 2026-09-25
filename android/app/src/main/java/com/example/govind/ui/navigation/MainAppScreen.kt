@@ -47,15 +47,15 @@ sealed class BottomNavItem(
     
     // Kitchen
     object KitchenHome : BottomNavItem(Screen.KitchenHome.route, "Home", Icons.Filled.Home, Icons.Outlined.Home)
-    object KitchenMenu : BottomNavItem(Screen.KitchenMenu.route, "Menu", Icons.AutoMirrored.Filled.List, Icons.AutoMirrored.Outlined.List)
+    object KitchenMenu : BottomNavItem(Screen.KitchenMenu.route, "Menu", Icons.Filled.List, Icons.Outlined.List)
     
     // Wholesale
     object WholesaleHome : BottomNavItem(Screen.WholesaleHome.route, "Home", Icons.Filled.Home, Icons.Outlined.Home)
-    object WholesaleCatalog : BottomNavItem(Screen.WholesaleCatalog.route, "Catalog", Icons.AutoMirrored.Filled.List, Icons.AutoMirrored.Outlined.List)
+    object WholesaleCatalog : BottomNavItem(Screen.WholesaleCatalog.route, "Catalog", Icons.Filled.List, Icons.Outlined.List)
     
     // Shared 
     object Cart : BottomNavItem(Screen.Cart.route, "Cart", Icons.Filled.ShoppingCart, Icons.Outlined.ShoppingCart)
-    object Orders : BottomNavItem(Screen.Orders.route, "Orders", Icons.AutoMirrored.Filled.List, Icons.AutoMirrored.Outlined.List)
+    object Orders : BottomNavItem(Screen.Orders.route, "Orders", Icons.Filled.List, Icons.Outlined.List)
     object Profile : BottomNavItem(Screen.Profile.route, "Profile", Icons.Filled.Person, Icons.Outlined.Person)
 }
 
@@ -66,6 +66,23 @@ fun MainAppScreen() {
     val currentDestination = navBackStackEntry?.destination
 
     val currentExperience by AppState.currentExperience.collectAsState()
+
+    LaunchedEffect(currentExperience) {
+        val destination = when(currentExperience) {
+            GovindExperience.FRESH -> Screen.Home.route
+            GovindExperience.KITCHEN -> Screen.KitchenHome.route
+            GovindExperience.WHOLESALE -> Screen.WholesaleHome.route
+        }
+        if (currentDestination?.route != destination && currentDestination?.route != Screen.Splash.route) {
+            navController.navigate(destination) {
+                popUpTo(navController.graph.findStartDestination().id) {
+                    saveState = true
+                }
+                launchSingleTop = true
+                restoreState = true
+            }
+        }
+    }
 
     val bottomBarDestinations = when (currentExperience) {
         GovindExperience.FRESH -> listOf(
@@ -205,6 +222,12 @@ fun MainAppScreen() {
                 com.example.govind.ui.features.search.SearchScreen(
                     onNavigateBack = { navController.popBackStack() },
                     onNavigateToProduct = { productId -> navController.navigate(Screen.ProductDetails.createRoute(productId)) }
+                )
+            }
+
+            composable(Screen.RateList.route) {
+                com.example.govind.ui.features.ratelist.RateListScreen(
+                    onNavigateBack = { navController.popBackStack() }
                 )
             }
 

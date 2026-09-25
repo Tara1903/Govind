@@ -20,9 +20,7 @@ import androidx.navigation.NavController
 import com.example.govind.ui.navigation.Screen
 
 @Composable
-fun ExperienceSwitcherHeader(
-    navController: NavController
-) {
+fun ExperienceSwitcherDropdown() {
     val currentExperience by AppState.currentExperience.collectAsState()
     var expanded by remember { mutableStateOf(false) }
 
@@ -44,7 +42,7 @@ fun ExperienceSwitcherHeader(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         text = title,
-                        style = MaterialTheme.typography.titleLarge,
+                        style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = color
                     )
@@ -77,10 +75,6 @@ fun ExperienceSwitcherHeader(
                 onClick = {
                     expanded = false
                     AppState.switchExperience(GovindExperience.FRESH)
-                    navController.navigate(Screen.Home.route) {
-                        popUpTo(navController.graph.id) { inclusive = false }
-                        launchSingleTop = true
-                    }
                 }
             )
             DropdownMenuItem(
@@ -93,10 +87,6 @@ fun ExperienceSwitcherHeader(
                 onClick = {
                     expanded = false
                     AppState.switchExperience(GovindExperience.KITCHEN)
-                    navController.navigate(Screen.KitchenHome.route) {
-                        popUpTo(navController.graph.id) { inclusive = false }
-                        launchSingleTop = true
-                    }
                 }
             )
             DropdownMenuItem(
@@ -109,10 +99,6 @@ fun ExperienceSwitcherHeader(
                 onClick = {
                     expanded = false
                     AppState.switchExperience(GovindExperience.WHOLESALE)
-                    navController.navigate(Screen.WholesaleHome.route) {
-                        popUpTo(navController.graph.id) { inclusive = false }
-                        launchSingleTop = true
-                    }
                 }
             )
         }
