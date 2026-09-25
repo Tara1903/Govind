@@ -15,8 +15,11 @@ export default function ProductsPage() {
   const [isEditing, setIsEditing] = useState(false);
   const [currentProduct, setCurrentProduct] = useState<any>(null);
   const [formData, setFormData] = useState({
-    name: '', price: '', stock_quantity: '', active: true, category_id: '',
-    on_fresh_board: false, product_type: 'SINGLE', bundle_items: ''
+    name: '', price: '', selling_price: '', unit: '', stock_quantity: '', 
+    description: '', image_url: '',
+    active: true, category_id: '',
+    on_fresh_board: false, product_type: 'SINGLE', bundle_items: '',
+    bulk_available: false
   });
 
   const [categories, setCategories] = useState<any[]>([]);
@@ -50,14 +53,19 @@ export default function ProductsPage() {
   const handleEdit = (product: any) => {
     setCurrentProduct(product);
     setFormData({
-      name: product.name,
-      price: product.price,
-      stock_quantity: product.stock_quantity,
+      name: product.name || '',
+      price: product.price?.toString() || '',
+      selling_price: product.selling_price?.toString() || '',
+      unit: product.unit || '',
+      stock_quantity: product.stock_quantity?.toString() || '',
+      description: product.description || '',
+      image_url: product.image_url || '',
       active: product.active,
       category_id: product.category_id || '',
       on_fresh_board: product.on_fresh_board || false,
       product_type: product.product_type || 'SINGLE',
       bundle_items: product.bundle_items ? JSON.stringify(product.bundle_items) : '',
+      bulk_available: product.bulk_available || false
     });
     setIsEditing(true);
   };
@@ -65,8 +73,11 @@ export default function ProductsPage() {
   const handleAdd = () => {
     setCurrentProduct(null);
     setFormData({
-      name: '', price: '', stock_quantity: '0', active: true, category_id: '',
-      on_fresh_board: false, product_type: 'SINGLE', bundle_items: ''
+      name: '', price: '', selling_price: '', unit: '1 item', stock_quantity: '0', 
+      description: '', image_url: '',
+      active: true, category_id: '',
+      on_fresh_board: false, product_type: 'SINGLE', bundle_items: '',
+      bulk_available: false
     });
     setIsEditing(true);
   };
@@ -96,12 +107,17 @@ export default function ProductsPage() {
       await supabase.from('products').update({
         name: formData.name,
         price: parseFloat(formData.price),
+        selling_price: parseFloat(formData.selling_price) || parseFloat(formData.price),
+        unit: formData.unit || '1 item',
         stock_quantity: parseInt(formData.stock_quantity, 10),
+        description: formData.description,
+        image_url: formData.image_url,
         active: formData.active,
         category_id: formData.category_id || null,
         on_fresh_board: formData.on_fresh_board,
         product_type: formData.product_type,
         bundle_items: parsedBundleItems,
+        bulk_available: formData.bulk_available
       }).eq('id', currentProduct.id);
     } else {
       // Insert
@@ -111,14 +127,17 @@ export default function ProductsPage() {
         name: formData.name,
         slug,
         price: parseFloat(formData.price),
-        selling_price: parseFloat(formData.price),
-        unit: '1 item',
+        selling_price: parseFloat(formData.selling_price) || parseFloat(formData.price),
+        unit: formData.unit || '1 item',
         stock_quantity: parseInt(formData.stock_quantity, 10),
+        description: formData.description,
+        image_url: formData.image_url,
         active: formData.active,
         category_id: formData.category_id || null,
         on_fresh_board: formData.on_fresh_board,
         product_type: formData.product_type,
         bundle_items: parsedBundleItems,
+        bulk_available: formData.bulk_available
       }]);
     }
     setIsEditing(false);
@@ -151,8 +170,24 @@ export default function ProductsPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Price (₹)</label>
+                <label className="block text-sm font-medium mb-1">Original Price</label>
                 <input required type="number" step="0.01" className="w-full border px-3 py-2 rounded" value={formData.price} onChange={e => setFormData({...formData, price: e.target.value})} />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Selling Price (Discounted)</label>
+                <input type="number" step="0.01" className="w-full border px-3 py-2 rounded" value={formData.selling_price} onChange={e => setFormData({...formData, selling_price: e.target.value})} />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Unit (e.g. 1 kg, 500 g, 1 bunch)</label>
+                <input required type="text" className="w-full border px-3 py-2 rounded" value={formData.unit} onChange={e => setFormData({...formData, unit: e.target.value})} />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Image URL</label>
+                <input type="url" className="w-full border px-3 py-2 rounded" value={formData.image_url} onChange={e => setFormData({...formData, image_url: e.target.value})} />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Description</label>
+                <textarea className="w-full border px-3 py-2 rounded" value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} />
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">Stock</label>
@@ -184,6 +219,14 @@ export default function ProductsPage() {
               <div className="flex items-center">
                 <input type="checkbox" id="active" checked={formData.active} onChange={e => setFormData({...formData, active: e.target.checked})} className="mr-2" />
                 <label htmlFor="active" className="text-sm font-medium">Active</label>
+              </div>
+              <div className="flex items-center">
+                <input type="checkbox" id="bulk_available" checked={formData.bulk_available} onChange={e => setFormData({...formData, bulk_available: e.target.checked})} className="mr-2" />
+                <label htmlFor="bulk_available" className="text-sm font-medium">Available for Wholesale (Bulk)</label>
+              </div>
+              <div className="flex items-center">
+                <input type="checkbox" id="bulk_available" checked={formData.bulk_available} onChange={e => setFormData({...formData, bulk_available: e.target.checked})} className="mr-2" />
+                <label htmlFor="bulk_available" className="text-sm font-medium">Available for Wholesale (Bulk)</label>
               </div>
               
               <div className="flex items-center">
@@ -252,3 +295,7 @@ export default function ProductsPage() {
     </div>
   );
 }
+
+
+
+
