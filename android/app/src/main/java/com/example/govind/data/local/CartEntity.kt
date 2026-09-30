@@ -1,14 +1,15 @@
 package com.example.govind.data.local
 
 import androidx.room.Entity
-import androidx.room.PrimaryKey
 import com.example.govind.data.model.CartItem
 import com.example.govind.data.model.Product
 
-@Entity(tableName = "cart_items")
+@Entity(
+    tableName = "cart_items",
+    primaryKeys = ["productId", "experienceType"]
+)
 data class CartEntity(
     val id: String,
-    @PrimaryKey
     val productId: String,
     val name: String,
     val slug: String,
@@ -19,9 +20,18 @@ data class CartEntity(
     val categoryId: String?,
     val unit: String,
     val quantity: Int,
-    val experienceType: String = "FRESH"
+    val experienceType: String = "FRESH",
+    val bundleItemsJson: String? = null,
+    val productType: String = "SINGLE"
 ) {
     fun toCartItem(): CartItem {
+        val bundleObj = bundleItemsJson?.let {
+            try {
+                kotlinx.serialization.json.Json.parseToJsonElement(it) as? kotlinx.serialization.json.JsonObject
+            } catch (e: Exception) {
+                null
+            }
+        }
         return CartItem(
             id = productId,
             cartId = "local_cart",
@@ -32,11 +42,16 @@ data class CartEntity(
                 price = price,
                 sellingPrice = sellingPrice,
                 description = description,
-                imageUrl = imageUrl,
+                productImages = imageUrl?.let { listOf(com.example.govind.data.model.ProductImage(it)) },
+                directImageUrl = imageUrl,
                 categoryId = categoryId,
-                unit = unit
+                unit = unit,
+                experienceType = experienceType,
+                productType = productType,
+                bundleItems = bundleObj
             ),
-            quantity = quantity
+            quantity = quantity,
+            experienceType = experienceType
         )
     }
 
@@ -54,7 +69,9 @@ data class CartEntity(
                 categoryId = item.product.categoryId,
                 unit = item.product.unit,
                 quantity = item.quantity,
-                experienceType = "FRESH"
+                experienceType = item.experienceType,
+                bundleItemsJson = item.product.bundleItems?.toString(),
+                productType = item.product.productType
             )
         }
     }

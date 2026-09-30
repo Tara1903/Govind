@@ -11,18 +11,27 @@ interface CartDao {
     @Query("SELECT * FROM cart_items")
     fun getCartItems(): Flow<List<CartEntity>>
 
+    @Query("SELECT * FROM cart_items WHERE experienceType = :experienceType")
+    fun getCartItemsByExperience(experienceType: String): Flow<List<CartEntity>>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertItem(item: CartEntity)
 
     @Query("SELECT * FROM cart_items WHERE productId = :productId LIMIT 1")
     suspend fun getCartItem(productId: String): CartEntity?
 
-    @Query("DELETE FROM cart_items WHERE productId = :productId")
-    suspend fun deleteItem(productId: String)
+    @Query("SELECT * FROM cart_items WHERE productId = :productId AND experienceType = :experienceType LIMIT 1")
+    suspend fun getCartItemForExperience(productId: String, experienceType: String): CartEntity?
 
-    @Query("UPDATE cart_items SET quantity = :quantity WHERE productId = :productId")
-    suspend fun updateQuantity(productId: String, quantity: Int)
+    @Query("DELETE FROM cart_items WHERE productId = :productId AND experienceType = :experienceType")
+    suspend fun deleteItem(productId: String, experienceType: String)
+
+    @Query("UPDATE cart_items SET quantity = :quantity WHERE productId = :productId AND experienceType = :experienceType")
+    suspend fun updateQuantity(productId: String, experienceType: String, quantity: Int)
 
     @Query("DELETE FROM cart_items")
     suspend fun clearCart()
+
+    @Query("DELETE FROM cart_items WHERE experienceType = :experienceType")
+    suspend fun clearCartForExperience(experienceType: String)
 }

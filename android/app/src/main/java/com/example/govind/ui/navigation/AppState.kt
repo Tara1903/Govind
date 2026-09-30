@@ -17,4 +17,10 @@ object AppState {
     fun switchExperience(experience: GovindExperience) {
         _currentExperience.value = experience
     }
+
+    fun switchExperience(experienceName: String) {
+        try {
+            _currentExperience.value = GovindExperience.valueOf(experienceName.uppercase())
+        } catch (_: Exception) {}
+    }
 }

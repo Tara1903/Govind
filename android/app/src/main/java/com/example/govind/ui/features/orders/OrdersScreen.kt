@@ -1,147 +1,353 @@
 package com.example.govind.ui.features.orders
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.automirrored.filled.ReceiptLong
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.ShoppingBag
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.govind.data.model.Order
+import com.example.govind.theme.GovindTheme
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OrdersScreen(
     onNavigateBack: () -> Unit,
+    onNavigateToOrderDetails: (String) -> Unit,
+    onNavigateToAuth: () -> Unit = {},
+    onNavigateToHome: () -> Unit = {},
     viewModel: OrdersViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
+    LaunchedEffect(Unit) {
+        viewModel.loadOrders()
+    }
+
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("My Orders", fontWeight = FontWeight.Bold) },
-                navigationIcon = {
-                    IconButton(onClick = onNavigateBack) {
-                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
+            Surface(
+                color = GovindTheme.colors.surface,
+                shadowElevation = 2.dp
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .statusBarsPadding()
+                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        IconButton(
+                            onClick = onNavigateBack,
+                            modifier = Modifier.size(36.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Back",
+                                tint = GovindTheme.colors.onSurface
+                            )
+                        }
+                        Text(
+                            text = "My Orders",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = GovindTheme.colors.onSurface
+                        )
                     }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background)
-            )
-        }
-    ) { padding ->
-        if (uiState.isLoading) {
-            Box(modifier = Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
-            }
-        } else if (uiState.error != null) {
-            Box(modifier = Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center) {
-                Text(text = "Error: ${uiState.error}", color = MaterialTheme.colorScheme.error)
-            }
-        } else if (uiState.orders.isEmpty()) {
-            Box(modifier = Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Icon(
-                        imageVector = Icons.Default.CheckCircle,
-                        contentDescription = "No Orders",
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.size(64.dp)
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(
-                        text = "You have no past orders.",
-                        style = MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+
+                    IconButton(
+                        onClick = { viewModel.loadOrders() },
+                        modifier = Modifier.size(36.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Refresh,
+                            contentDescription = "Refresh",
+                            tint = GovindTheme.colors.secondary
+                        )
+                    }
                 }
             }
-        } else {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding)
-                    .background(MaterialTheme.colorScheme.background),
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                items(uiState.orders.reversed()) { order ->
+        },
+        containerColor = GovindTheme.colors.surface
+    ) { padding ->
+        when {
+            // Guest State
+            !uiState.isLoggedIn -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(padding)
+                        .padding(24.dp),
+                    contentAlignment = Alignment.Center
+                ) {
                     Surface(
-                        shape = RoundedCornerShape(16.dp),
-                        color = MaterialTheme.colorScheme.surface,
+                        shape = RoundedCornerShape(24.dp),
+                        color = GovindTheme.colors.surfaceContainerLowest,
                         shadowElevation = 2.dp,
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Column(modifier = Modifier.padding(16.dp)) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
+                        Column(
+                            modifier = Modifier.padding(28.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(14.dp)
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(64.dp)
+                                    .clip(CircleShape)
+                                    .background(GovindTheme.colors.secondaryContainer),
+                                contentAlignment = Alignment.Center
                             ) {
-                                Text(
-                                    "Order #${order.id.take(8).uppercase()}",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.Bold
+                                Icon(
+                                    imageVector = Icons.Default.Lock,
+                                    contentDescription = null,
+                                    tint = GovindTheme.colors.secondary,
+                                    modifier = Modifier.size(32.dp)
                                 )
-                                Surface(
-                                    color = if (order.orderStatus == "CONFIRMED") MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.secondaryContainer,
-                                    shape = RoundedCornerShape(8.dp)
-                                ) {
-                                    Text(
-                                        text = order.orderStatus,
-                                        style = MaterialTheme.typography.labelSmall,
-                                        color = if (order.orderStatus == "CONFIRMED") MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSecondaryContainer,
-                                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                }
                             }
-                            Spacer(modifier = Modifier.height(12.dp))
-                            HorizontalDivider(color = MaterialTheme.colorScheme.outline)
-                            Spacer(modifier = Modifier.height(12.dp))
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween
+                            Text(
+                                text = "Sign In to View Orders",
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.Bold,
+                                color = GovindTheme.colors.onSurface
+                            )
+                            Text(
+                                text = "Track active live deliveries and access tax invoices from your account.",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = GovindTheme.colors.onSurfaceVariant,
+                                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                            )
+                            Button(
+                                onClick = onNavigateToAuth,
+                                modifier = Modifier.fillMaxWidth().height(48.dp),
+                                shape = CircleShape,
+                                colors = ButtonDefaults.buttonColors(containerColor = GovindTheme.colors.primaryContainer)
                             ) {
-                                Text("Total Amount", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                Text("₹${order.total}", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                            }
-                            Spacer(modifier = Modifier.height(4.dp))
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Text("Payment Method", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                Text(order.paymentMethod, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)
-                            }
-                            Spacer(modifier = Modifier.height(16.dp))
-                            val context = androidx.compose.ui.platform.LocalContext.current
-                            OutlinedButton(
-                                onClick = {
-                                    val intent = android.content.Intent(android.content.Intent.ACTION_VIEW)
-                                    intent.data = android.net.Uri.parse("https://wa.me/919999999999?text=Help with Order ${order.id}")
-                                    try {
-                                        context.startActivity(intent)
-                                    } catch (e: Exception) {
-                                        android.widget.Toast.makeText(context, "WhatsApp not installed", android.widget.Toast.LENGTH_SHORT).show()
-                                    }
-                                },
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                Text("Need Help? Chat on WhatsApp")
+                                Text("Sign In", fontWeight = FontWeight.Bold, color = Color.White)
                             }
                         }
                     }
                 }
+            }
+
+            // Loading State
+            uiState.isLoading -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(padding),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(color = GovindTheme.colors.secondary)
+                }
+            }
+
+            // Empty Orders State
+            uiState.orders.isEmpty() -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(padding)
+                        .padding(24.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(14.dp)
+                    ) {
+                        Text("📦", style = MaterialTheme.typography.displayLarge)
+                        Text(
+                            text = "No Orders Placed Yet",
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold,
+                            color = GovindTheme.colors.onSurface
+                        )
+                        Text(
+                            text = "Explore Farm Fresh produce, delicious Punjabi meals from Govind Kitchen, or Mandi B2B Wholesale.",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = GovindTheme.colors.onSurfaceVariant,
+                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                        )
+                        Button(
+                            onClick = onNavigateToHome,
+                            shape = CircleShape,
+                            colors = ButtonDefaults.buttonColors(containerColor = GovindTheme.colors.primaryContainer)
+                        ) {
+                            Text("Start Shopping", color = Color.White, fontWeight = FontWeight.Bold)
+                        }
+                    }
+                }
+            }
+
+            // Orders List
+            else -> {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(padding),
+                    contentPadding = PaddingValues(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(14.dp)
+                ) {
+                    items(uiState.orders) { order ->
+                        StitchOrderCard(order = order, onClick = { onNavigateToOrderDetails(order.id) })
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun StitchOrderCard(order: Order, onClick: () -> Unit) {
+    Surface(
+        shape = RoundedCornerShape(16.dp),
+        color = GovindTheme.colors.surfaceContainerLowest,
+        shadowElevation = 1.dp,
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() }
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            // Header Row: Order ID + Status
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(36.dp)
+                            .clip(CircleShape)
+                            .background(GovindTheme.colors.surfaceContainer),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ReceiptLong,
+                            contentDescription = null,
+                            tint = GovindTheme.colors.primaryContainer,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+                    Column {
+                        Text(
+                            text = "Order #${order.id.take(8).uppercase(Locale.ROOT)}",
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = GovindTheme.colors.onSurface
+                        )
+                        Text(
+                            text = order.createdAt?.take(10) ?: "",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = GovindTheme.colors.onSurfaceVariant
+                        )
+                    }
+                }
+
+                val isDelivered = order.orderStatus.equals("DELIVERED", ignoreCase = true)
+                Surface(
+                    shape = CircleShape,
+                    color = if (isDelivered) GovindTheme.colors.secondaryContainer else GovindTheme.colors.tertiaryFixed
+                ) {
+                    Text(
+                        text = order.orderStatus,
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = if (isDelivered) GovindTheme.colors.onSecondaryContainer else GovindTheme.colors.onTertiaryFixed,
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
+                    )
+                }
+            }
+
+            HorizontalDivider(color = GovindTheme.colors.surfaceContainerHigh)
+
+            // Items Count & Preview
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.ShoppingBag,
+                        contentDescription = null,
+                        tint = GovindTheme.colors.secondary,
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Text(
+                        text = "${order.orderItems?.size ?: 1} Unified Item(s)",
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.Medium,
+                        color = GovindTheme.colors.onSurface
+                    )
+                }
+                Text(
+                    text = "₹${order.total.toInt()}",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = GovindTheme.colors.primaryContainer
+                )
+            }
+
+            // Tracking CTA Footer
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(GovindTheme.colors.surfaceContainerLow)
+                    .padding(horizontal = 12.dp, vertical = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Live GPS Tracking & Timeline",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = GovindTheme.colors.secondary,
+                    fontWeight = FontWeight.Bold
+                )
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                    contentDescription = null,
+                    tint = GovindTheme.colors.secondary,
+                    modifier = Modifier.size(16.dp)
+                )
             }
         }
     }

@@ -14,6 +14,32 @@ data class Cart(
 data class CartItem(
     val id: String,
     @SerialName("cart_id") val cartId: String,
-    val product: Product, // In a real app we might only store product_id locally and fetch details, but let's keep it simple here
-    val quantity: Int
+    val product: Product,
+    val quantity: Int,
+    val experienceType: String = "FRESH"
+)
+
+@Serializable
+data class CloudCartItem(
+    val id: String = "",
+    @SerialName("cart_id") val cartId: String = "",
+    @SerialName("product_id") val productId: String = "",
+    val quantity: Int = 1,
+    @SerialName("experience_type") val experienceType: String = "FRESH"
+)
+
+@Serializable
+data class CloudCart(
+    val id: String = "",
+    @SerialName("profile_id") val profileId: String = "",
+    @SerialName("cart_items") val cartItems: List<CloudCartItem> = emptyList()
+)
+
+@Serializable
+data class FavoriteResponse(
+    val id: String = "",
+    @SerialName("profile_id") val profileId: String = "",
+    @SerialName("product_id") val productId: String = "",
+    @SerialName("created_at") val createdAt: String? = null,
+    val products: Product? = null
 )

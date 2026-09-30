@@ -25,7 +25,22 @@ data class User(
 @Serializable
 data class Profile(
     val id: String,
-    val name: String,
-    val phone: String?,
+    val name: String = "",
+    @SerialName("full_name") val fullName: String? = null,
+    val phone: String? = null,
+    val role: String = "customer",
     @SerialName("created_at") val createdAt: String? = null
+)
+
+@Serializable
+data class SendOtpRequest(
+    val email: String,
+    @SerialName("create_user") val createUser: Boolean = true
+)
+
+@Serializable
+data class VerifyOtpRequest(
+    val type: String,
+    val email: String,
+    val token: String
 )

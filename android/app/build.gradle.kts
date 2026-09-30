@@ -42,8 +42,8 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
-            isShrinkResources = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             signingConfig = signingConfigs.getByName("release")
         }
@@ -93,6 +93,7 @@ dependencies {
   implementation(libs.androidx.compose.ui)
   implementation(libs.androidx.compose.ui.tooling.preview)
   implementation(libs.androidx.compose.material3)
+  implementation("androidx.compose.material:material-icons-extended")
   // Tooling
   debugImplementation(libs.androidx.compose.ui.tooling)
   // Instrumented tests
@@ -144,4 +145,5 @@ dependencies {
   
   // Preferences DataStore (if needed, but Room is enough for cart, auth session in SharedPreferences)
   implementation("androidx.datastore:datastore-preferences:1.0.0")
+  implementation(libs.play.services.location)
 }

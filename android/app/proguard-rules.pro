@@ -1,0 +1,8 @@
+﻿-dontwarn proguard.annotation.Keep
+-dontwarn proguard.annotation.KeepClassMembers
+-keep class com.razorpay.** { *; }
+-dontwarn com.razorpay.**
+-keep class io.ktor.** { *; }
+-dontwarn io.ktor.**
+-keep class io.github.jan.supabase.** { *; }
+-dontwarn io.github.jan.supabase.**

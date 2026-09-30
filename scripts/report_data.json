@@ -1,0 +1,1136 @@
+{
+  "prods": [
+    {
+      "name": "Aloo Paratha (2 Pcs)",
+      "slug": "aloo-paratha",
+      "price": 99,
+      "selling_price": 79,
+      "unit": "plate",
+      "experience_type": "KITCHEN",
+      "on_fresh_board": false,
+      "category_id": "6778ea2f-8da3-4f26-83ed-963a34aa2d98"
+    },
+    {
+      "name": "Amaranth Leaves",
+      "slug": "amaranth-leaves",
+      "price": 15,
+      "selling_price": 12,
+      "unit": "bunch",
+      "experience_type": "FRESH",
+      "on_fresh_board": false,
+      "category_id": "b0f21067-a659-4516-91e5-295119ba4c94"
+    },
+    {
+      "name": "Amla",
+      "slug": "amla",
+      "price": 117,
+      "selling_price": 99,
+      "unit": "kg",
+      "experience_type": "FRESH",
+      "on_fresh_board": false,
+      "category_id": "bf29cbb5-09cd-4425-85ac-f8e6140493d7"
+    },
+    {
+      "name": "Apple Shimla",
+      "slug": "apple-shimla",
+      "price": 163,
+      "selling_price": 145,
+      "unit": "kg",
+      "experience_type": "FRESH",
+      "on_fresh_board": true,
+      "category_id": "b340341a-d6ee-4489-82ec-4157e454ff4a"
+    },
+    {
+      "name": "Apple Washington",
+      "slug": "apple-washington",
+      "price": 260,
+      "selling_price": 229,
+      "unit": "kg",
+      "experience_type": "FRESH",
+      "on_fresh_board": false,
+      "category_id": "b340341a-d6ee-4489-82ec-4157e454ff4a"
+    },
+    {
+      "name": "Apricot",
+      "slug": "apricot",
+      "price": 247,
+      "selling_price": 219,
+      "unit": "kg",
+      "experience_type": "FRESH",
+      "on_fresh_board": false,
+      "category_id": "2099483c-66a2-42de-a0dd-699e85167815"
+    },
+    {
+      "name": "Ash Gourd",
+      "slug": "ash-gourd",
+      "price": 20,
+      "selling_price": 18,
+      "unit": "kg",
+      "experience_type": "FRESH",
+      "on_fresh_board": false,
+      "category_id": "53cea86b-97e4-496c-abc8-62ec408896e8"
+    },
+    {
+      "name": "Avocado",
+      "slug": "avocado",
+      "price": 140,
+      "selling_price": 119,
+      "unit": "piece",
+      "experience_type": "FRESH",
+      "on_fresh_board": false,
+      "category_id": "86c850f5-3f4f-4042-b406-9c261d5ba5a1"
+    },
+    {
+      "name": "Baby Corn",
+      "slug": "baby-corn",
+      "price": 48,
+      "selling_price": 42,
+      "unit": "kg",
+      "experience_type": "FRESH",
+      "on_fresh_board": false,
+      "category_id": "738e5915-1086-422f-a8a1-8bcc280b02c6"
+    },
+    {
+      "name": "Banana Flower",
+      "slug": "banana-flower",
+      "price": 25,
+      "selling_price": 20,
+      "unit": "piece",
+      "experience_type": "FRESH",
+      "on_fresh_board": false,
+      "category_id": "114c5e76-3106-4bf6-8087-fa5246c294cd"
+    },
+    {
+      "name": "Banana Morris",
+      "slug": "banana-morris",
+      "price": 42,
+      "selling_price": 36,
+      "unit": "kg",
+      "experience_type": "FRESH",
+      "on_fresh_board": false,
+      "category_id": "b340341a-d6ee-4489-82ec-4157e454ff4a"
+    },
+    {
+      "name": "Banana Regular",
+      "slug": "banana-regular",
+      "price": 61,
+      "selling_price": 52,
+      "unit": "kg",
+      "experience_type": "FRESH",
+      "on_fresh_board": true,
+      "category_id": "b340341a-d6ee-4489-82ec-4157e454ff4a"
+    },
+    {
+      "name": "Beetroot",
+      "slug": "beetroot",
+      "price": 49,
+      "selling_price": 43,
+      "unit": "kg",
+      "experience_type": "FRESH",
+      "on_fresh_board": false,
+      "category_id": "97596b13-c1c5-4942-bed8-219eb6861fca"
+    },
+    {
+      "name": "Bitter Gourd",
+      "slug": "bitter-gourd",
+      "price": 48,
+      "selling_price": 41,
+      "unit": "kg",
+      "experience_type": "FRESH",
+      "on_fresh_board": false,
+      "category_id": "53cea86b-97e4-496c-abc8-62ec408896e8"
+    },
+    {
+      "name": "Black Grapes",
+      "slug": "black-grapes",
+      "price": 169,
+      "selling_price": 149,
+      "unit": "kg",
+      "experience_type": "FRESH",
+      "on_fresh_board": false,
+      "category_id": "5b8bd1d5-4cae-4019-b00e-b95494c42442"
+    },
+    {
+      "name": "Blueberries",
+      "slug": "blueberries",
+      "price": 450,
+      "selling_price": 399,
+      "unit": "125g pack",
+      "experience_type": "FRESH",
+      "on_fresh_board": false,
+      "category_id": "86c850f5-3f4f-4042-b406-9c261d5ba5a1"
+    },
+    {
+      "name": "Boondi Raita (200ml)",
+      "slug": "boondi-raita",
+      "price": 45,
+      "selling_price": 35,
+      "unit": "cup",
+      "experience_type": "KITCHEN",
+      "on_fresh_board": false,
+      "category_id": "5e9534f5-3319-4768-b492-17a45002b447"
+    },
+    {
+      "name": "Bottle Gourd",
+      "slug": "bottle-gourd",
+      "price": 34,
+      "selling_price": 28,
+      "unit": "kg",
+      "experience_type": "FRESH",
+      "on_fresh_board": false,
+      "category_id": "53cea86b-97e4-496c-abc8-62ec408896e8"
+    },
+    {
+      "name": "Brinjal",
+      "slug": "brinjal",
+      "price": 45,
+      "selling_price": 39,
+      "unit": "kg",
+      "experience_type": "FRESH",
+      "on_fresh_board": false,
+      "category_id": "124f26f6-cdcc-4fac-97b8-0a90724f41e7"
+    },
+    {
+      "name": "Broad Beans",
+      "slug": "broad-beans",
+      "price": 55,
+      "selling_price": 47,
+      "unit": "kg",
+      "experience_type": "FRESH",
+      "on_fresh_board": false,
+      "category_id": "67e6d6cd-62fe-41e6-9be6-d1ca14efc711"
+    },
+    {
+      "name": "Broccoli",
+      "slug": "broccoli",
+      "price": 130,
+      "selling_price": 110,
+      "unit": "kg",
+      "experience_type": "FRESH",
+      "on_fresh_board": false,
+      "category_id": "186551f4-ee11-4323-aa28-ccf61c460b0c"
+    },
+    {
+      "name": "Butter Beans",
+      "slug": "butter-beans",
+      "price": 52,
+      "selling_price": 44,
+      "unit": "kg",
+      "experience_type": "FRESH",
+      "on_fresh_board": false,
+      "category_id": "67e6d6cd-62fe-41e6-9be6-d1ca14efc711"
+    },
+    {
+      "name": "Butter Naan",
+      "slug": "butter-naan",
+      "price": 30,
+      "selling_price": 25,
+      "unit": "piece",
+      "experience_type": "KITCHEN",
+      "on_fresh_board": false,
+      "category_id": "5e9534f5-3319-4768-b492-17a45002b447"
+    },
+    {
+      "name": "Cabbage",
+      "slug": "cabbage",
+      "price": 36,
+      "selling_price": 30,
+      "unit": "kg",
+      "experience_type": "FRESH",
+      "on_fresh_board": false,
+      "category_id": "186551f4-ee11-4323-aa28-ccf61c460b0c"
+    },
+    {
+      "name": "Capsicum",
+      "slug": "capsicum",
+      "price": 55,
+      "selling_price": 47,
+      "unit": "kg",
+      "experience_type": "FRESH",
+      "on_fresh_board": true,
+      "category_id": "124f26f6-cdcc-4fac-97b8-0a90724f41e7"
+    },
+    {
+      "name": "Carrot",
+      "slug": "carrot",
+      "price": 50,
+      "selling_price": 45,
+      "unit": "kg",
+      "experience_type": "FRESH",
+      "on_fresh_board": true,
+      "category_id": "124f26f6-cdcc-4fac-97b8-0a90724f41e7"
+    },
+    {
+      "name": "Cauliflower",
+      "slug": "cauliflower",
+      "price": 44,
+      "selling_price": 38,
+      "unit": "kg",
+      "experience_type": "FRESH",
+      "on_fresh_board": false,
+      "category_id": "186551f4-ee11-4323-aa28-ccf61c460b0c"
+    },
+    {
+      "name": "Celery",
+      "slug": "celery",
+      "price": 130,
+      "selling_price": 109,
+      "unit": "bunch",
+      "experience_type": "FRESH",
+      "on_fresh_board": false,
+      "category_id": "738e5915-1086-422f-a8a1-8bcc280b02c6"
+    },
+    {
+      "name": "Cherries",
+      "slug": "cherries",
+      "price": 750,
+      "selling_price": 649,
+      "unit": "kg",
+      "experience_type": "FRESH",
+      "on_fresh_board": false,
+      "category_id": "86c850f5-3f4f-4042-b406-9c261d5ba5a1"
+    },
+    {
+      "name": "Chole Bhature (2 Pcs)",
+      "slug": "chole-bhature",
+      "price": 120,
+      "selling_price": 99,
+      "unit": "plate",
+      "experience_type": "KITCHEN",
+      "on_fresh_board": false,
+      "category_id": "e711c2fc-23eb-48b0-a61b-5454f31c904c"
+    },
+    {
+      "name": "Cluster Beans",
+      "slug": "cluster-beans",
+      "price": 48,
+      "selling_price": 41,
+      "unit": "kg",
+      "experience_type": "FRESH",
+      "on_fresh_board": false,
+      "category_id": "67e6d6cd-62fe-41e6-9be6-d1ca14efc711"
+    },
+    {
+      "name": "Coconut",
+      "slug": "coconut",
+      "price": 30,
+      "selling_price": 25,
+      "unit": "piece",
+      "experience_type": "FRESH",
+      "on_fresh_board": false,
+      "category_id": "114c5e76-3106-4bf6-8087-fa5246c294cd"
+    },
+    {
+      "name": "Colocasia",
+      "slug": "colocasia",
+      "price": 60,
+      "selling_price": 52,
+      "unit": "kg",
+      "experience_type": "FRESH",
+      "on_fresh_board": false,
+      "category_id": "97596b13-c1c5-4942-bed8-219eb6861fca"
+    },
+    {
+      "name": "Coriander",
+      "slug": "coriander",
+      "price": 12,
+      "selling_price": 9,
+      "unit": "bunch",
+      "experience_type": "FRESH",
+      "on_fresh_board": false,
+      "category_id": "b0f21067-a659-4516-91e5-295119ba4c94"
+    },
+    {
+      "name": "Cucumber",
+      "slug": "cucumber",
+      "price": 40,
+      "selling_price": 35,
+      "unit": "kg",
+      "experience_type": "FRESH",
+      "on_fresh_board": false,
+      "category_id": "124f26f6-cdcc-4fac-97b8-0a90724f41e7"
+    },
+    {
+      "name": "Custard Apple",
+      "slug": "custard-apple",
+      "price": 73,
+      "selling_price": 64,
+      "unit": "kg",
+      "experience_type": "FRESH",
+      "on_fresh_board": false,
+      "category_id": "5b8bd1d5-4cae-4019-b00e-b95494c42442"
+    },
+    {
+      "name": "Dal Makhani with Jeera Rice",
+      "slug": "dal-makhani-jeera-rice",
+      "price": 120,
+      "selling_price": 99,
+      "unit": "bowl",
+      "experience_type": "KITCHEN",
+      "on_fresh_board": false,
+      "category_id": "e711c2fc-23eb-48b0-a61b-5454f31c904c"
+    },
+    {
+      "name": "Dates Fresh",
+      "slug": "dates-fresh",
+      "price": 450,
+      "selling_price": 399,
+      "unit": "kg",
+      "experience_type": "FRESH",
+      "on_fresh_board": false,
+      "category_id": "86c850f5-3f4f-4042-b406-9c261d5ba5a1"
+    },
+    {
+      "name": "Deluxe Punjabi Thali",
+      "slug": "deluxe-punjabi-thali",
+      "price": 240,
+      "selling_price": 199,
+      "unit": "thali",
+      "experience_type": "KITCHEN",
+      "on_fresh_board": false,
+      "category_id": "ecb9cf98-7970-49c7-af5f-ca6f83d15df0"
+    },
+    {
+      "name": "Dragon Fruit",
+      "slug": "dragon-fruit",
+      "price": 360,
+      "selling_price": 299,
+      "unit": "kg",
+      "experience_type": "FRESH",
+      "on_fresh_board": false,
+      "category_id": "86c850f5-3f4f-4042-b406-9c261d5ba5a1"
+    },
+    {
+      "name": "Drumstick",
+      "slug": "drumstick",
+      "price": 65,
+      "selling_price": 55,
+      "unit": "kg",
+      "experience_type": "FRESH",
+      "on_fresh_board": false,
+      "category_id": "53cea86b-97e4-496c-abc8-62ec408896e8"
+    },
+    {
+      "name": "French Beans",
+      "slug": "french-beans",
+      "price": 66,
+      "selling_price": 56,
+      "unit": "kg",
+      "experience_type": "FRESH",
+      "on_fresh_board": false,
+      "category_id": "67e6d6cd-62fe-41e6-9be6-d1ca14efc711"
+    },
+    {
+      "name": "Garlic",
+      "slug": "garlic",
+      "price": 186,
+      "selling_price": 159,
+      "unit": "kg",
+      "experience_type": "FRESH",
+      "on_fresh_board": false,
+      "category_id": "114c5e76-3106-4bf6-8087-fa5246c294cd"
+    },
+    {
+      "name": "Ginger",
+      "slug": "ginger",
+      "price": 155,
+      "selling_price": 129,
+      "unit": "kg",
+      "experience_type": "FRESH",
+      "on_fresh_board": false,
+      "category_id": "114c5e76-3106-4bf6-8087-fa5246c294cd"
+    },
+    {
+      "name": "Gobhi Paratha (2 Pcs)",
+      "slug": "gobhi-paratha",
+      "price": 110,
+      "selling_price": 89,
+      "unit": "plate",
+      "experience_type": "KITCHEN",
+      "on_fresh_board": false,
+      "category_id": "6778ea2f-8da3-4f26-83ed-963a34aa2d98"
+    },
+    {
+      "name": "Green Apple",
+      "slug": "green-apple",
+      "price": 286,
+      "selling_price": 255,
+      "unit": "kg",
+      "experience_type": "FRESH",
+      "on_fresh_board": false,
+      "category_id": "5b8bd1d5-4cae-4019-b00e-b95494c42442"
+    },
+    {
+      "name": "Green Chilli",
+      "slug": "green-chilli",
+      "price": 72,
+      "selling_price": 62,
+      "unit": "kg",
+      "experience_type": "FRESH",
+      "on_fresh_board": false,
+      "category_id": "124f26f6-cdcc-4fac-97b8-0a90724f41e7"
+    },
+    {
+      "name": "Green Grapes",
+      "slug": "green-grapes",
+      "price": 163,
+      "selling_price": 149,
+      "unit": "kg",
+      "experience_type": "FRESH",
+      "on_fresh_board": false,
+      "category_id": "5b8bd1d5-4cae-4019-b00e-b95494c42442"
+    },
+    {
+      "name": "Green Peas",
+      "slug": "green-peas",
+      "price": 90,
+      "selling_price": 79,
+      "unit": "kg",
+      "experience_type": "FRESH",
+      "on_fresh_board": true,
+      "category_id": "124f26f6-cdcc-4fac-97b8-0a90724f41e7"
+    },
+    {
+      "name": "Guava",
+      "slug": "guava",
+      "price": 74,
+      "selling_price": 64,
+      "unit": "kg",
+      "experience_type": "FRESH",
+      "on_fresh_board": false,
+      "category_id": "b340341a-d6ee-4489-82ec-4157e454ff4a"
+    },
+    {
+      "name": "Gulab Jamun (2 Pcs)",
+      "slug": "gulab-jamun",
+      "price": 50,
+      "selling_price": 40,
+      "unit": "portion",
+      "experience_type": "KITCHEN",
+      "on_fresh_board": false,
+      "category_id": "2008ea1b-c33c-4cec-ac5d-3b17ac56dffb"
+    },
+    {
+      "name": "Imported Orange",
+      "slug": "imported-orange",
+      "price": 90,
+      "selling_price": 79,
+      "unit": "kg",
+      "experience_type": "FRESH",
+      "on_fresh_board": false,
+      "category_id": "bf29cbb5-09cd-4425-85ac-f8e6140493d7"
+    },
+    {
+      "name": "Jackfruit",
+      "slug": "jackfruit",
+      "price": 189,
+      "selling_price": 165,
+      "unit": "kg",
+      "experience_type": "FRESH",
+      "on_fresh_board": false,
+      "category_id": "2099483c-66a2-42de-a0dd-699e85167815"
+    },
+    {
+      "name": "Kiwi",
+      "slug": "kiwi",
+      "price": 55,
+      "selling_price": 45,
+      "unit": "piece",
+      "experience_type": "FRESH",
+      "on_fresh_board": false,
+      "category_id": "86c850f5-3f4f-4042-b406-9c261d5ba5a1"
+    },
+    {
+      "name": "Lettuce",
+      "slug": "lettuce",
+      "price": 90,
+      "selling_price": 75,
+      "unit": "piece",
+      "experience_type": "FRESH",
+      "on_fresh_board": false,
+      "category_id": "738e5915-1086-422f-a8a1-8bcc280b02c6"
+    },
+    {
+      "name": "Lychee",
+      "slug": "lychee",
+      "price": 312,
+      "selling_price": 279,
+      "unit": "kg",
+      "experience_type": "FRESH",
+      "on_fresh_board": false,
+      "category_id": "2099483c-66a2-42de-a0dd-699e85167815"
+    },
+    {
+      "name": "Methi Leaves",
+      "slug": "methi-leaves",
+      "price": 25,
+      "selling_price": 20,
+      "unit": "bunch",
+      "experience_type": "FRESH",
+      "on_fresh_board": false,
+      "category_id": "b0f21067-a659-4516-91e5-295119ba4c94"
+    },
+    {
+      "name": "Mint",
+      "slug": "mint",
+      "price": 10,
+      "selling_price": 8,
+      "unit": "bunch",
+      "experience_type": "FRESH",
+      "on_fresh_board": false,
+      "category_id": "b0f21067-a659-4516-91e5-295119ba4c94"
+    },
+    {
+      "name": "Mushroom",
+      "slug": "mushroom",
+      "price": 104,
+      "selling_price": 89,
+      "unit": "kg",
+      "experience_type": "FRESH",
+      "on_fresh_board": false,
+      "category_id": "738e5915-1086-422f-a8a1-8bcc280b02c6"
+    },
+    {
+      "name": "Muskmelon",
+      "slug": "muskmelon",
+      "price": 27,
+      "selling_price": 23,
+      "unit": "kg",
+      "experience_type": "FRESH",
+      "on_fresh_board": false,
+      "category_id": "2099483c-66a2-42de-a0dd-699e85167815"
+    },
+    {
+      "name": "Mustard Greens",
+      "slug": "mustard-greens",
+      "price": 22,
+      "selling_price": 18,
+      "unit": "bunch",
+      "experience_type": "FRESH",
+      "on_fresh_board": false,
+      "category_id": "b0f21067-a659-4516-91e5-295119ba4c94"
+    },
+    {
+      "name": "Onion",
+      "slug": "onion",
+      "price": 70,
+      "selling_price": 64,
+      "unit": "kg",
+      "experience_type": "FRESH",
+      "on_fresh_board": true,
+      "category_id": "124f26f6-cdcc-4fac-97b8-0a90724f41e7"
+    },
+    {
+      "name": "Orange",
+      "slug": "orange",
+      "price": 78,
+      "selling_price": 69,
+      "unit": "kg",
+      "experience_type": "FRESH",
+      "on_fresh_board": false,
+      "category_id": "b340341a-d6ee-4489-82ec-4157e454ff4a"
+    },
+    {
+      "name": "Paneer Paratha (2 Pcs)",
+      "slug": "paneer-paratha",
+      "price": 130,
+      "selling_price": 109,
+      "unit": "plate",
+      "experience_type": "KITCHEN",
+      "on_fresh_board": false,
+      "category_id": "6778ea2f-8da3-4f26-83ed-963a34aa2d98"
+    },
+    {
+      "name": "Papaya",
+      "slug": "papaya",
+      "price": 49,
+      "selling_price": 41,
+      "unit": "kg",
+      "experience_type": "FRESH",
+      "on_fresh_board": false,
+      "category_id": "b340341a-d6ee-4489-82ec-4157e454ff4a"
+    },
+    {
+      "name": "Pear",
+      "slug": "pear",
+      "price": 163,
+      "selling_price": 139,
+      "unit": "kg",
+      "experience_type": "FRESH",
+      "on_fresh_board": false,
+      "category_id": "5b8bd1d5-4cae-4019-b00e-b95494c42442"
+    },
+    {
+      "name": "Pineapple",
+      "slug": "pineapple",
+      "price": 50,
+      "selling_price": 42,
+      "unit": "piece",
+      "experience_type": "FRESH",
+      "on_fresh_board": false,
+      "category_id": "b340341a-d6ee-4489-82ec-4157e454ff4a"
+    },
+    {
+      "name": "Pomegranate",
+      "slug": "pomegranate",
+      "price": 150,
+      "selling_price": 129,
+      "unit": "kg",
+      "experience_type": "FRESH",
+      "on_fresh_board": true,
+      "category_id": "5b8bd1d5-4cae-4019-b00e-b95494c42442"
+    },
+    {
+      "name": "Potato",
+      "slug": "potato",
+      "price": 32,
+      "selling_price": 28,
+      "unit": "kg",
+      "experience_type": "FRESH",
+      "on_fresh_board": true,
+      "category_id": "124f26f6-cdcc-4fac-97b8-0a90724f41e7"
+    },
+    {
+      "name": "Pumpkin",
+      "slug": "pumpkin",
+      "price": 26,
+      "selling_price": 22,
+      "unit": "kg",
+      "experience_type": "FRESH",
+      "on_fresh_board": false,
+      "category_id": "53cea86b-97e4-496c-abc8-62ec408896e8"
+    },
+    {
+      "name": "Punjabi Sweet Lassi (300ml)",
+      "slug": "punjabi-sweet-lassi",
+      "price": 55,
+      "selling_price": 45,
+      "unit": "glass",
+      "experience_type": "KITCHEN",
+      "on_fresh_board": false,
+      "category_id": "2008ea1b-c33c-4cec-ac5d-3b17ac56dffb"
+    },
+    {
+      "name": "Radish",
+      "slug": "radish",
+      "price": 42,
+      "selling_price": 36,
+      "unit": "kg",
+      "experience_type": "FRESH",
+      "on_fresh_board": false,
+      "category_id": "97596b13-c1c5-4942-bed8-219eb6861fca"
+    },
+    {
+      "name": "Rajma Chawal Bowl",
+      "slug": "rajma-chawal-bowl",
+      "price": 110,
+      "selling_price": 89,
+      "unit": "bowl",
+      "experience_type": "KITCHEN",
+      "on_fresh_board": false,
+      "category_id": "e711c2fc-23eb-48b0-a61b-5454f31c904c"
+    },
+    {
+      "name": "Raw Banana",
+      "slug": "raw-banana",
+      "price": 10,
+      "selling_price": 9,
+      "unit": "kg",
+      "experience_type": "FRESH",
+      "on_fresh_board": false,
+      "category_id": "114c5e76-3106-4bf6-8087-fa5246c294cd"
+    },
+    {
+      "name": "Raw Mango",
+      "slug": "raw-mango",
+      "price": 130,
+      "selling_price": 115,
+      "unit": "kg",
+      "experience_type": "FRESH",
+      "on_fresh_board": false,
+      "category_id": "2099483c-66a2-42de-a0dd-699e85167815"
+    },
+    {
+      "name": "Ridge Gourd",
+      "slug": "ridge-gourd",
+      "price": 46,
+      "selling_price": 39,
+      "unit": "kg",
+      "experience_type": "FRESH",
+      "on_fresh_board": false,
+      "category_id": "53cea86b-97e4-496c-abc8-62ec408896e8"
+    },
+    {
+      "name": "Ripe Mango",
+      "slug": "ripe-mango",
+      "price": 215,
+      "selling_price": 189,
+      "unit": "kg",
+      "experience_type": "FRESH",
+      "on_fresh_board": true,
+      "category_id": "2099483c-66a2-42de-a0dd-699e85167815"
+    },
+    {
+      "name": "Sapota",
+      "slug": "sapota",
+      "price": 65,
+      "selling_price": 56,
+      "unit": "kg",
+      "experience_type": "FRESH",
+      "on_fresh_board": false,
+      "category_id": "5b8bd1d5-4cae-4019-b00e-b95494c42442"
+    },
+    {
+      "name": "Shahi Paneer (300ml)",
+      "slug": "shahi-paneer",
+      "price": 165,
+      "selling_price": 139,
+      "unit": "portion",
+      "experience_type": "KITCHEN",
+      "on_fresh_board": false,
+      "category_id": "e711c2fc-23eb-48b0-a61b-5454f31c904c"
+    },
+    {
+      "name": "Snake Gourd",
+      "slug": "snake-gourd",
+      "price": 40,
+      "selling_price": 34,
+      "unit": "kg",
+      "experience_type": "FRESH",
+      "on_fresh_board": false,
+      "category_id": "53cea86b-97e4-496c-abc8-62ec408896e8"
+    },
+    {
+      "name": "Sorrel Leaves",
+      "slug": "sorrel-leaves",
+      "price": 20,
+      "selling_price": 17,
+      "unit": "bunch",
+      "experience_type": "FRESH",
+      "on_fresh_board": false,
+      "category_id": "b0f21067-a659-4516-91e5-295119ba4c94"
+    },
+    {
+      "name": "Special Punjabi Thali",
+      "slug": "special-punjabi-thali",
+      "price": 180,
+      "selling_price": 149,
+      "unit": "thali",
+      "experience_type": "KITCHEN",
+      "on_fresh_board": false,
+      "category_id": "ecb9cf98-7970-49c7-af5f-ca6f83d15df0"
+    },
+    {
+      "name": "Spinach",
+      "slug": "spinach",
+      "price": 15,
+      "selling_price": 12,
+      "unit": "bunch",
+      "experience_type": "FRESH",
+      "on_fresh_board": false,
+      "category_id": "b0f21067-a659-4516-91e5-295119ba4c94"
+    },
+    {
+      "name": "Spring Onion",
+      "slug": "spring-onion",
+      "price": 30,
+      "selling_price": 25,
+      "unit": "bunch",
+      "experience_type": "FRESH",
+      "on_fresh_board": false,
+      "category_id": "738e5915-1086-422f-a8a1-8bcc280b02c6"
+    },
+    {
+      "name": "Strawberries",
+      "slug": "strawberries",
+      "price": 280,
+      "selling_price": 229,
+      "unit": "250g pack",
+      "experience_type": "FRESH",
+      "on_fresh_board": false,
+      "category_id": "86c850f5-3f4f-4042-b406-9c261d5ba5a1"
+    },
+    {
+      "name": "Student Tiffin Thali",
+      "slug": "student-tiffin-thali",
+      "price": 120,
+      "selling_price": 99,
+      "unit": "thali",
+      "experience_type": "KITCHEN",
+      "on_fresh_board": false,
+      "category_id": "ecb9cf98-7970-49c7-af5f-ca6f83d15df0"
+    },
+    {
+      "name": "Sweet Corn",
+      "slug": "sweet-corn",
+      "price": 65,
+      "selling_price": 55,
+      "unit": "kg",
+      "experience_type": "FRESH",
+      "on_fresh_board": false,
+      "category_id": "124f26f6-cdcc-4fac-97b8-0a90724f41e7"
+    },
+    {
+      "name": "Sweet Potato",
+      "slug": "sweet-potato",
+      "price": 42,
+      "selling_price": 35,
+      "unit": "kg",
+      "experience_type": "FRESH",
+      "on_fresh_board": false,
+      "category_id": "97596b13-c1c5-4942-bed8-219eb6861fca"
+    },
+    {
+      "name": "Tomato",
+      "slug": "tomato",
+      "price": 34,
+      "selling_price": 29,
+      "unit": "kg",
+      "experience_type": "FRESH",
+      "on_fresh_board": true,
+      "category_id": "124f26f6-cdcc-4fac-97b8-0a90724f41e7"
+    },
+    {
+      "name": "Turnip",
+      "slug": "turnip",
+      "price": 50,
+      "selling_price": 44,
+      "unit": "kg",
+      "experience_type": "FRESH",
+      "on_fresh_board": false,
+      "category_id": "97596b13-c1c5-4942-bed8-219eb6861fca"
+    },
+    {
+      "name": "Watermelon",
+      "slug": "watermelon",
+      "price": 40,
+      "selling_price": 32,
+      "unit": "kg",
+      "experience_type": "FRESH",
+      "on_fresh_board": false,
+      "category_id": "b340341a-d6ee-4489-82ec-4157e454ff4a"
+    },
+    {
+      "name": "Wholesale Apple Shimla (20kg Carton)",
+      "slug": "wholesale-apple-shimla-20kg",
+      "price": 2900,
+      "selling_price": 2300,
+      "unit": "20kg carton",
+      "experience_type": "WHOLESALE",
+      "on_fresh_board": false,
+      "category_id": "2f2c3d3b-efcd-468f-94f7-487b635c4103"
+    },
+    {
+      "name": "Wholesale Banana Regular (15kg Crate)",
+      "slug": "wholesale-banana-15kg",
+      "price": 780,
+      "selling_price": 570,
+      "unit": "15kg crate",
+      "experience_type": "WHOLESALE",
+      "on_fresh_board": false,
+      "category_id": "2f2c3d3b-efcd-468f-94f7-487b635c4103"
+    },
+    {
+      "name": "Wholesale Garlic (25kg Sack)",
+      "slug": "wholesale-garlic-25kg",
+      "price": 3975,
+      "selling_price": 3125,
+      "unit": "25kg sack",
+      "experience_type": "WHOLESALE",
+      "on_fresh_board": false,
+      "category_id": "3a9a6c20-41aa-4a28-8a32-56b770a70b04"
+    },
+    {
+      "name": "Wholesale Ginger (25kg Sack)",
+      "slug": "wholesale-ginger-25kg",
+      "price": 3225,
+      "selling_price": 2625,
+      "unit": "25kg sack",
+      "experience_type": "WHOLESALE",
+      "on_fresh_board": false,
+      "category_id": "3a9a6c20-41aa-4a28-8a32-56b770a70b04"
+    },
+    {
+      "name": "Wholesale Green Peas (20kg Sack)",
+      "slug": "wholesale-green-peas-20kg",
+      "price": 1580,
+      "selling_price": 1300,
+      "unit": "20kg sack",
+      "experience_type": "WHOLESALE",
+      "on_fresh_board": false,
+      "category_id": "3a9a6c20-41aa-4a28-8a32-56b770a70b04"
+    },
+    {
+      "name": "Wholesale Onion (50kg Bag)",
+      "slug": "wholesale-onion-50kg",
+      "price": 3200,
+      "selling_price": 2600,
+      "unit": "50kg bag",
+      "experience_type": "WHOLESALE",
+      "on_fresh_board": false,
+      "category_id": "3a9a6c20-41aa-4a28-8a32-56b770a70b04"
+    },
+    {
+      "name": "Wholesale Potato (50kg Bag)",
+      "slug": "wholesale-potato-50kg",
+      "price": 1400,
+      "selling_price": 1150,
+      "unit": "50kg bag",
+      "experience_type": "WHOLESALE",
+      "on_fresh_board": false,
+      "category_id": "3a9a6c20-41aa-4a28-8a32-56b770a70b04"
+    },
+    {
+      "name": "Wholesale Tomato (25kg Crate)",
+      "slug": "wholesale-tomato-25kg",
+      "price": 750,
+      "selling_price": 550,
+      "unit": "25kg crate",
+      "experience_type": "WHOLESALE",
+      "on_fresh_board": false,
+      "category_id": "3a9a6c20-41aa-4a28-8a32-56b770a70b04"
+    },
+    {
+      "name": "Yam",
+      "slug": "yam",
+      "price": 75,
+      "selling_price": 65,
+      "unit": "kg",
+      "experience_type": "FRESH",
+      "on_fresh_board": false,
+      "category_id": "97596b13-c1c5-4942-bed8-219eb6861fca"
+    },
+    {
+      "name": "Zucchini",
+      "slug": "zucchini",
+      "price": 130,
+      "selling_price": 109,
+      "unit": "kg",
+      "experience_type": "FRESH",
+      "on_fresh_board": false,
+      "category_id": "738e5915-1086-422f-a8a1-8bcc280b02c6"
+    }
+  ],
+  "cats": [
+    {
+      "id": "67e6d6cd-62fe-41e6-9be6-d1ca14efc711",
+      "name": "Beans & Pods",
+      "slug": "beans-pods",
+      "experience_type": "FRESH"
+    },
+    {
+      "id": "bf29cbb5-09cd-4425-85ac-f8e6140493d7",
+      "name": "Citrus Fruits",
+      "slug": "citrus-fruits",
+      "experience_type": "FRESH"
+    },
+    {
+      "id": "186551f4-ee11-4323-aa28-ccf61c460b0c",
+      "name": "Cruciferous Vegetables",
+      "slug": "cruciferous-vegetables",
+      "experience_type": "FRESH"
+    },
+    {
+      "id": "124f26f6-cdcc-4fac-97b8-0a90724f41e7",
+      "name": "Everyday Essentials",
+      "slug": "everyday-essentials",
+      "experience_type": "FRESH"
+    },
+    {
+      "id": "b340341a-d6ee-4489-82ec-4157e454ff4a",
+      "name": "Everyday Fruits",
+      "slug": "everyday-fruits",
+      "experience_type": "FRESH"
+    },
+    {
+      "id": "53cea86b-97e4-496c-abc8-62ec408896e8",
+      "name": "Gourds",
+      "slug": "gourds",
+      "experience_type": "FRESH"
+    },
+    {
+      "id": "114c5e76-3106-4bf6-8087-fa5246c294cd",
+      "name": "Herbs & Fresh Greens",
+      "slug": "herbs-fresh-greens",
+      "experience_type": "FRESH"
+    },
+    {
+      "id": "86c850f5-3f4f-4042-b406-9c261d5ba5a1",
+      "name": "Imported / Exotic Fruits",
+      "slug": "imported-exotic-fruits",
+      "experience_type": "FRESH"
+    },
+    {
+      "id": "b0f21067-a659-4516-91e5-295119ba4c94",
+      "name": "Leafy Greens",
+      "slug": "leafy-greens",
+      "experience_type": "FRESH"
+    },
+    {
+      "id": "5b8bd1d5-4cae-4019-b00e-b95494c42442",
+      "name": "Premium Fruits",
+      "slug": "premium-fruits",
+      "experience_type": "FRESH"
+    },
+    {
+      "id": "97596b13-c1c5-4942-bed8-219eb6861fca",
+      "name": "Roots & Tubers",
+      "slug": "roots-tubers",
+      "experience_type": "FRESH"
+    },
+    {
+      "id": "2099483c-66a2-42de-a0dd-699e85167815",
+      "name": "Seasonal Fruits",
+      "slug": "seasonal-fruits",
+      "experience_type": "FRESH"
+    },
+    {
+      "id": "738e5915-1086-422f-a8a1-8bcc280b02c6",
+      "name": "Specialty Vegetables",
+      "slug": "specialty-vegetables",
+      "experience_type": "FRESH"
+    },
+    {
+      "id": "2008ea1b-c33c-4cec-ac5d-3b17ac56dffb",
+      "name": "Beverages & Desserts",
+      "slug": "beverages-desserts",
+      "experience_type": "KITCHEN"
+    },
+    {
+      "id": "5e9534f5-3319-4768-b492-17a45002b447",
+      "name": "Breads & Sides",
+      "slug": "breads-sides",
+      "experience_type": "KITCHEN"
+    },
+    {
+      "id": "e711c2fc-23eb-48b0-a61b-5454f31c904c",
+      "name": "Meals & Combos",
+      "slug": "meals-combos",
+      "experience_type": "KITCHEN"
+    },
+    {
+      "id": "6778ea2f-8da3-4f26-83ed-963a34aa2d98",
+      "name": "Paratha Specials",
+      "slug": "paratha-specials",
+      "experience_type": "KITCHEN"
+    },
+    {
+      "id": "ecb9cf98-7970-49c7-af5f-ca6f83d15df0",
+      "name": "Thali Specials",
+      "slug": "thali-specials",
+      "experience_type": "KITCHEN"
+    },
+    {
+      "id": "2f2c3d3b-efcd-468f-94f7-487b635c4103",
+      "name": "Wholesale Fruits",
+      "slug": "wholesale-fruits",
+      "experience_type": "WHOLESALE"
+    },
+    {
+      "id": "3a9a6c20-41aa-4a28-8a32-56b770a70b04",
+      "name": "Wholesale Vegetables",
+      "slug": "wholesale-vegetables",
+      "experience_type": "WHOLESALE"
+    }
+  ]
+}

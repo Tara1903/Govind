@@ -10,7 +10,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
@@ -21,15 +20,20 @@ import androidx.hilt.navigation.compose.hiltViewModel
 fun SplashScreen(
     viewModel: SplashViewModel = hiltViewModel(),
     onNavigateToHome: () -> Unit,
+    onNavigateToDeliveryPartner: () -> Unit = {},
     onNavigateToOnboarding: () -> Unit,
     onNavigateToAuth: () -> Unit
 ) {
     LaunchedEffect(key1 = true) {
-        delay(2000L) // Simulate some loading time
-        if (viewModel.isLoggedIn()) {
+        delay(1000L) // Simulate some loading time
+        if (!viewModel.hasCompletedOnboarding()) {
+            onNavigateToOnboarding()
+        } else if (viewModel.isDeliveryPartner()) {
+            onNavigateToDeliveryPartner()
+        } else if (viewModel.isLoggedIn() || viewModel.isGuest()) {
             onNavigateToHome()
         } else {
-            onNavigateToOnboarding()
+            onNavigateToAuth()
         }
     }
 

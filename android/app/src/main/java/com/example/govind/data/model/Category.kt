@@ -11,5 +11,6 @@ data class Category(
     val image: String? = null,
     val description: String? = null,
     @SerialName("display_order") val displayOrder: Int = 0,
-    val active: Boolean = true
+    val active: Boolean = true,
+    @SerialName("experience_type") val experienceType: String? = "FRESH"
 )

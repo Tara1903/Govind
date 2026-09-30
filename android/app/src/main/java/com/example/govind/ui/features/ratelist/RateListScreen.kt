@@ -2,160 +2,273 @@ package com.example.govind.ui.features.ratelist
 
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.outlined.TableChart
+import androidx.compose.material.icons.outlined.TrendingDown
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-
-data class RateItem(val name: String, val unit: String, val price: String)
-data class RateSection(val title: String, val items: List<RateItem>)
+import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.govind.theme.Dimens
+import com.example.govind.theme.GovindTheme
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RateListScreen(
+    viewModel: RateListViewModel = hiltViewModel(),
     onNavigateBack: () -> Unit
 ) {
     val context = LocalContext.current
-    
-    val rateSections = listOf(
-        RateSection(
-            title = "Fresh Vegetables",
-            items = listOf(
-                RateItem("Tomato", "1 kg", "\u20B935"),
-                RateItem("Potato", "1 kg", "\u20B942"),
-                RateItem("Onion", "1 kg", "\u20B948"),
-                RateItem("Methi", "1 bunch", "\u20B930"),
-                RateItem("Coriander", "1 bunch", "\u20B915"),
-                RateItem("Green Chilli", "1 kg", "\u20B960")
-            )
-        ),
-        RateSection(
-            title = "Fresh Fruits",
-            items = listOf(
-                RateItem("Apple", "1 kg", "\u20B9180"),
-                RateItem("Banana", "1 dozen", "\u20B940"),
-                RateItem("Orange", "1 kg", "\u20B9120")
-            )
-        ),
-        RateSection(
-            title = "Healthy Snacks",
-            items = listOf(
-                RateItem("Roasted Makhana", "200g", "\u20B9150"),
-                RateItem("Mixed Nuts", "500g", "\u20B9450")
-            )
-        )
-    )
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    val timeFormat = SimpleDateFormat("hh:mm a, dd MMM", Locale.getDefault())
+    val currentTime = timeFormat.format(Date())
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Today's Rate List") },
+                title = {
+                    Column {
+                        Text(
+                            text = "Today's Mandi Rate List",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(6.dp)
+                                    .clip(CircleShape)
+                                    .background(GovindTheme.colors.secondary)
+                            )
+                            Text(
+                                text = "Live APMC Rates • $currentTime",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = GovindTheme.colors.secondary
+                            )
+                        }
+                    }
+                },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back",
+                            tint = GovindTheme.colors.textPrimary
+                        )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFFFEFCF5),
-                    titleContentColor = MaterialTheme.colorScheme.onBackground
+                    containerColor = MaterialTheme.colorScheme.surfaceContainerLowest
                 )
             )
         },
         bottomBar = {
             Surface(
-                color = Color(0xFFFEFCF5),
-                shadowElevation = 8.dp
+                color = MaterialTheme.colorScheme.surfaceContainerLowest,
+                shadowElevation = 8.dp,
+                modifier = Modifier.fillMaxWidth()
             ) {
                 Button(
                     onClick = {
                         val url = "https://wa.me/919630937033?text=Hi,%20I%20want%20today's%20fresh%20rate%20list."
-                        val intent = Intent(Intent.ACTION_VIEW)
-                        intent.data = Uri.parse(url)
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
                         context.startActivity(intent)
                     },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp)
-                        .height(56.dp),
+                        .height(52.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF25D366)),
-                    shape = RoundedCornerShape(12.dp)
+                    shape = CircleShape
                 ) {
                     Text(
                         text = "Get Rates on WhatsApp",
                         color = Color.White,
                         fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.titleMedium
+                        style = MaterialTheme.typography.titleSmall
                     )
                 }
             }
         },
-        containerColor = Color(0xFFFEFCF5)
+        containerColor = MaterialTheme.colorScheme.surface
     ) { paddingValues ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
-            contentPadding = PaddingValues(16.dp)
-        ) {
-            item {
-                Text(
-                    text = "Updated 10:42 AM",
-                    style = MaterialTheme.typography.labelMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
+        if (uiState.isLoading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(color = MaterialTheme.colorScheme.primaryContainer)
             }
-            
-            rateSections.forEach { section ->
+        } else if (uiState.error != null && uiState.products.isEmpty()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(uiState.error ?: "Error loading rates")
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
+                contentPadding = PaddingValues(16.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                // Notice Card
                 item {
-                    Text(
-                        text = section.title,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF064520),
-                        modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
-                    )
-                }
-                
-                items(section.items) { item ->
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+                    Surface(
+                        color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.4f),
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier.fillMaxWidth()
                     ) {
-                        Column {
+                        Row(
+                            modifier = Modifier.padding(12.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(10.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.TableChart,
+                                contentDescription = null,
+                                tint = GovindTheme.colors.secondary,
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Column {
+                                Text(
+                                    text = "Transparent Wholesale Benchmark",
+                                    style = MaterialTheme.typography.labelMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    color = GovindTheme.colors.textPrimary
+                                )
+                                Text(
+                                    text = "Prices are benchmarked daily from Azadpur & Gurugram Mandis at 05:00 AM.",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = GovindTheme.colors.textMuted
+                                )
+                            }
+                        }
+                    }
+                }
+
+                // Table Header
+                item {
+                    Surface(
+                        color = MaterialTheme.colorScheme.surfaceContainerHigh,
+                        shape = RoundedCornerShape(8.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
                             Text(
-                                text = item.name,
-                                style = MaterialTheme.typography.bodyLarge,
-                                fontWeight = FontWeight.Medium,
-                                color = MaterialTheme.colorScheme.onBackground
+                                text = "COMMODITY",
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = GovindTheme.colors.textMuted
                             )
                             Text(
-                                text = item.unit,
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                text = "RATE / UNIT",
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = GovindTheme.colors.textMuted
                             )
                         }
-                        Text(
-                            text = item.price,
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onBackground
-                        )
                     }
-                    HorizontalDivider(color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+                }
+
+                // Items list
+                items(uiState.products) { item ->
+                    Surface(
+                        color = MaterialTheme.colorScheme.surfaceContainerLowest,
+                        shape = RoundedCornerShape(10.dp),
+                        shadowElevation = 1.dp,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 14.dp, vertical = 12.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = item.name,
+                                    style = MaterialTheme.typography.titleSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = GovindTheme.colors.textPrimary
+                                )
+                                Text(
+                                    text = item.unit,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = GovindTheme.colors.textMuted
+                                )
+                            }
+
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                Text(
+                                    text = "₹${item.sellingPrice.toInt()}",
+                                    style = GovindTheme.priceDisplay,
+                                    color = GovindTheme.colors.textPrimary
+                                )
+
+                                Surface(
+                                    color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.5f),
+                                    shape = CircleShape
+                                ) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Outlined.TrendingDown,
+                                            contentDescription = null,
+                                            tint = GovindTheme.colors.secondary,
+                                            modifier = Modifier.size(11.dp)
+                                        )
+                                        Text(
+                                            text = "Mandi",
+                                            style = MaterialTheme.typography.labelSmall.copy(fontSize = 9.sp),
+                                            color = GovindTheme.colors.secondary,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }

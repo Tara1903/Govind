@@ -24,10 +24,35 @@ class SessionManager @Inject constructor(
         get() = prefs.getString("user_id", null)
         set(value) = prefs.edit().putString("user_id", value).apply()
 
+    var userEmail: String?
+        get() = prefs.getString("user_email", null)
+        set(value) = prefs.edit().putString("user_email", value).apply()
+
+    var userRole: String?
+        get() = prefs.getString("user_role", null)
+        set(value) = prefs.edit().putString("user_role", value).apply()
+
+    var lastExperience: String
+        get() = prefs.getString("last_experience", "FRESH") ?: "FRESH"
+        set(value) = prefs.edit().putString("last_experience", value).apply()
+        
+    var hasCompletedOnboarding: Boolean
+        get() = prefs.getBoolean("has_completed_onboarding", false)
+        set(value) = prefs.edit().putBoolean("has_completed_onboarding", value).apply()
+
+    var isGuest: Boolean
+        get() = prefs.getBoolean("is_guest", false)
+        set(value) = prefs.edit().putBoolean("is_guest", value).apply()
+
     val isLoggedIn: Boolean
         get() = !accessToken.isNullOrEmpty()
 
     fun clearSession() {
+        val lastExp = lastExperience
+        val onboarded = hasCompletedOnboarding
         prefs.edit().clear().apply()
+        // restore non-auth prefs
+        lastExperience = lastExp
+        hasCompletedOnboarding = onboarded
     }
 }

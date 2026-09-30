@@ -10,4 +10,7 @@ class SplashViewModel @Inject constructor(
     private val sessionManager: SessionManager
 ) : ViewModel() {
     fun isLoggedIn(): Boolean = sessionManager.isLoggedIn
+    fun hasCompletedOnboarding(): Boolean = sessionManager.hasCompletedOnboarding
+    fun isGuest(): Boolean = sessionManager.isGuest
+    fun isDeliveryPartner(): Boolean = sessionManager.userRole == "delivery"
 }

@@ -29,8 +29,20 @@ class ProductDetailsViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(ProductDetailsUiState())
     val uiState: StateFlow<ProductDetailsUiState> = _uiState.asStateFlow()
 
+    private val _isFavorite = MutableStateFlow(false)
+    val isFavorite: StateFlow<Boolean> = _isFavorite.asStateFlow()
+
     init {
         loadProduct()
+        observeFavorite()
+    }
+
+    private fun observeFavorite() {
+        viewModelScope.launch {
+            repository.isFavorite(productId).collect {
+                _isFavorite.value = it
+            }
+        }
     }
 
     private fun loadProduct() {
@@ -56,7 +68,23 @@ class ProductDetailsViewModel @Inject constructor(
     fun addToCart(quantity: Int = 1) {
         val product = _uiState.value.product ?: return
         viewModelScope.launch {
-            repository.addToCart(product, quantity)
+            repository.addToCart(product, quantity, com.example.govind.ui.navigation.AppState.currentExperience.value.name)
+        }
+    }
+
+    fun toggleFavorite(onAuthRequired: () -> Unit) {
+        if (!repository.isUserLoggedIn()) {
+            onAuthRequired()
+            return
+        }
+        viewModelScope.launch {
+            val res = repository.toggleFavorite(productId)
+            if (res.isSuccess) {
+                _isFavorite.value = res.getOrDefault(false)
+            }
         }
     }
 }
+
+
+

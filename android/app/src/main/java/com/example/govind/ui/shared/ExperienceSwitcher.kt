@@ -1,174 +1,162 @@
 package com.example.govind.ui.shared
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.outlined.Eco
+import androidx.compose.material.icons.outlined.Inventory2
+import androidx.compose.material.icons.outlined.Restaurant
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.govind.theme.Dimens
 import com.example.govind.theme.GovindTheme
 import com.example.govind.ui.navigation.AppState
 import com.example.govind.ui.navigation.GovindExperience
-import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
+/**
+ * 3-Way Experience Switcher with min 44dp height matching Stitch design.
+ * Features pill track with surfaceContainerHigh background, 1dp outline-variant border,
+ * active primary-container fill with green indicator pulse dot, and inactive surface-container-low pills.
+ */
 @Composable
-fun ExperienceSwitcherDropdown() {
+fun PillExperienceSwitcher(
+    modifier: Modifier = Modifier
+) {
     val currentExperience by AppState.currentExperience.collectAsState()
-    var showSheet by remember { mutableStateOf(false) }
-    val sheetState = rememberModalBottomSheetState()
-    val scope = rememberCoroutineScope()
 
-    val title = when (currentExperience) {
-        GovindExperience.FRESH -> "Govind Fresh"
-        GovindExperience.KITCHEN -> "Govind Kitchen"
-        GovindExperience.WHOLESALE -> "Govind Wholesale"
-    }
-
-    Box {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(CircleShape)
+            .background(MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.7f))
+            .border(
+                width = 1.dp,
+                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f),
+                shape = CircleShape
+            )
+            .padding(3.dp)
+    ) {
         Row(
-            modifier = Modifier
-                .clip(RoundedCornerShape(8.dp))
-                .clickable { showSheet = true }
-                .padding(horizontal = 8.dp, vertical = 4.dp),
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = "$title ▾",
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.SemiBold,
-                color = GovindTheme.colors.govindGreen
+            ExperiencePill(
+                title = "Fresh",
+                icon = Icons.Outlined.Eco,
+                isSelected = currentExperience == GovindExperience.FRESH,
+                activeIndicatorColor = MaterialTheme.colorScheme.secondaryContainer,
+                onClick = { AppState.switchExperience(GovindExperience.FRESH) },
+                modifier = Modifier.weight(1f)
             )
-        }
-
-        if (showSheet) {
-            ModalBottomSheet(
-                onDismissRequest = { showSheet = false },
-                sheetState = sheetState,
-                containerColor = GovindTheme.colors.pureWhite,
-                shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 20.dp)
-                        .padding(bottom = 24.dp)
-                ) {
-                    Text(
-                        text = "Choose your Govind experience",
-                        style = MaterialTheme.typography.headlineMedium,
-                        color = GovindTheme.colors.textPrimary,
-                        modifier = Modifier.padding(bottom = 20.dp)
-                    )
-
-                    ExperienceOption(
-                        emoji = "🥬",
-                        title = "Govind Fresh",
-                        subtitle = "Fresh fruits, vegetables & snacks",
-                        isSelected = currentExperience == GovindExperience.FRESH,
-                        onClick = {
-                            scope.launch { sheetState.hide() }.invokeOnCompletion {
-                                if (!sheetState.isVisible) {
-                                    showSheet = false
-                                    AppState.switchExperience(GovindExperience.FRESH)
-                                }
-                            }
-                        }
-                    )
-                    
-                    Spacer(modifier = Modifier.height(12.dp))
-                    
-                    ExperienceOption(
-                        emoji = "🍛",
-                        title = "Govind Kitchen",
-                        subtitle = "Today's Punjabi food",
-                        isSelected = currentExperience == GovindExperience.KITCHEN,
-                        onClick = {
-                            scope.launch { sheetState.hide() }.invokeOnCompletion {
-                                if (!sheetState.isVisible) {
-                                    showSheet = false
-                                    AppState.switchExperience(GovindExperience.KITCHEN)
-                                }
-                            }
-                        }
-                    )
-                    
-                    Spacer(modifier = Modifier.height(12.dp))
-                    
-                    ExperienceOption(
-                        emoji = "📦",
-                        title = "Govind Wholesale",
-                        subtitle = "Bulk & business orders",
-                        isSelected = currentExperience == GovindExperience.WHOLESALE,
-                        onClick = {
-                            scope.launch { sheetState.hide() }.invokeOnCompletion {
-                                if (!sheetState.isVisible) {
-                                    showSheet = false
-                                    AppState.switchExperience(GovindExperience.WHOLESALE)
-                                }
-                            }
-                        }
-                    )
-                }
-            }
+            ExperiencePill(
+                title = "Kitchen",
+                icon = Icons.Outlined.Restaurant,
+                isSelected = currentExperience == GovindExperience.KITCHEN,
+                activeIndicatorColor = GovindTheme.colors.kitchenAccent,
+                onClick = { AppState.switchExperience(GovindExperience.KITCHEN) },
+                modifier = Modifier.weight(1f)
+            )
+            ExperiencePill(
+                title = "Wholesale",
+                icon = Icons.Outlined.Inventory2,
+                isSelected = currentExperience == GovindExperience.WHOLESALE,
+                activeIndicatorColor = GovindTheme.colors.wholesaleAmber,
+                onClick = { AppState.switchExperience(GovindExperience.WHOLESALE) },
+                modifier = Modifier.weight(1f)
+            )
         }
     }
 }
 
 @Composable
-fun ExperienceOption(
-    emoji: String,
+fun ExperiencePill(
     title: String,
-    subtitle: String,
+    icon: ImageVector,
     isSelected: Boolean,
-    onClick: () -> Unit
+    activeIndicatorColor: Color,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    val bgColor = if (isSelected) GovindTheme.colors.softGreen else GovindTheme.colors.pureWhite
-    val borderColor = if (isSelected) GovindTheme.colors.govindGreen else GovindTheme.colors.border
-    val borderWidth = if (isSelected) 2.dp else 1.dp
+    val targetBgColor = if (isSelected) {
+        MaterialTheme.colorScheme.primaryContainer
+    } else {
+        MaterialTheme.colorScheme.surfaceContainerLow
+    }
+    val targetContentColor = if (isSelected) {
+        Color.White
+    } else {
+        MaterialTheme.colorScheme.onSurfaceVariant
+    }
 
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .background(bgColor)
-            .border(borderWidth, borderColor, RoundedCornerShape(12.dp))
+    val animatedBg by animateColorAsState(
+        targetValue = targetBgColor,
+        animationSpec = tween(durationMillis = 200),
+        label = "pill_bg"
+    )
+    val animatedContent by animateColorAsState(
+        targetValue = targetContentColor,
+        animationSpec = tween(durationMillis = 200),
+        label = "pill_content"
+    )
+
+    Surface(
+        color = animatedBg,
+        shape = CircleShape,
+        shadowElevation = if (isSelected) 3.dp else 0.dp,
+        modifier = modifier
+            .defaultMinSize(minHeight = 44.dp)
             .clickable(onClick = onClick)
-            .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(text = emoji, fontSize = 24.sp, modifier = Modifier.padding(end = 16.dp))
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleMedium,
-                color = GovindTheme.colors.textPrimary,
-                fontWeight = FontWeight.SemiBold
-            )
-            Text(
-                text = subtitle,
-                style = MaterialTheme.typography.bodySmall,
-                color = GovindTheme.colors.textSecondary
-            )
-        }
-        if (isSelected) {
-            Icon(
-                imageVector = Icons.Default.Check,
-                contentDescription = "Selected",
-                tint = GovindTheme.colors.govindGreen,
-                modifier = Modifier.size(20.dp)
-            )
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp, vertical = 10.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = title,
+                    tint = if (isSelected) activeIndicatorColor else animatedContent,
+                    modifier = Modifier.size(18.dp)
+                )
+                Spacer(modifier = Modifier.width(6.dp))
+                Text(
+                    text = title,
+                    color = animatedContent,
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.SemiBold
+                )
+            }
+
+            // Small active indicator dot (as in Stitch)
+            if (isSelected) {
+                Box(
+                    modifier = Modifier
+                        .size(6.dp)
+                        .clip(CircleShape)
+                        .background(activeIndicatorColor)
+                        .align(Alignment.TopEnd)
+                )
+            }
         }
     }
 }

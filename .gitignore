@@ -1,9 +1,12 @@
-
 *.apk
 *.log
 *.txt
+.env
+.env.local
+.env.*.local
+!.env.example
+android/local.properties
 android/.kotlin/
 android/app/release.keystore
 skills-lock.json
 .agents/
-

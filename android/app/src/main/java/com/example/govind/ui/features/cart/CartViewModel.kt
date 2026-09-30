@@ -15,6 +15,7 @@ data class CartUiState(
     val isLoading: Boolean = true,
     val cart: Cart? = null,
     val totalAmount: Double = 0.0,
+    val totalSavings: Double = 0.0,
     val error: String? = null
 )
 
@@ -26,20 +27,31 @@ class CartViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(CartUiState())
     val uiState: StateFlow<CartUiState> = _uiState.asStateFlow()
 
-    init {
-        loadCart()
-    }
+    private var currentJob: kotlinx.coroutines.Job? = null
 
-    private fun loadCart() {
-        viewModelScope.launch {
+    fun loadCart() {
+        currentJob?.cancel()
+        currentJob = viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true)
             try {
-                repository.getCart().collect { cart ->
-                    val total = cart?.items?.sumOf { it.product.sellingPrice * it.quantity } ?: 0.0
+                repository.getGlobalCart().collect { cart ->
+                    var total = 0.0
+                    var savings = 0.0
+                    cart?.items?.forEach { item ->
+                        val result = com.example.govind.domain.pricing.PricingEngine.calculateProductPrice(
+                            basePrice = item.product.sellingPrice,
+                            quantity = item.quantity,
+                            wholesalePricing = item.product.getWholesalePricing(),
+                            experience = item.experienceType
+                        )
+                        total += result.subtotal
+                        savings += result.totalDiscount
+                    }
                     _uiState.value = _uiState.value.copy(
                         isLoading = false,
                         cart = cart,
-                        totalAmount = total
+                        totalAmount = total,
+                        totalSavings = savings
                     )
                 }
             } catch (e: Exception) {
@@ -51,15 +63,19 @@ class CartViewModel @Inject constructor(
         }
     }
     
-    fun increaseQuantity(cartItemId: String, currentQuantity: Int) {
+    fun increaseQuantity(cartItemId: String, currentQuantity: Int, experienceType: String) {
         viewModelScope.launch {
-            repository.updateCartItemQuantity(cartItemId, currentQuantity + 1)
+            repository.updateCartItemQuantity(cartItemId, experienceType, currentQuantity + 1)
         }
     }
     
-    fun decreaseQuantity(cartItemId: String, currentQuantity: Int) {
+    fun decreaseQuantity(cartItemId: String, currentQuantity: Int, experienceType: String) {
         viewModelScope.launch {
-            repository.updateCartItemQuantity(cartItemId, currentQuantity - 1)
+            repository.updateCartItemQuantity(cartItemId, experienceType, currentQuantity - 1)
         }
     }
+
+    fun isLoggedIn(): Boolean = repository.isLoggedIn()
 }
+
+

@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='utf-8' standalone='yes' ?>
+<map>
+    <boolean name="has_completed_onboarding" value="true" />
+    <boolean name="is_guest" value="false" />
+    <string name="last_experience">FRESH</string>
+    <string name="access_token">eyJhbGciOiJFUzI1NiIsImtpZCI6IjQ3Nzg3ODQyLWY3NmYtNDQwOS05ODg0LWM5ZDgyMDIyMzAyZCIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJodHRwczovL2Nya3VpdXhhanl3bGdtbG5rbHZqLnN1cGFiYXNlLmNvL2F1dGgvdjEiLCJzdWIiOiJkMjEyOTY2OS1mYmI3LTRiMjgtYWRiMS1jZGExZmJiYzI1OTgiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiZXhwIjoxNzkwNzEwMTA1LCJpYXQiOjE3OTA3MDY1MDUsImVtYWlsIjoiaGFyaXNpbmdoc2lraDEyNTJAZ21haWwuY29tIiwicGhvbmUiOiIiLCJhcHBfbWV0YWRhdGEiOnsicHJvdmlkZXIiOiJlbWFpbCIsInByb3ZpZGVycyI6WyJlbWFpbCJdfSwidXNlcl9tZXRhZGF0YSI6eyJlbWFpbCI6ImhhcmlzaW5naHNpa2gxMjUyQGdtYWlsLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJwaG9uZV92ZXJpZmllZCI6ZmFsc2UsInN1YiI6ImQyMTI5NjY5LWZiYjctNGIyOC1hZGIxLWNkYTFmYmJjMjU5OCJ9LCJyb2xlIjoiYXV0aGVudGljYXRlZCIsImFhbCI6ImFhbDEiLCJhbXIiOlt7Im1ldGhvZCI6Im90cCIsInRpbWVzdGFtcCI6MTc5MDcwNjUwNX1dLCJzZXNzaW9uX2lkIjoiYjM5Yjg4MDgtNThmNi00NjcxLWJiYzEtZGVlNjdlNDM5NzkyIiwiaXNfYW5vbnltb3VzIjpmYWxzZX0.7tCKkJYM9OTPDdHz5bK4O9VFV2vFpIsEktDZEOZXXbx35agJK39JsDqKa3yhngr80GixUjkQiJPWjd0tRXHarg</string>
+    <string name="refresh_token">wxj3j2rvjopl</string>
+    <string name="user_id">d2129669-fbb7-4b28-adb1-cda1fbbc2598</string>
+    <string name="user_email">harisinghsikh1252@gmail.com</string>
+</map>

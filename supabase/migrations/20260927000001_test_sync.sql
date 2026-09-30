@@ -1,0 +1,6 @@
+CREATE OR REPLACE FUNCTION public.test_sync() RETURNS text AS $$
+BEGIN
+  RETURN 'SYNCED';
+END;
+$$ LANGUAGE plpgsql;
+

@@ -4,10 +4,15 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
+data class ProductImage(
+    @SerialName("image_url") val imageUrl: String
+)
+
+@Serializable
 data class Product(
     val id: String,
     val name: String,
-    val slug: String,
+    val slug: String = "",
     val description: String? = null,
     @SerialName("category_id") val categoryId: String? = null,
     val price: Double,
@@ -24,5 +29,24 @@ data class Product(
     val bestseller: Boolean = false,
     val seasonal: Boolean = false,
     @SerialName("fresh_today") val freshToday: Boolean = false,
-    val imageUrl: String? = null
-)
+    @SerialName("experience_type") val experienceType: String = "FRESH",
+    @SerialName("on_fresh_board") val onFreshBoard: Boolean = false,
+    @SerialName("product_type") val productType: String = "SINGLE",
+    @SerialName("daily_special") val dailySpecial: Boolean = false,
+    @SerialName("bulk_available") val bulkAvailable: Boolean = false,
+    @SerialName("image_url") val directImageUrl: String? = null,
+    @SerialName("product_images") val productImages: List<ProductImage>? = null,
+    @SerialName("bundle_items") val bundleItems: kotlinx.serialization.json.JsonObject? = null
+) {
+    val imageUrl: String? get() = productImages?.firstOrNull()?.imageUrl ?: directImageUrl
+
+    fun getWholesalePricing(): com.example.govind.domain.pricing.WholesalePricing? {
+        if (bundleItems == null) return null
+        val wp = bundleItems["wholesale_pricing"] ?: return null
+        return try {
+            kotlinx.serialization.json.Json.decodeFromJsonElement(com.example.govind.domain.pricing.WholesalePricing.serializer(), wp)
+        } catch(e: Exception) {
+            null
+        }
+    }
+}

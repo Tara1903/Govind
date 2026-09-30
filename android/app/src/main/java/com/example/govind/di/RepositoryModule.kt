@@ -16,4 +16,10 @@ abstract class RepositoryModule {
     abstract fun bindGovindRepository(
         impl: com.example.govind.data.repository.SupabaseGovindRepositoryImpl
     ): GovindRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindTrackingRepository(
+        impl: com.example.govind.data.repository.TrackingRepositoryImpl
+    ): com.example.govind.domain.repository.TrackingRepository
 }

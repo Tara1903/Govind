@@ -21,7 +21,7 @@ object DatabaseModule {
             context,
             AppDatabase::class.java,
             "govind_db"
-        ).build()
+        ).fallbackToDestructiveMigration().build()
     }
 
     @Provides
