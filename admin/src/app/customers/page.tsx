@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { Users, Search, RefreshCw, Eye, ShoppingCart, IndianRupee, X } from "lucide-react";
+import { Users, Search, RefreshCw, Eye, ShoppingCart, IndianRupee, X, Phone } from "lucide-react";
 
 export default function CustomersPage() {
   const supabase = createClient();
@@ -88,20 +88,20 @@ export default function CustomersPage() {
   });
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div className="space-y-4 md:space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight text-gray-900">Customers & Users</h2>
-          <p className="text-sm text-gray-500">Live profiles, order volume, and customer activity</p>
+          <h2 className="text-xl md:text-3xl font-bold tracking-tight text-gray-900">Customers & Users</h2>
+          <p className="text-xs md:text-sm text-gray-500">Live profiles, order volume, and customer activity</p>
         </div>
-        <Button variant="outline" size="sm" onClick={fetchCustomers} disabled={loading} className="flex items-center gap-1.5">
+        <Button variant="outline" size="sm" onClick={fetchCustomers} disabled={loading} className="self-start sm:self-auto h-9 text-xs font-semibold flex items-center gap-1.5">
           <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
           Refresh
         </Button>
       </div>
 
       <Card className="shadow-sm">
-        <CardHeader className="pb-3">
+        <CardHeader className="pb-3 px-3.5 sm:px-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <CardTitle className="text-base font-semibold">
@@ -111,13 +111,13 @@ export default function CustomersPage() {
                 Synchronized with the authentication and profiles system
               </CardDescription>
             </div>
-            <div className="flex flex-wrap items-center gap-2">
-              <div className="relative">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+              <div className="relative flex-1 sm:flex-initial">
                 <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-gray-400" />
                 <input
                   type="text"
                   placeholder="Search by name, phone, email..."
-                  className="pl-8 pr-3 py-1.5 text-xs border rounded-md w-60 bg-white"
+                  className="pl-8 pr-3 py-1.5 text-xs border rounded-md w-full sm:w-60 bg-white"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
@@ -136,89 +136,163 @@ export default function CustomersPage() {
             </div>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-3.5 sm:px-6">
           {loading ? (
             <div className="py-8 text-center text-sm text-gray-500">Loading user profiles...</div>
           ) : filteredCustomers.length === 0 ? (
             <div className="py-8 text-center text-sm text-gray-500">No matching profiles found.</div>
           ) : (
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Customer Name</TableHead>
-                    <TableHead>Contact (Phone / Email)</TableHead>
-                    <TableHead>Role</TableHead>
-                    <TableHead>Total Orders</TableHead>
-                    <TableHead>Total Spend</TableHead>
-                    <TableHead>Registered</TableHead>
-                    <TableHead className="text-right">Action</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredCustomers.map((cust) => (
-                    <TableRow key={cust.id}>
-                      <TableCell>
-                        <div className="font-semibold text-xs text-gray-900">
+            <>
+              {/* MOBILE VIEW: Customers Card Feed */}
+              <div className="block md:hidden space-y-3">
+                {filteredCustomers.map((cust) => (
+                  <div
+                    key={cust.id}
+                    className="p-3.5 bg-white rounded-xl border border-gray-200 shadow-sm space-y-3"
+                  >
+                    {/* Name & Role */}
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <div className="font-semibold text-sm text-gray-900">
                           {cust.name || cust.full_name || "Guest Customer"}
                         </div>
-                        <div className="text-[10px] text-gray-400 font-mono">
-                          {cust.id.slice(0, 8)}...
+                        <div className="text-[10px] text-gray-400 font-mono mt-0.5">
+                          ID: {cust.id.slice(0, 8)}...
                         </div>
-                      </TableCell>
-                      <TableCell>
-                        <div className="text-xs text-gray-800">{cust.phone || "No Phone"}</div>
-                        <div className="text-[11px] text-gray-500">{cust.email || "No Email"}</div>
-                      </TableCell>
-                      <TableCell>
-                        <span
-                          className={`inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-semibold ${
-                            cust.role === "admin"
-                              ? "bg-purple-100 text-purple-800"
-                              : cust.role === "delivery"
-                              ? "bg-cyan-100 text-cyan-800"
-                              : "bg-green-100 text-green-800"
-                          }`}
-                        >
-                          {cust.role || "customer"}
-                        </span>
-                      </TableCell>
-                      <TableCell className="text-xs font-semibold text-gray-900">
-                        {cust.orderCount} orders
-                      </TableCell>
-                      <TableCell className="text-xs font-bold text-gray-900">
-                        ₹{Number(cust.totalSpend).toFixed(2)}
-                      </TableCell>
-                      <TableCell className="text-xs text-gray-500">
-                        {cust.created_at ? new Date(cust.created_at).toLocaleDateString() : "N/A"}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-7 text-xs flex items-center gap-1 ml-auto"
-                          onClick={() => handleViewCustomer(cust)}
-                        >
-                          <Eye className="h-3.5 w-3.5" />
-                          View
-                        </Button>
-                      </TableCell>
+                      </div>
+                      <span
+                        className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-semibold shrink-0 ${
+                          cust.role === "admin"
+                            ? "bg-purple-100 text-purple-800"
+                            : cust.role === "delivery"
+                            ? "bg-cyan-100 text-cyan-800"
+                            : "bg-green-100 text-green-800"
+                        }`}
+                      >
+                        {cust.role || "customer"}
+                      </span>
+                    </div>
+
+                    {/* Phone & Email */}
+                    <div className="flex items-center justify-between text-xs py-2 border-y border-gray-100">
+                      <div>
+                        {cust.phone ? (
+                          <a
+                            href={`tel:${cust.phone}`}
+                            className="font-semibold text-emerald-700 hover:underline flex items-center gap-1"
+                          >
+                            <Phone className="h-3 w-3" />
+                            {cust.phone}
+                          </a>
+                        ) : (
+                          <span className="text-gray-400">No Phone</span>
+                        )}
+                        <div className="text-[11px] text-gray-500 mt-0.5 truncate max-w-[200px]">
+                          {cust.email || "No Email"}
+                        </div>
+                      </div>
+
+                      {/* Order Stats */}
+                      <div className="text-right">
+                        <div className="font-semibold text-gray-900">{cust.orderCount} orders</div>
+                        <div className="text-[11px] font-bold text-emerald-700">
+                          ₹{Number(cust.totalSpend).toFixed(2)}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Action */}
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="w-full h-10 text-xs font-semibold flex items-center justify-center gap-1.5 border-gray-300 active:bg-gray-50"
+                      onClick={() => handleViewCustomer(cust)}
+                    >
+                      <Eye className="h-4 w-4" /> View Customer History
+                    </Button>
+                  </div>
+                ))}
+              </div>
+
+              {/* DESKTOP VIEW: Customers Table */}
+              <div className="hidden md:block overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Customer Name</TableHead>
+                      <TableHead>Contact (Phone / Email)</TableHead>
+                      <TableHead>Role</TableHead>
+                      <TableHead>Total Orders</TableHead>
+                      <TableHead>Total Spend</TableHead>
+                      <TableHead>Registered</TableHead>
+                      <TableHead className="text-right">Action</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredCustomers.map((cust) => (
+                      <TableRow key={cust.id}>
+                        <TableCell>
+                          <div className="font-semibold text-xs text-gray-900">
+                            {cust.name || cust.full_name || "Guest Customer"}
+                          </div>
+                          <div className="text-[10px] text-gray-400 font-mono">
+                            {cust.id.slice(0, 8)}...
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="text-xs text-gray-800">{cust.phone || "No Phone"}</div>
+                          <div className="text-[11px] text-gray-500">{cust.email || "No Email"}</div>
+                        </TableCell>
+                        <TableCell>
+                          <span
+                            className={`inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-semibold ${
+                              cust.role === "admin"
+                                ? "bg-purple-100 text-purple-800"
+                                : cust.role === "delivery"
+                                ? "bg-cyan-100 text-cyan-800"
+                                : "bg-green-100 text-green-800"
+                            }`}
+                          >
+                            {cust.role || "customer"}
+                          </span>
+                        </TableCell>
+                        <TableCell className="text-xs font-semibold text-gray-900">
+                          {cust.orderCount} orders
+                        </TableCell>
+                        <TableCell className="text-xs font-bold text-gray-900">
+                          ₹{Number(cust.totalSpend).toFixed(2)}
+                        </TableCell>
+                        <TableCell className="text-xs text-gray-500">
+                          {cust.created_at ? new Date(cust.created_at).toLocaleDateString() : "N/A"}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-7 text-xs flex items-center gap-1 ml-auto"
+                            onClick={() => handleViewCustomer(cust)}
+                          >
+                            <Eye className="h-3.5 w-3.5" />
+                            View
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </>
           )}
         </CardContent>
       </Card>
 
       {/* Customer Detail Drawer / Modal */}
       {selectedCustomer && (
-        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4">
-          <Card className="max-w-2xl w-full bg-white shadow-2xl max-h-[85vh] flex flex-col">
-            <CardHeader className="flex flex-row items-center justify-between border-b pb-4">
+        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-3 sm:p-4">
+          <Card className="max-w-2xl w-full bg-white shadow-2xl max-h-[90vh] flex flex-col">
+            <CardHeader className="flex flex-row items-center justify-between border-b p-4 sm:p-6 pb-3">
               <div>
-                <CardTitle className="text-lg font-bold">
+                <CardTitle className="text-base sm:text-lg font-bold">
                   {selectedCustomer.name || selectedCustomer.full_name || "Customer Details"}
                 </CardTitle>
                 <CardDescription className="text-xs">
@@ -234,11 +308,21 @@ export default function CustomersPage() {
                 <X className="h-4 w-4" />
               </Button>
             </CardHeader>
-            <CardContent className="overflow-y-auto p-6 space-y-4">
-              <div className="grid grid-cols-2 gap-4 p-4 rounded-lg bg-gray-50 border text-xs">
+            <CardContent className="overflow-y-auto p-4 sm:p-6 space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3.5 rounded-lg bg-gray-50 border text-xs">
                 <div>
                   <span className="text-gray-500 block">Phone Number</span>
-                  <span className="font-semibold text-gray-800">{selectedCustomer.phone || "N/A"}</span>
+                  {selectedCustomer.phone ? (
+                    <a
+                      href={`tel:${selectedCustomer.phone}`}
+                      className="font-semibold text-emerald-700 hover:underline inline-flex items-center gap-1 mt-0.5"
+                    >
+                      <Phone className="h-3 w-3" />
+                      {selectedCustomer.phone}
+                    </a>
+                  ) : (
+                    <span className="font-semibold text-gray-800">N/A</span>
+                  )}
                 </div>
                 <div>
                   <span className="text-gray-500 block">Email Address</span>

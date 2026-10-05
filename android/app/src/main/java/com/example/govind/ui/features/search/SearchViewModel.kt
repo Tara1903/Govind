@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.govind.data.model.Product
 import com.example.govind.domain.repository.GovindRepository
+import com.example.govind.ui.navigation.AppState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -17,6 +18,7 @@ data class SearchUiState(
     val query: String = "",
     val isLoading: Boolean = false,
     val results: List<Product> = emptyList(),
+    val cartQuantities: Map<String, Int> = emptyMap(),
     val error: String? = null
 )
 
@@ -29,6 +31,19 @@ class SearchViewModel @Inject constructor(
     val uiState: StateFlow<SearchUiState> = _uiState.asStateFlow()
 
     private var searchJob: Job? = null
+
+    init {
+        observeCart()
+    }
+
+    private fun observeCart() {
+        viewModelScope.launch {
+            repository.getGlobalCart().collect { cart ->
+                val quantities = cart?.items?.associate { it.product.id to it.quantity } ?: emptyMap()
+                _uiState.value = _uiState.value.copy(cartQuantities = quantities)
+            }
+        }
+    }
 
     fun updateQuery(query: String) {
         _uiState.value = _uiState.value.copy(query = query)
@@ -47,6 +62,24 @@ class SearchViewModel @Inject constructor(
                 }
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(isLoading = false, error = e.message ?: "Search failed")
+            }
+        }
+    }
+
+    fun addToCart(product: Product, quantity: Int = 1) {
+        viewModelScope.launch {
+            val exp = product.experienceType.ifBlank { AppState.currentExperience.value.name }
+            repository.addToCart(product, quantity, exp)
+        }
+    }
+
+    fun updateQuantity(product: Product, quantity: Int) {
+        viewModelScope.launch {
+            val exp = product.experienceType.ifBlank { AppState.currentExperience.value.name }
+            if (quantity <= 0) {
+                repository.removeFromCart(product.id, exp)
+            } else {
+                repository.updateCartItemQuantity(product.id, exp, quantity)
             }
         }
     }

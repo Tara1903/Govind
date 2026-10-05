@@ -285,10 +285,6 @@ class SupabaseGovindRepositoryImpl @Inject constructor(
             return Result.failure(Exception("Authentication required. Please sign in to place an order."))
         }
 
-        if (paymentMethod.equals("ONLINE", ignoreCase = true)) {
-            return Result.failure(Exception("ONLINE PAYMENT BLOCKED — STARPAY CREDENTIALS/API CONTRACT REQUIRED. Please select Cash on Delivery (COD)."))
-        }
-
         val cartEntities = cartDao.getCartItems().first()
         val cartItems = cartEntities.map { it.toCartItem() }
         if (cartItems.isEmpty()) return Result.failure(Exception("Your basket is empty. Please add items before checkout."))
@@ -387,7 +383,8 @@ class SupabaseGovindRepositoryImpl @Inject constructor(
                 put("p_tax", kotlinx.serialization.json.JsonPrimitive(0.0))
                 put("p_delivery_charge", kotlinx.serialization.json.JsonPrimitive(deliveryCharge))
                 put("p_total", kotlinx.serialization.json.JsonPrimitive(total))
-                put("p_payment_method", kotlinx.serialization.json.JsonPrimitive("COD"))
+                val dbPaymentMethod = if (paymentMethod.contains("STARPAY", ignoreCase = true) || paymentMethod.contains("ONLINE", ignoreCase = true)) "ONLINE" else "COD"
+                put("p_payment_method", kotlinx.serialization.json.JsonPrimitive(dbPaymentMethod))
                 put("p_items", itemsJson)
                 put("p_savings", kotlinx.serialization.json.JsonPrimitive(totalSavings))
                 put("p_address_snapshot", addressSnapshot)
@@ -426,8 +423,8 @@ class SupabaseGovindRepositoryImpl @Inject constructor(
                 deliveryCharge = deliveryCharge,
                 total = total,
                 savings = totalSavings,
-                paymentMethod = "COD",
-                paymentStatus = "PENDING",
+                paymentMethod = paymentMethod,
+                paymentStatus = if (paymentMethod.contains("STARPAY", ignoreCase = true) || paymentMethod.contains("ONLINE", ignoreCase = true)) "AWAITING_PAYMENT" else "PENDING",
                 orderStatus = "PLACED",
                 experienceType = orderExperienceType,
                 addresses = selectedAddress,
@@ -508,6 +505,19 @@ class SupabaseGovindRepositoryImpl @Inject constructor(
         return try {
             val request = kotlinx.serialization.json.buildJsonObject {
                 put("order_status", kotlinx.serialization.json.JsonPrimitive(status))
+            }
+            api.updateOrderStatus("eq.$orderId", request)
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun markOrderPaid(orderId: String, upiRef: String?): Result<Unit> {
+        return try {
+            val request = kotlinx.serialization.json.buildJsonObject {
+                put("order_status", kotlinx.serialization.json.JsonPrimitive("CONFIRMED"))
+                put("payment_status", kotlinx.serialization.json.JsonPrimitive("PAID"))
             }
             api.updateOrderStatus("eq.$orderId", request)
             Result.success(Unit)

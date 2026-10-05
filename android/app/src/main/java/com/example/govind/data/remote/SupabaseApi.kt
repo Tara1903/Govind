@@ -223,6 +223,33 @@ interface SupabaseApi {
     suspend fun clearCloudCart(
         @Query("cart_id") cartIdQuery: String
     )
+    
+    // Notifications & Device Tokens
+    @retrofit2.http.POST("rest/v1/rpc/upsert_device_token")
+    suspend fun upsertDeviceToken(
+        @retrofit2.http.Body request: kotlinx.serialization.json.JsonObject
+    )
+    
+    @retrofit2.http.POST("rest/v1/rpc/mark_notification_read")
+    suspend fun markNotificationRead(
+        @retrofit2.http.Body request: kotlinx.serialization.json.JsonObject
+    )
+    
+    @retrofit2.http.POST("rest/v1/rpc/mark_all_notifications_read")
+    suspend fun markAllNotificationsRead()
+
+    @GET("rest/v1/notifications")
+    suspend fun getNotifications(
+        @Query("select") select: String = "*",
+        @Query("order") order: String = "created_at.desc",
+        @Query("limit") limit: Int = 50
+    ): List<com.example.govind.data.repository.NotificationItem>
+
+    @GET("rest/v1/notifications")
+    suspend fun getUnreadNotifications(
+        @Query("select") select: String = "id",
+        @Query("read_at") readAt: String = "is.null"
+    ): List<kotlinx.serialization.json.JsonObject>
 }
 
 

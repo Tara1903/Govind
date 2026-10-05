@@ -15,8 +15,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Phone
+import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.Verified
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
@@ -47,6 +49,7 @@ import com.example.govind.ui.shared.*
 @Composable
 fun HomeScreen(
     onNavigateToSearch: () -> Unit,
+    onNavigateToCategory: (String) -> Unit = { onNavigateToSearch() },
     onNavigateToProduct: (String) -> Unit,
     onNavigateToCart: () -> Unit,
     onNavigateToProfile: () -> Unit,
@@ -132,7 +135,7 @@ fun HomeScreen(
                 item {
                     FreshCategoryGrid(
                         categories = uiState.categories,
-                        onCategoryClick = { onNavigateToSearch() },
+                        onCategoryClick = { onNavigateToCategory(it) },
                         onSeeAllClick = onNavigateToSearch
                     )
                 }
@@ -177,13 +180,18 @@ fun HomeScreen(
                 item {
                     Box(modifier = Modifier.padding(horizontal = Dimens.Margin, vertical = 8.dp)) {
                         DealsOfTheDayCard(
-                            onAddDeal = { name, price ->
+                            cartQuantities = uiState.cartQuantities,
+                            availableProducts = harvestProducts,
+                            onAddDeal = { name, _ ->
                                 val dealProduct = harvestProducts.firstOrNull { it.name.contains(name, ignoreCase = true) }
                                 if (dealProduct != null) {
                                     viewModel.addToCart(dealProduct, 1)
                                 } else {
                                     onNavigateToSearch()
                                 }
+                            },
+                            onUpdateQuantity = { product, qty ->
+                                viewModel.updateQuantity(product, qty)
                             }
                         )
                     }
@@ -191,15 +199,26 @@ fun HomeScreen(
 
                 // 9. Daily Breakfast Basket Bundle
                 item {
+                    val basketProduct = uiState.combos.firstOrNull() ?: uiState.packs.firstOrNull() ?: harvestProducts.firstOrNull()
+                    val basketQty = basketProduct?.let { uiState.cartQuantities[it.id] } ?: 0
                     Box(modifier = Modifier.padding(horizontal = Dimens.Margin, vertical = 8.dp)) {
                         DailyBreakfastBasketCard(
+                            quantityInCart = basketQty,
                             onAddBasket = {
-                                if (uiState.combos.isNotEmpty()) {
-                                    viewModel.addToCart(uiState.combos.first(), 1)
-                                } else if (uiState.packs.isNotEmpty()) {
-                                    viewModel.addToCart(uiState.packs.first(), 1)
+                                if (basketProduct != null) {
+                                    viewModel.addToCart(basketProduct, 1)
                                 } else {
                                     onNavigateToSearch()
+                                }
+                            },
+                            onIncrement = {
+                                if (basketProduct != null) {
+                                    viewModel.updateQuantity(basketProduct, basketQty + 1)
+                                }
+                            },
+                            onDecrement = {
+                                if (basketProduct != null) {
+                                    viewModel.updateQuantity(basketProduct, basketQty - 1)
                                 }
                             }
                         )
@@ -541,15 +560,33 @@ fun FreshCategoryGrid(
     onCategoryClick: (String) -> Unit,
     onSeeAllClick: () -> Unit
 ) {
+    fun getCategoryMeta(name: String): Triple<String, String, String> {
+        return when {
+            name.contains("Everyday Essentials", ignoreCase = true) -> Triple("Everyday Veg", "from ₹18", "🥔")
+            name.contains("Leafy Greens", ignoreCase = true) -> Triple("Leafy Greens", "Morning Dew", "🥬")
+            name.contains("Roots & Tubers", ignoreCase = true) -> Triple("Roots & Tubers", "Farm Fresh", "🥕")
+            name.contains("Gourds", ignoreCase = true) -> Triple("Crisp Gourds", "Vine Fresh", "🥒")
+            name.contains("Beans & Pods", ignoreCase = true) -> Triple("Beans & Pods", "Handpicked", "🫛")
+            name.contains("Cruciferous", ignoreCase = true) -> Triple("Cauli & Broccoli", "Daily Arrival", "🥦")
+            name.contains("Specialty", ignoreCase = true) -> Triple("Exotic Veggies", "Polyhouse", "🌽")
+            name.contains("Herbs", ignoreCase = true) -> Triple("Herbs & Seasoning", "Aromatic", "🌿")
+            name.contains("Everyday Fruits", ignoreCase = true) -> Triple("Daily Fruits", "Sweet & Ripe", "🍎")
+            name.contains("Seasonal Fruits", ignoreCase = true) -> Triple("Seasonal Picks", "Sun Ripened", "🥭")
+            name.contains("Premium Fruits", ignoreCase = true) -> Triple("Premium Fruits", "Selected", "🍇")
+            name.contains("Imported", ignoreCase = true) -> Triple("Imported Fruits", "Air Flown", "🥝")
+            else -> Triple(name, "Farm Fresh", "🥬")
+        }
+    }
+
     val defaultCategories = listOf(
-        Triple("Fresh Veggies", "from ₹18", "🥬"),
-        Triple("Farm Fruits", "from ₹45", "🍎"),
-        Triple("Leafy Herbs", "Morning Dew", "🌿"),
-        Triple("Exotics", "Air-Flown", "🥑"),
-        Triple("A2 Dairy", "Pure Churned", "🥛"),
-        Triple("Oils & Ghee", "Wood Pressed", "🫒"),
-        Triple("Daily Staples", "Chakki Fresh", "🌾"),
-        Triple("Dry Fruits", "Handpicked", "🥜")
+        Triple("Everyday Veg", "from ₹18", "🥔"),
+        Triple("Leafy Greens", "Morning Dew", "🥬"),
+        Triple("Roots & Tubers", "Farm Fresh", "🥕"),
+        Triple("Crisp Gourds", "Vine Fresh", "🥒"),
+        Triple("Beans & Pods", "Handpicked", "🫛"),
+        Triple("Cauli & Broccoli", "Daily Arrival", "🥦"),
+        Triple("Exotic Veggies", "Polyhouse", "🌽"),
+        Triple("Herbs & Seasoning", "Aromatic", "🌿")
     )
 
     Column(modifier = Modifier.fillMaxWidth()) {
@@ -561,9 +598,8 @@ fun FreshCategoryGrid(
         )
 
         val itemsToDisplay = if (categories.isNotEmpty()) {
-            categories.take(8).mapIndexed { index, cat ->
-                val fallback = defaultCategories.getOrElse(index) { Triple(cat.name, "Farm Fresh", "🥬") }
-                Triple(cat.name, fallback.second, fallback.third)
+            categories.take(8).map { cat ->
+                getCategoryMeta(cat.name)
             }
         } else {
             defaultCategories
@@ -605,7 +641,10 @@ fun FreshCategoryGrid(
 
 @Composable
 fun DealsOfTheDayCard(
-    onAddDeal: (String, Int) -> Unit
+    cartQuantities: Map<String, Int> = emptyMap(),
+    availableProducts: List<Product> = emptyList(),
+    onAddDeal: (String, Int) -> Unit = { _, _ -> },
+    onUpdateQuantity: (Product, Int) -> Unit = { _, _ -> }
 ) {
     Card(
         shape = RoundedCornerShape(16.dp),
@@ -679,35 +718,61 @@ fun DealsOfTheDayCard(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // 3 mini deal items
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                DealMiniItem(
-                    title = "Yellow Lemons",
-                    unit = "250 g",
-                    price = 19,
-                    emoji = "🍋",
-                    onAdd = { onAddDeal("Yellow Lemons", 19) },
-                    modifier = Modifier.weight(1f)
-                )
-                DealMiniItem(
-                    title = "Red Carrots",
-                    unit = "500 g",
-                    price = 29,
-                    emoji = "🥕",
-                    onAdd = { onAddDeal("Red Carrots", 29) },
-                    modifier = Modifier.weight(1f)
-                )
-                DealMiniItem(
-                    title = "Button Mushroom",
-                    unit = "200 g",
-                    price = 42,
-                    emoji = "🍄",
-                    onAdd = { onAddDeal("Button Mushroom", 42) },
-                    modifier = Modifier.weight(1f)
-                )
+            // Pick 3 existing under-₹49 products dynamically from availableProducts
+            val deals = remember(availableProducts) {
+                val under49 = availableProducts.filter { it.sellingPrice <= 49.0 }
+                if (under49.size >= 3) {
+                    under49.take(3)
+                } else if (availableProducts.isNotEmpty()) {
+                    availableProducts.take(3)
+                } else {
+                    emptyList()
+                }
+            }
+
+            fun getDealEmoji(prodName: String): String {
+                val n = prodName.lowercase()
+                return when {
+                    n.contains("potato") -> "🥔"
+                    n.contains("tomato") -> "🍅"
+                    n.contains("onion") -> "🧅"
+                    n.contains("carrot") -> "🥕"
+                    n.contains("mushroom") -> "🍄"
+                    n.contains("cucumber") -> "🥒"
+                    n.contains("spinach") -> "🥬"
+                    n.contains("capsicum") -> "🫑"
+                    n.contains("banana") -> "🍌"
+                    n.contains("apple") -> "🍎"
+                    else -> "🌿"
+                }
+            }
+
+            if (deals.isNotEmpty()) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    deals.forEach { dealProd ->
+                        val qty = cartQuantities[dealProd.id] ?: 0
+                        DealMiniItem(
+                            title = dealProd.name,
+                            unit = dealProd.unit,
+                            price = dealProd.sellingPrice.toInt(),
+                            emoji = getDealEmoji(dealProd.name),
+                            quantityInCart = qty,
+                            onAdd = {
+                                onUpdateQuantity(dealProd, 1)
+                            },
+                            onIncrement = {
+                                onUpdateQuantity(dealProd, qty + 1)
+                            },
+                            onDecrement = {
+                                onUpdateQuantity(dealProd, qty - 1)
+                            },
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+                }
             }
         }
     }
@@ -719,7 +784,10 @@ fun DealMiniItem(
     unit: String,
     price: Int,
     emoji: String,
+    quantityInCart: Int = 0,
     onAdd: () -> Unit,
+    onIncrement: () -> Unit = onAdd,
+    onDecrement: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     Surface(
@@ -733,12 +801,12 @@ fun DealMiniItem(
         ) {
             Box(modifier = Modifier.fillMaxWidth()) {
                 Surface(
-                    color = MaterialTheme.colorScheme.error,
+                    color = if (quantityInCart > 0) GovindTheme.colors.brandPrimary else MaterialTheme.colorScheme.error,
                     shape = RoundedCornerShape(4.dp),
                     modifier = Modifier.align(Alignment.TopStart)
                 ) {
                     Text(
-                        text = "₹$price",
+                        text = if (quantityInCart > 0) "₹${price * quantityInCart}" else "₹$price",
                         color = Color.White,
                         style = MaterialTheme.typography.labelSmall,
                         fontWeight = FontWeight.Bold,
@@ -763,27 +831,79 @@ fun DealMiniItem(
                 overflow = TextOverflow.Ellipsis
             )
             Text(
-                text = unit,
+                text = if (quantityInCart > 0) "$quantityInCart in cart • ₹${price * quantityInCart}" else unit,
                 style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp),
-                color = GovindTheme.colors.textMuted
+                color = if (quantityInCart > 0) GovindTheme.colors.secondary else GovindTheme.colors.textMuted,
+                fontWeight = if (quantityInCart > 0) FontWeight.Bold else FontWeight.Normal,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
             Spacer(modifier = Modifier.height(6.dp))
-            Surface(
-                color = MaterialTheme.colorScheme.surfaceContainerLowest,
-                shape = CircleShape,
-                shadowElevation = 1.dp,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable(onClick = onAdd)
-            ) {
-                Text(
-                    text = "+ ADD",
+            if (quantityInCart <= 0) {
+                Surface(
+                    color = MaterialTheme.colorScheme.surfaceContainerLowest,
+                    shape = CircleShape,
+                    shadowElevation = 1.dp,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable(onClick = onAdd)
+                ) {
+                    Text(
+                        text = "+ ADD • ₹$price",
+                        color = MaterialTheme.colorScheme.primaryContainer,
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(vertical = 4.dp)
+                    )
+                }
+            } else {
+                Surface(
                     color = MaterialTheme.colorScheme.primaryContainer,
-                    style = MaterialTheme.typography.labelSmall,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(vertical = 4.dp)
-                )
+                    shape = CircleShape,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 2.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(22.dp)
+                                .clickable(onClick = onDecrement),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Remove,
+                                contentDescription = "Decrease",
+                                tint = Color.White,
+                                modifier = Modifier.size(12.dp)
+                            )
+                        }
+                        Text(
+                            text = "$quantityInCart",
+                            color = Color.White,
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Box(
+                            modifier = Modifier
+                                .size(22.dp)
+                                .clickable(onClick = onIncrement),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Add,
+                                contentDescription = "Increase",
+                                tint = Color.White,
+                                modifier = Modifier.size(12.dp)
+                            )
+                        }
+                    }
+                }
             }
         }
     }
@@ -791,7 +911,10 @@ fun DealMiniItem(
 
 @Composable
 fun DailyBreakfastBasketCard(
-    onAddBasket: () -> Unit
+    quantityInCart: Int = 0,
+    onAddBasket: () -> Unit,
+    onIncrement: () -> Unit = onAddBasket,
+    onDecrement: () -> Unit = {}
 ) {
     Card(
         shape = RoundedCornerShape(16.dp),
@@ -854,7 +977,7 @@ fun DailyBreakfastBasketCard(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // 4 Items row with '+' signs
+            // 4 Items row with '+' signs (100% PURE VEGETARIAN)
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -867,7 +990,7 @@ fun DailyBreakfastBasketCard(
                 Text("+", color = GovindTheme.colors.textMuted, fontWeight = FontWeight.Bold)
                 BundleItemMini("🍞", "Wheat Bread")
                 Text("+", color = GovindTheme.colors.textMuted, fontWeight = FontWeight.Bold)
-                BundleItemMini("🥚", "Eggs (6)")
+                BundleItemMini("🧈", "White Butter")
                 Text("+", color = GovindTheme.colors.textMuted, fontWeight = FontWeight.Bold)
                 BundleItemMini("🍌", "Bananas 500g")
             }
@@ -885,40 +1008,50 @@ fun DailyBreakfastBasketCard(
                         horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
                         Text(
-                            text = "₹182",
+                            text = if (quantityInCart > 0) "₹${182 * quantityInCart}" else "₹182",
                             style = GovindTheme.priceDisplay,
-                            color = GovindTheme.colors.textPrimary
+                            color = if (quantityInCart > 0) GovindTheme.colors.brandPrimary else GovindTheme.colors.textPrimary
                         )
                         Text(
-                            text = "₹230",
+                            text = if (quantityInCart > 0) "₹${230 * quantityInCart}" else "₹230",
                             style = GovindTheme.priceStrikethrough,
                             color = GovindTheme.colors.textMuted,
                             textDecoration = TextDecoration.LineThrough
                         )
                     }
                     Text(
-                        text = "All 4 morning essentials included",
+                        text = if (quantityInCart > 0) "$quantityInCart basket in cart • ₹182/each" else "All 4 morning essentials included",
                         style = MaterialTheme.typography.bodySmall,
-                        color = GovindTheme.colors.secondary
+                        color = GovindTheme.colors.secondary,
+                        fontWeight = if (quantityInCart > 0) FontWeight.Bold else FontWeight.Normal
                     )
                 }
 
-                Button(
-                    onClick = onAddBasket,
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
-                    shape = CircleShape
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.AddShoppingCart,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.secondaryContainer,
-                        modifier = Modifier.size(16.dp)
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text(
-                        text = "Add Basket (₹182)",
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold
+                if (quantityInCart <= 0) {
+                    Button(
+                        onClick = onAddBasket,
+                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
+                        shape = CircleShape
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.AddShoppingCart,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.secondaryContainer,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = "Add Basket • ₹182",
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                } else {
+                    GovindQuantityControl(
+                        quantity = quantityInCart,
+                        onIncrement = onIncrement,
+                        onDecrement = onDecrement,
+                        onAdd = onAddBasket
                     )
                 }
             }

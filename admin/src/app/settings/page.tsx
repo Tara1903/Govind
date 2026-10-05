@@ -184,7 +184,7 @@ export default function SettingsPage() {
                   type="number"
                   step="0.01"
                   required
-                  className="w-full border px-3 py-2 rounded text-sm bg-white"
+                  className="w-full min-h-[42px] border border-gray-300 px-3 py-2 rounded-lg text-sm bg-white focus:ring-2 focus:ring-green-700 outline-none"
                   value={deliveryData.min_order_amount}
                   onChange={(e) => setDeliveryData({ ...deliveryData, min_order_amount: e.target.value })}
                 />
@@ -198,7 +198,7 @@ export default function SettingsPage() {
                   type="number"
                   step="0.01"
                   required
-                  className="w-full border px-3 py-2 rounded text-sm bg-white font-medium"
+                  className="w-full min-h-[42px] border border-gray-300 px-3 py-2 rounded-lg text-sm bg-white font-medium focus:ring-2 focus:ring-green-700 outline-none"
                   value={deliveryData.delivery_charge}
                   onChange={(e) => setDeliveryData({ ...deliveryData, delivery_charge: e.target.value })}
                 />
@@ -212,7 +212,7 @@ export default function SettingsPage() {
                   type="number"
                   step="0.01"
                   required
-                  className="w-full border px-3 py-2 rounded text-sm bg-white font-medium text-green-700"
+                  className="w-full min-h-[42px] border border-gray-300 px-3 py-2 rounded-lg text-sm bg-white font-medium text-green-700 focus:ring-2 focus:ring-green-700 outline-none"
                   value={deliveryData.free_delivery_threshold}
                   onChange={(e) => setDeliveryData({ ...deliveryData, free_delivery_threshold: e.target.value })}
                 />
@@ -224,7 +224,7 @@ export default function SettingsPage() {
                 Serviceable Pincodes (Comma separated)
               </label>
               <textarea
-                className="w-full border px-3 py-2 rounded text-sm bg-white font-mono text-xs h-20"
+                className="w-full border border-gray-300 px-3 py-2 rounded-lg text-sm bg-white font-mono text-xs h-20 focus:ring-2 focus:ring-green-700 outline-none"
                 placeholder="110001, 110002, 110003..."
                 value={deliveryData.serviceable_pincodes}
                 onChange={(e) => setDeliveryData({ ...deliveryData, serviceable_pincodes: e.target.value })}
@@ -240,14 +240,14 @@ export default function SettingsPage() {
                 id="del_active"
                 checked={deliveryData.active}
                 onChange={(e) => setDeliveryData({ ...deliveryData, active: e.target.checked })}
-                className="rounded text-green-700"
+                className="h-4 w-4 rounded text-green-700 cursor-pointer"
               />
               <label htmlFor="del_active" className="text-xs font-semibold text-gray-700 cursor-pointer">
                 Delivery System Active
               </label>
             </div>
 
-            <Button type="submit" disabled={savingDelivery} className="bg-green-700 hover:bg-green-800 text-white text-xs">
+            <Button type="submit" disabled={savingDelivery} className="min-h-[42px] w-full sm:w-auto bg-green-700 hover:bg-green-800 text-white text-xs font-semibold">
               <Save className="h-3.5 w-3.5 mr-1.5" />
               {savingDelivery ? "Saving Changes..." : "Save Delivery Rules"}
             </Button>
@@ -276,7 +276,7 @@ export default function SettingsPage() {
                 <input
                   type="text"
                   required
-                  className="w-full border px-3 py-2 rounded text-sm bg-white font-mono"
+                  className="w-full min-h-[42px] border border-gray-300 px-3 py-2 rounded-lg text-sm bg-white font-mono focus:ring-2 focus:ring-blue-700 outline-none"
                   value={businessData.whatsapp_number}
                   onChange={(e) => setBusinessData({ ...businessData, whatsapp_number: e.target.value })}
                 />
@@ -289,7 +289,7 @@ export default function SettingsPage() {
                 <input
                   type="text"
                   required
-                  className="w-full border px-3 py-2 rounded text-sm bg-white font-mono"
+                  className="w-full min-h-[42px] border border-gray-300 px-3 py-2 rounded-lg text-sm bg-white font-mono focus:ring-2 focus:ring-blue-700 outline-none"
                   value={businessData.support_phone}
                   onChange={(e) => setBusinessData({ ...businessData, support_phone: e.target.value })}
                 />
@@ -302,7 +302,7 @@ export default function SettingsPage() {
                 <input
                   type="text"
                   required
-                  className="w-full border px-3 py-2 rounded text-sm bg-white font-mono"
+                  className="w-full min-h-[42px] border border-gray-300 px-3 py-2 rounded-lg text-sm bg-white font-mono focus:ring-2 focus:ring-blue-700 outline-none"
                   value={businessData.wholesale_contact}
                   onChange={(e) => setBusinessData({ ...businessData, wholesale_contact: e.target.value })}
                 />
@@ -315,13 +315,13 @@ export default function SettingsPage() {
               </label>
               <input
                 type="text"
-                className="w-full border px-3 py-2 rounded text-sm bg-white"
+                className="w-full min-h-[42px] border border-gray-300 px-3 py-2 rounded-lg text-sm bg-white focus:ring-2 focus:ring-blue-700 outline-none"
                 value={businessData.delivery_announcement}
                 onChange={(e) => setBusinessData({ ...businessData, delivery_announcement: e.target.value })}
               />
             </div>
 
-            <Button type="submit" disabled={savingBusiness} className="bg-blue-700 hover:bg-blue-800 text-white text-xs">
+            <Button type="submit" disabled={savingBusiness} className="min-h-[42px] w-full sm:w-auto bg-blue-700 hover:bg-blue-800 text-white text-xs font-semibold">
               <Save className="h-3.5 w-3.5 mr-1.5" />
               {savingBusiness ? "Saving Contacts..." : "Save Store Contacts"}
             </Button>

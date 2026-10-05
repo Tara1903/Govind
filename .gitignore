@@ -10,3 +10,12 @@ android/.kotlin/
 android/app/release.keystore
 skills-lock.json
 .agents/
+*firebase-adminsdk*.json
+serviceAccountKey.json
+
+# Scratch and test artifacts
+temp_*
+temp_*/
+products_dump.json
+check_images.js
+supabase/.temp/

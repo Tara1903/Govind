@@ -173,14 +173,14 @@ export default function CouponsPage() {
               </div>
             )}
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-semibold text-gray-700 mb-1">Coupon Code *</label>
                   <input
                     required
                     type="text"
                     placeholder="e.g. GOVIND50"
-                    className="w-full border px-3 py-2 rounded text-sm uppercase font-mono font-bold bg-white"
+                    className="w-full min-h-[42px] border border-gray-300 px-3 py-2 rounded-lg text-sm uppercase font-mono font-bold bg-white focus:ring-2 focus:ring-green-700 outline-none"
                     value={formData.code}
                     onChange={(e) => setFormData({ ...formData, code: e.target.value })}
                   />
@@ -188,7 +188,7 @@ export default function CouponsPage() {
                 <div>
                   <label className="block text-xs font-semibold text-gray-700 mb-1">Discount Type</label>
                   <select
-                    className="w-full border px-3 py-2 rounded text-sm bg-white"
+                    className="w-full min-h-[42px] border border-gray-300 px-3 py-2 rounded-lg text-sm bg-white focus:ring-2 focus:ring-green-700 outline-none"
                     value={formData.discount_type}
                     onChange={(e) => setFormData({ ...formData, discount_type: e.target.value })}
                   >
@@ -205,7 +205,7 @@ export default function CouponsPage() {
                     type="number"
                     step="0.01"
                     placeholder="e.g. 20 or 50"
-                    className="w-full border px-3 py-2 rounded text-sm bg-white font-semibold"
+                    className="w-full min-h-[42px] border border-gray-300 px-3 py-2 rounded-lg text-sm bg-white font-semibold focus:ring-2 focus:ring-green-700 outline-none"
                     value={formData.discount_value}
                     onChange={(e) => setFormData({ ...formData, discount_value: e.target.value })}
                   />
@@ -216,7 +216,7 @@ export default function CouponsPage() {
                     type="number"
                     step="0.01"
                     placeholder="e.g. 299"
-                    className="w-full border px-3 py-2 rounded text-sm bg-white"
+                    className="w-full min-h-[42px] border border-gray-300 px-3 py-2 rounded-lg text-sm bg-white focus:ring-2 focus:ring-green-700 outline-none"
                     value={formData.min_order_amount}
                     onChange={(e) => setFormData({ ...formData, min_order_amount: e.target.value })}
                   />
@@ -227,7 +227,7 @@ export default function CouponsPage() {
                     type="number"
                     step="0.01"
                     placeholder="e.g. 100"
-                    className="w-full border px-3 py-2 rounded text-sm bg-white"
+                    className="w-full min-h-[42px] border border-gray-300 px-3 py-2 rounded-lg text-sm bg-white focus:ring-2 focus:ring-green-700 outline-none"
                     value={formData.max_discount_amount}
                     onChange={(e) => setFormData({ ...formData, max_discount_amount: e.target.value })}
                   />
@@ -236,7 +236,7 @@ export default function CouponsPage() {
                   <label className="block text-xs font-semibold text-gray-700 mb-1">Expiration Date</label>
                   <input
                     type="date"
-                    className="w-full border px-3 py-2 rounded text-sm bg-white"
+                    className="w-full min-h-[42px] border border-gray-300 px-3 py-2 rounded-lg text-sm bg-white focus:ring-2 focus:ring-green-700 outline-none"
                     value={formData.expiration_date}
                     onChange={(e) => setFormData({ ...formData, expiration_date: e.target.value })}
                   />
@@ -249,18 +249,18 @@ export default function CouponsPage() {
                   id="coupon_active"
                   checked={formData.active}
                   onChange={(e) => setFormData({ ...formData, active: e.target.checked })}
-                  className="rounded text-green-700"
+                  className="h-4 w-4 rounded text-green-700 cursor-pointer"
                 />
                 <label htmlFor="coupon_active" className="text-xs font-semibold text-gray-700 cursor-pointer">
                   Active (valid for customer checkout)
                 </label>
               </div>
 
-              <div className="flex gap-2 pt-4">
-                <Button type="submit" className="bg-green-700 hover:bg-green-800 text-white">
+              <div className="flex gap-2 pt-2">
+                <Button type="submit" className="min-h-[42px] flex-1 sm:flex-initial bg-green-700 hover:bg-green-800 text-white font-semibold">
                   Save Coupon
                 </Button>
-                <Button type="button" variant="outline" onClick={() => setIsEditing(false)}>
+                <Button type="button" variant="outline" onClick={() => setIsEditing(false)} className="min-h-[42px] flex-1 sm:flex-initial">
                   Cancel
                 </Button>
               </div>
@@ -279,12 +279,12 @@ export default function CouponsPage() {
                   Active vouchers are automatically verified by the Pricing & Checkout engine
                 </CardDescription>
               </div>
-              <div className="relative">
+              <div className="relative w-full sm:w-auto">
                 <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-gray-400" />
                 <input
                   type="text"
                   placeholder="Search code..."
-                  className="pl-8 pr-3 py-1.5 text-xs border rounded-md w-48 bg-white"
+                  className="pl-8 pr-3 py-2 sm:py-1.5 text-xs border rounded-md w-full sm:w-48 bg-white"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
@@ -297,81 +297,165 @@ export default function CouponsPage() {
             ) : filteredCoupons.length === 0 ? (
               <div className="py-8 text-center text-sm text-gray-500">No coupons registered yet.</div>
             ) : (
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Coupon Code</TableHead>
-                      <TableHead>Discount</TableHead>
-                      <TableHead>Min Spend</TableHead>
-                      <TableHead>Max Cap</TableHead>
-                      <TableHead>Expires On</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredCoupons.map((coupon) => (
-                      <TableRow key={coupon.id}>
-                        <TableCell className="font-mono font-bold text-xs text-gray-900">
+              <>
+                {/* Mobile Card Feed (block md:hidden) */}
+                <div className="block md:hidden space-y-3">
+                  {filteredCoupons.map((coupon) => (
+                    <div
+                      key={`mobile-coupon-${coupon.id}`}
+                      className="bg-white rounded-xl border border-gray-200 p-3.5 shadow-xs space-y-3"
+                    >
+                      {/* Top Header: Coupon Code + Discount badge */}
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="font-mono font-bold text-sm bg-gray-100 text-gray-900 px-3 py-1.5 rounded-lg border border-gray-200 tracking-wider">
                           {coupon.code}
-                        </TableCell>
-                        <TableCell className="text-xs font-semibold text-green-700">
+                        </div>
+                        <span className="text-xs font-bold text-green-700 bg-green-50 border border-green-200 px-2.5 py-1 rounded-full">
                           {coupon.discount_type === "percentage"
                             ? `${coupon.discount_value}% OFF`
                             : `₹${coupon.discount_value} FLAT`}
-                        </TableCell>
-                        <TableCell className="text-xs text-gray-600">
-                          ₹{coupon.min_order_amount || 0}
-                        </TableCell>
-                        <TableCell className="text-xs text-gray-500">
-                          {coupon.max_discount_amount ? `₹${coupon.max_discount_amount}` : "None"}
-                        </TableCell>
-                        <TableCell className="text-xs text-gray-500">
-                          {coupon.expiration_date
-                            ? new Date(coupon.expiration_date).toLocaleDateString()
-                            : "Never"}
-                        </TableCell>
-                        <TableCell>
-                          <button
-                            type="button"
-                            onClick={() => toggleCouponActive(coupon.id, coupon.active)}
-                            className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold transition-all ${
-                              coupon.active
-                                ? "bg-green-100 text-green-800 hover:bg-green-200"
-                                : "bg-red-100 text-red-800 hover:bg-red-200"
-                            }`}
+                        </span>
+                      </div>
+
+                      {/* Constraints Grid */}
+                      <div className="grid grid-cols-2 gap-2 text-xs bg-gray-50/70 p-2.5 rounded-lg border border-gray-100">
+                        <div>
+                          <span className="text-gray-500 text-[11px] block">Min Spend</span>
+                          <span className="font-semibold text-gray-800">₹{coupon.min_order_amount || 0}</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-500 text-[11px] block">Max Discount Cap</span>
+                          <span className="font-semibold text-gray-800">
+                            {coupon.max_discount_amount ? `₹${coupon.max_discount_amount}` : "No Cap"}
+                          </span>
+                        </div>
+                        <div className="col-span-2 pt-1 border-t border-gray-200/60 flex items-center justify-between">
+                          <span className="text-gray-500 text-[11px]">Expires</span>
+                          <span className="font-medium text-gray-700 text-[11px]">
+                            {coupon.expiration_date
+                              ? new Date(coupon.expiration_date).toLocaleDateString()
+                              : "Never expires"}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Actions: Toggle Active + Edit + Delete */}
+                      <div className="flex items-center justify-between gap-2 pt-1 border-t border-gray-100">
+                        <button
+                          type="button"
+                          onClick={() => toggleCouponActive(coupon.id, coupon.active)}
+                          className={`min-h-[38px] px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all ${
+                            coupon.active
+                              ? "bg-green-100 text-green-800 border border-green-200"
+                              : "bg-red-100 text-red-800 border border-red-200"
+                          }`}
+                        >
+                          <span className={`w-2 h-2 rounded-full ${coupon.active ? "bg-green-600" : "bg-red-600"}`} />
+                          <span>{coupon.active ? "Active" : "Inactive"}</span>
+                        </button>
+
+                        <div className="flex items-center gap-1">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="min-h-[38px] px-3 text-xs flex items-center gap-1 text-gray-700"
+                            onClick={() => handleEdit(coupon)}
                           >
-                            {coupon.active ? "Active" : "Inactive"}
-                          </button>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex items-center justify-end gap-1">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-7 w-7 p-0"
-                              onClick={() => handleEdit(coupon)}
-                              title="Edit Coupon"
-                            >
-                              <Edit3 className="h-3.5 w-3.5 text-gray-600" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-7 w-7 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
-                              onClick={() => handleDelete(coupon)}
-                              title="Delete Coupon"
-                            >
-                              <Trash2 className="h-3.5 w-3.5" />
-                            </Button>
-                          </div>
-                        </TableCell>
+                            <Edit3 className="h-3.5 w-3.5" />
+                            <span>Edit</span>
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="min-h-[38px] px-3 text-xs flex items-center gap-1 text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
+                            onClick={() => handleDelete(coupon)}
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                            <span>Delete</span>
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Desktop Table View (hidden md:block) */}
+                <div className="hidden md:block overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Coupon Code</TableHead>
+                        <TableHead>Discount</TableHead>
+                        <TableHead>Min Spend</TableHead>
+                        <TableHead>Max Cap</TableHead>
+                        <TableHead>Expires On</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead className="text-right">Actions</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
+                    </TableHeader>
+                    <TableBody>
+                      {filteredCoupons.map((coupon) => (
+                        <TableRow key={coupon.id}>
+                          <TableCell className="font-mono font-bold text-xs text-gray-900">
+                            {coupon.code}
+                          </TableCell>
+                          <TableCell className="text-xs font-semibold text-green-700">
+                            {coupon.discount_type === "percentage"
+                              ? `${coupon.discount_value}% OFF`
+                              : `₹${coupon.discount_value} FLAT`}
+                          </TableCell>
+                          <TableCell className="text-xs text-gray-600">
+                            ₹{coupon.min_order_amount || 0}
+                          </TableCell>
+                          <TableCell className="text-xs text-gray-500">
+                            {coupon.max_discount_amount ? `₹${coupon.max_discount_amount}` : "None"}
+                          </TableCell>
+                          <TableCell className="text-xs text-gray-500">
+                            {coupon.expiration_date
+                              ? new Date(coupon.expiration_date).toLocaleDateString()
+                              : "Never"}
+                          </TableCell>
+                          <TableCell>
+                            <button
+                              type="button"
+                              onClick={() => toggleCouponActive(coupon.id, coupon.active)}
+                              className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold transition-all ${
+                                coupon.active
+                                  ? "bg-green-100 text-green-800 hover:bg-green-200"
+                                  : "bg-red-100 text-red-800 hover:bg-red-200"
+                              }`}
+                            >
+                              {coupon.active ? "Active" : "Inactive"}
+                            </button>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex items-center justify-end gap-1">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-7 w-7 p-0"
+                                onClick={() => handleEdit(coupon)}
+                                title="Edit Coupon"
+                              >
+                                <Edit3 className="h-3.5 w-3.5 text-gray-600" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-7 w-7 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+                                onClick={() => handleDelete(coupon)}
+                                title="Delete Coupon"
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              </>
             )}
           </CardContent>
         </Card>

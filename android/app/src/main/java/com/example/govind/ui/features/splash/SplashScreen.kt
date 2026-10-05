@@ -16,6 +16,9 @@ import kotlinx.coroutines.delay
 
 import androidx.hilt.navigation.compose.hiltViewModel
 
+import androidx.compose.ui.layout.ContentScale
+import com.example.govind.theme.GovindTheme
+
 @Composable
 fun SplashScreen(
     viewModel: SplashViewModel = hiltViewModel(),
@@ -40,13 +43,15 @@ fun SplashScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.primary),
+            .background(GovindTheme.colors.warmWhite),
         contentAlignment = Alignment.Center
     ) {
         Image(
-            painter = painterResource(id = com.example.govind.R.drawable.logo),
+            painter = painterResource(id = com.example.govind.R.drawable.govind_logo_squircle),
             contentDescription = "Govind Logo",
-            modifier = Modifier.size(128.dp)
+            contentScale = ContentScale.Fit,
+            modifier = Modifier.size(180.dp)
         )
     }
 }
+

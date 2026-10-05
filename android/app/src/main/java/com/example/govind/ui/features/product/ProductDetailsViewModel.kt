@@ -15,6 +15,7 @@ import javax.inject.Inject
 data class ProductDetailsUiState(
     val isLoading: Boolean = true,
     val product: Product? = null,
+    val quantityInCart: Int = 0,
     val error: String? = null
 )
 
@@ -35,12 +36,22 @@ class ProductDetailsViewModel @Inject constructor(
     init {
         loadProduct()
         observeFavorite()
+        observeCart()
     }
 
     private fun observeFavorite() {
         viewModelScope.launch {
             repository.isFavorite(productId).collect {
                 _isFavorite.value = it
+            }
+        }
+    }
+
+    private fun observeCart() {
+        viewModelScope.launch {
+            repository.getGlobalCart().collect { cart ->
+                val qty = cart?.items?.filter { it.product.id == productId }?.sumOf { it.quantity } ?: 0
+                _uiState.value = _uiState.value.copy(quantityInCart = qty)
             }
         }
     }
@@ -68,7 +79,20 @@ class ProductDetailsViewModel @Inject constructor(
     fun addToCart(quantity: Int = 1) {
         val product = _uiState.value.product ?: return
         viewModelScope.launch {
-            repository.addToCart(product, quantity, com.example.govind.ui.navigation.AppState.currentExperience.value.name)
+            val exp = product.experienceType.ifBlank { com.example.govind.ui.navigation.AppState.currentExperience.value.name }
+            repository.addToCart(product, quantity, exp)
+        }
+    }
+
+    fun updateQuantity(quantity: Int) {
+        val product = _uiState.value.product ?: return
+        viewModelScope.launch {
+            val exp = product.experienceType.ifBlank { com.example.govind.ui.navigation.AppState.currentExperience.value.name }
+            if (quantity <= 0) {
+                repository.removeFromCart(product.id, exp)
+            } else {
+                repository.updateCartItemQuantity(product.id, exp, quantity)
+            }
         }
     }
 

@@ -23,12 +23,12 @@ export async function POST(req: Request) {
     const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Fetch product details
+    // Fetch product details and live bulk tiers
     const productIds = cart_items.map((item: any) => item.product_id);
-    const { data: products, error: productsError } = await supabase
-      .from('products')
-      .select('*')
-      .in('id', productIds);
+    const [{ data: products, error: productsError }, { data: bulkTiers }] = await Promise.all([
+      supabase.from('products').select('*').in('id', productIds),
+      supabase.from('product_bulk_tiers').select('*').in('product_id', productIds).eq('is_active', true)
+    ]);
 
     if (productsError || !products) {
       throw new Error('Failed to fetch products');
@@ -47,10 +47,21 @@ export async function POST(req: Request) {
 
       const itemExperienceType = item.experienceType || experienceType;
 
+      const pTiers = bulkTiers?.filter((t: any) => t.product_id === product.id) || [];
+      const wholesalePricing = pTiers.length > 0 ? {
+        wholesale_eligible: true,
+        tiers: pTiers.map((t: any) => ({
+          min_qty: t.minimum_quantity,
+          type: t.pricing_type || 'percentage',
+          value: Number(t.discount_percentage || 0),
+          status: 'active'
+        }))
+      } : product.bundle_items?.wholesale_pricing;
+
       const pricing = calculateProductPrice(
         product.selling_price,
         item.quantity,
-        product.bundle_items?.wholesale_pricing,
+        wholesalePricing,
         itemExperienceType
       );
 

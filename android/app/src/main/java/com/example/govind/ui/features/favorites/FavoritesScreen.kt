@@ -31,6 +31,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import com.example.govind.data.model.Product
 import com.example.govind.theme.GovindTheme
+import com.example.govind.ui.shared.GovindQuantityControl
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -191,11 +192,15 @@ fun FavoritesScreen(
                         modifier = Modifier.fillMaxSize()
                     ) {
                         items(uiState.items, key = { it.id }) { product ->
+                            val qty = uiState.cartQuantities[product.id] ?: 0
                             FavoriteProductCard(
                                 product = product,
+                                quantityInCart = qty,
                                 onClick = { onNavigateToProduct(product.id) },
                                 onRemove = { viewModel.removeFavorite(product.id) },
-                                onAddToCart = { viewModel.addToCart(product) }
+                                onAddToCart = { viewModel.addToCart(product, 1) },
+                                onIncrement = { viewModel.updateQuantity(product, qty + 1) },
+                                onDecrement = { viewModel.updateQuantity(product, qty - 1) }
                             )
                         }
                     }
@@ -210,7 +215,10 @@ fun FavoriteProductCard(
     product: Product,
     onClick: () -> Unit,
     onRemove: () -> Unit,
-    onAddToCart: () -> Unit
+    quantityInCart: Int = 0,
+    onAddToCart: () -> Unit,
+    onIncrement: () -> Unit = onAddToCart,
+    onDecrement: () -> Unit = {}
 ) {
     Surface(
         shape = RoundedCornerShape(16.dp),
@@ -325,37 +333,65 @@ fun FavoriteProductCard(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Column {
-                    Text(
-                        text = "₹${product.sellingPrice.toInt()}",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = GovindTheme.colors.govindGreen
-                    )
-                    if (product.price != null && product.price > product.sellingPrice) {
+                if (quantityInCart > 0) {
+                    Column(modifier = Modifier.weight(1f, fill = false)) {
                         Text(
-                            text = "₹${product.price.toInt()}",
-                            style = MaterialTheme.typography.labelSmall.copy(
-                                textDecoration = TextDecoration.LineThrough
-                            ),
-                            color = GovindTheme.colors.onSurfaceVariant
+                            text = "₹${(product.sellingPrice * quantityInCart).toInt()}",
+                            style = GovindTheme.priceDisplay,
+                            color = GovindTheme.colors.brandPrimary,
+                            fontWeight = FontWeight.ExtraBold
                         )
+                        Text(
+                            text = "$quantityInCart in cart • ₹${product.sellingPrice.toInt()}",
+                            style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+                            color = GovindTheme.colors.secondary,
+                            fontWeight = FontWeight.Bold,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                } else {
+                    Column {
+                        Text(
+                            text = "₹${product.sellingPrice.toInt()}",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = GovindTheme.colors.govindGreen
+                        )
+                        if (product.price != null && product.price > product.sellingPrice) {
+                            Text(
+                                text = "₹${product.price.toInt()}",
+                                style = MaterialTheme.typography.labelSmall.copy(
+                                    textDecoration = TextDecoration.LineThrough
+                                ),
+                                color = GovindTheme.colors.onSurfaceVariant
+                            )
+                        }
                     }
                 }
 
-                FilledIconButton(
-                    onClick = onAddToCart,
-                    shape = RoundedCornerShape(8.dp),
-                    colors = IconButtonDefaults.filledIconButtonColors(
-                        containerColor = GovindTheme.colors.govindGreen
-                    ),
-                    modifier = Modifier.size(32.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.AddShoppingCart,
-                        contentDescription = "Add to cart",
-                        tint = Color.White,
-                        modifier = Modifier.size(16.dp)
+                if (quantityInCart <= 0) {
+                    FilledIconButton(
+                        onClick = onAddToCart,
+                        shape = RoundedCornerShape(8.dp),
+                        colors = IconButtonDefaults.filledIconButtonColors(
+                            containerColor = GovindTheme.colors.govindGreen
+                        ),
+                        modifier = Modifier.size(32.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.AddShoppingCart,
+                            contentDescription = "Add to cart",
+                            tint = Color.White,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
+                } else {
+                    GovindQuantityControl(
+                        quantity = quantityInCart,
+                        onIncrement = onIncrement,
+                        onDecrement = onDecrement,
+                        onAdd = onAddToCart
                     )
                 }
             }

@@ -70,6 +70,8 @@ sealed class BottomNavItem(
 
 @Composable
 fun MainAppScreen(
+    initialRoute: String? = null,
+    onRouteConsumed: () -> Unit = {},
     cartViewModel: CartViewModel = hiltViewModel()
 ) {
     val navController = rememberNavController()
@@ -78,6 +80,15 @@ fun MainAppScreen(
 
     val currentExperience by AppState.currentExperience.collectAsState()
     val cartUiState by cartViewModel.uiState.collectAsStateWithLifecycle()
+
+    LaunchedEffect(initialRoute) {
+        if (initialRoute != null) {
+            navController.navigate(initialRoute) {
+                launchSingleTop = true
+            }
+            onRouteConsumed()
+        }
+    }
 
     LaunchedEffect(Unit) {
         cartViewModel.loadCart()
@@ -279,7 +290,7 @@ fun MainAppScreen(
                 com.example.govind.ui.features.auth.AuthScreen(
                     onContinueAsGuest = {
                         navController.navigate(destination) {
-                            popUpTo(0) { inclusive = true }
+                            popUpTo(Screen.Auth.route) { inclusive = true }
                         }
                     },
                     onAuthSuccess = { userRole ->
@@ -301,6 +312,7 @@ fun MainAppScreen(
             composable(Screen.Home.route) {
                 HomeScreen(
                     onNavigateToSearch = { navController.navigate(Screen.Search.route) },
+                    onNavigateToCategory = { category -> navController.navigate(Screen.Search.createRoute(category)) },
                     onNavigateToProduct = { productId -> navController.navigate(Screen.ProductDetails.createRoute(productId)) },
                     onNavigateToCart = { navController.navigate(Screen.Cart.route) },
                     onNavigateToProfile = { navController.navigate(Screen.Profile.route) },
@@ -311,6 +323,7 @@ fun MainAppScreen(
             composable(Screen.KitchenHome.route) {
                 KitchenHomeScreen(
                     onNavigateToCart = { navController.navigate(Screen.Cart.route) },
+                    onNavigateToProfile = { navController.navigate(Screen.Profile.route) },
                     onNavigateToMenu = { navController.navigate(Screen.KitchenMenu.route) }
                 )
             }
@@ -320,15 +333,47 @@ fun MainAppScreen(
             }
 
             composable(Screen.WholesaleHome.route) {
-                WholesaleHomeScreen()
+                WholesaleHomeScreen(
+                    onNavigateToCart = { navController.navigate(Screen.Cart.route) },
+                    onNavigateToProfile = { navController.navigate(Screen.Profile.route) },
+                    onNavigateToSearch = { navController.navigate(Screen.Search.route) },
+                    onNavigateToRateList = { navController.navigate(Screen.RateList.route) },
+                    onNavigateToProduct = { productId -> navController.navigate(Screen.ProductDetails.createRoute(productId)) }
+                )
             }
 
             composable(Screen.WholesaleCatalog.route) {
-                WholesaleCatalogScreen()
+                WholesaleCatalogScreen(
+                    onNavigateToCart = { navController.navigate(Screen.Cart.route) },
+                    onNavigateToProfile = { navController.navigate(Screen.Profile.route) },
+                    onNavigateToSearch = { navController.navigate(Screen.Search.route) },
+                    onNavigateToRateList = { navController.navigate(Screen.RateList.route) },
+                    onNavigateToProduct = { productId -> navController.navigate(Screen.ProductDetails.createRoute(productId)) }
+                )
+            }
+            
+            composable(Screen.Notifications.route) {
+                com.example.govind.ui.features.notifications.NotificationCenterScreen(
+                    onNavigate = { route -> navController.navigate(route) },
+                    onBack = {
+                        if (!navController.popBackStack()) {
+                            navController.navigate(Screen.Home.route)
+                        }
+                    }
+                )
             }
 
-            composable(Screen.Search.route) {
+            composable(
+                route = Screen.Search.route,
+                arguments = listOf(navArgument("query") {
+                    type = NavType.StringType
+                    nullable = true
+                    defaultValue = null
+                })
+            ) { backStackEntry ->
+                val query = backStackEntry.arguments?.getString("query")
                 com.example.govind.ui.features.search.SearchScreen(
+                    initialQuery = query,
                     onNavigateBack = { navController.popBackStack() },
                     onNavigateToProduct = { productId -> navController.navigate(Screen.ProductDetails.createRoute(productId)) }
                 )
@@ -361,7 +406,8 @@ fun MainAppScreen(
                 val orderId = backStackEntry.arguments?.getString("orderId") ?: return@composable
                 com.example.govind.ui.features.orders.OrderDetailsScreen(
                     orderId = orderId,
-                    onNavigateBack = { navController.popBackStack() }
+                    onNavigateBack = { navController.popBackStack() },
+                    onNavigateToSupport = { navController.navigate(Screen.Support.route) }
                 )
             }
 
@@ -442,7 +488,8 @@ fun MainAppScreen(
                 ProductDetailsScreen(
                     productId = productId,
                     onNavigateBack = { navController.popBackStack() },
-                    onNavigateToAuth = { navController.navigate(Screen.Auth.route) }
+                    onNavigateToAuth = { navController.navigate(Screen.Auth.route) },
+                    onNavigateToCart = { navController.navigate(Screen.Cart.route) }
                 )
             }
 
@@ -464,9 +511,64 @@ fun MainAppScreen(
                     onNavigateToAddAddress = { navController.navigate(Screen.AddAddress.route) },
                     onNavigateToAuth = { navController.navigate(Screen.Auth.route) },
                     onNavigateToOrderDetails = { orderId -> navController.navigate(Screen.OrderDetails.createRoute(orderId)) },
+                    onNavigateToStarPay = { amount, orderId, orderRef, description, customerName, customerEmail, customerPhone ->
+                        navController.navigate(
+                            Screen.StarPay.createRoute(
+                                amount = amount,
+                                orderId = "",
+                                orderRef = orderRef,
+                                description = description,
+                                customerName = customerName,
+                                customerEmail = customerEmail,
+                                customerPhone = customerPhone,
+                                internalOrderId = orderId
+                            )
+                        )
+                    },
                     onNavigateToHome = {
                         navController.navigate(destination) {
                             popUpTo(destination) { inclusive = false }
+                        }
+                    }
+                )
+            }
+
+            composable(
+                route = Screen.StarPay.route,
+                arguments = listOf(
+                    navArgument("amount") { type = NavType.StringType; defaultValue = "0.0" },
+                    navArgument("orderId") { type = NavType.StringType; defaultValue = "" },
+                    navArgument("orderRef") { type = NavType.StringType; defaultValue = "" },
+                    navArgument("description") { type = NavType.StringType; defaultValue = "" },
+                    navArgument("customerName") { type = NavType.StringType; defaultValue = "" },
+                    navArgument("customerEmail") { type = NavType.StringType; defaultValue = "" },
+                    navArgument("customerPhone") { type = NavType.StringType; defaultValue = "" },
+                    navArgument("internalOrderId") { type = NavType.StringType; defaultValue = "" }
+                )
+            ) { backStackEntry ->
+                val amountStr = backStackEntry.arguments?.getString("amount") ?: "0.0"
+                val amount = amountStr.toDoubleOrNull() ?: 0.0
+                val orderId = backStackEntry.arguments?.getString("orderId") ?: ""
+                val orderRef = backStackEntry.arguments?.getString("orderRef") ?: ""
+                val desc = try { java.net.URLDecoder.decode(backStackEntry.arguments?.getString("description") ?: "", "UTF-8") } catch (_: Exception) { "" }
+                val name = try { java.net.URLDecoder.decode(backStackEntry.arguments?.getString("customerName") ?: "", "UTF-8") } catch (_: Exception) { "" }
+                val email = try { java.net.URLDecoder.decode(backStackEntry.arguments?.getString("customerEmail") ?: "", "UTF-8") } catch (_: Exception) { "" }
+                val phone = backStackEntry.arguments?.getString("customerPhone") ?: ""
+                val internalOrderId = backStackEntry.arguments?.getString("internalOrderId") ?: ""
+
+                com.example.govind.ui.features.starpay.StarPayPaymentScreen(
+                    amount = amount,
+                    orderId = orderId,
+                    orderRef = orderRef,
+                    description = desc,
+                    customerName = name,
+                    customerEmail = email,
+                    customerPhone = phone,
+                    internalOrderId = internalOrderId,
+                    onNavigateBack = { navController.popBackStack() },
+                    onPaymentSuccess = { paidOrderId, _ ->
+                        navController.navigate(Screen.OrderDetails.createRoute(paidOrderId)) {
+                            popUpTo(Screen.Home.route) { inclusive = false }
                         }
                     }
                 )

@@ -153,11 +153,11 @@ export default function Dashboard() {
   }, []);
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div className="space-y-4 md:space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight text-gray-900">Dashboard</h2>
-          <p className="text-sm text-gray-500">Live operational overview for Govind Fresh & Kitchen</p>
+          <h2 className="text-xl md:text-3xl font-bold tracking-tight text-gray-900">Dashboard</h2>
+          <p className="text-xs md:text-sm text-gray-500">Live operational overview for Govind Fresh & Kitchen</p>
         </div>
         <div className="flex items-center gap-2">
           <Button
@@ -165,12 +165,12 @@ export default function Dashboard() {
             size="sm"
             onClick={loadDashboardData}
             disabled={loading}
-            className="flex items-center gap-1.5"
+            className="h-9 text-xs font-semibold flex items-center gap-1.5"
           >
             <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
             Refresh Data
           </Button>
-          <Button asChild size="sm" className="bg-green-700 hover:bg-green-800 text-white">
+          <Button asChild size="sm" className="h-9 text-xs font-semibold bg-green-700 hover:bg-green-800 text-white">
             <Link href="/orders">Manage Orders</Link>
           </Button>
         </div>
@@ -332,59 +332,127 @@ export default function Dashboard() {
             </Link>
           </Button>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-3.5 sm:px-6">
           {loading ? (
             <div className="py-8 text-center text-sm text-gray-500">Loading live order stream...</div>
           ) : stats.recentOrders.length === 0 ? (
             <div className="py-8 text-center text-sm text-gray-500">No orders recorded yet.</div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-xs">
-                <thead>
-                  <tr className="border-b text-gray-500 text-left">
-                    <th className="pb-2 font-medium">Order ID</th>
-                    <th className="pb-2 font-medium">Customer</th>
-                    <th className="pb-2 font-medium">Date & Time</th>
-                    <th className="pb-2 font-medium">Amount</th>
-                    <th className="pb-2 font-medium">Status</th>
-                    <th className="pb-2 font-medium text-right">Action</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y">
-                  {stats.recentOrders.map((order) => (
-                    <tr key={order.id} className="hover:bg-gray-50">
-                      <td className="py-2.5 font-mono font-medium text-gray-900">
+            <>
+              {/* MOBILE VIEW: Recent Orders Feed */}
+              <div className="block md:hidden space-y-2.5">
+                {stats.recentOrders.map((order) => (
+                  <div
+                    key={order.id}
+                    className="p-3 bg-white rounded-xl border border-gray-200 shadow-sm space-y-2"
+                  >
+                    <div className="flex items-center justify-between">
+                      <Link
+                        href={`/orders/${order.id}`}
+                        className="font-mono font-bold text-xs text-emerald-700 hover:underline"
+                      >
                         #{order.id.slice(0, 8).toUpperCase()}
-                      </td>
-                      <td className="py-2.5 text-gray-700">
-                        {order.profiles?.name || "Customer"} ({order.profiles?.phone || "N/A"})
-                      </td>
-                      <td className="py-2.5 text-gray-500">
-                        {new Date(order.created_at).toLocaleString()}
-                      </td>
-                      <td className="py-2.5 font-semibold text-gray-900">
-                        ₹{Number(order.total).toFixed(2)}
-                      </td>
-                      <td className="py-2.5">
-                        <span className={`px-2 py-0.5 rounded text-[11px] font-semibold ${
-                          order.order_status === "DELIVERED" ? "bg-green-100 text-green-800" :
-                          order.order_status === "PLACED" ? "bg-amber-100 text-amber-800" :
-                          order.order_status === "CONFIRMED" ? "bg-blue-100 text-blue-800" :
-                          "bg-purple-100 text-purple-800"
-                        }`}>
-                          {order.order_status}
-                        </span>
-                      </td>
-                      <td className="py-2.5 text-right">
-                        <Button variant="ghost" size="sm" asChild className="h-7 text-xs">
-                          <Link href={`/orders/${order.id}`}>Inspect</Link>
-                        </Button>
-                      </td>
+                      </Link>
+                      <span
+                        className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                          order.order_status === "DELIVERED"
+                            ? "bg-green-100 text-green-800"
+                            : order.order_status === "PLACED"
+                            ? "bg-amber-100 text-amber-800"
+                            : order.order_status === "CONFIRMED"
+                            ? "bg-blue-100 text-blue-800"
+                            : "bg-purple-100 text-purple-800"
+                        }`}
+                      >
+                        {order.order_status}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center justify-between text-xs pt-1 border-t border-gray-100">
+                      <div>
+                        <div className="font-semibold text-gray-900">
+                          {order.profiles?.name || "Customer"}
+                        </div>
+                        <div className="text-[11px] text-gray-500">
+                          {new Date(order.created_at).toLocaleString([], {
+                            month: "short",
+                            day: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </div>
+                      </div>
+
+                      <div className="text-right">
+                        <div className="font-bold text-sm text-gray-900 font-mono">
+                          ₹{Number(order.total).toFixed(2)}
+                        </div>
+                        <Link
+                          href={`/orders/${order.id}`}
+                          className="text-[11px] font-semibold text-emerald-700 hover:underline inline-flex items-center gap-0.5 mt-0.5"
+                        >
+                          Inspect <ArrowRight className="h-3 w-3" />
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* DESKTOP VIEW: Dense Recent Orders Table */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="w-full text-xs">
+                  <thead>
+                    <tr className="border-b text-gray-500 text-left">
+                      <th className="pb-2 font-medium">Order ID</th>
+                      <th className="pb-2 font-medium">Customer</th>
+                      <th className="pb-2 font-medium">Date & Time</th>
+                      <th className="pb-2 font-medium">Amount</th>
+                      <th className="pb-2 font-medium">Status</th>
+                      <th className="pb-2 font-medium text-right">Action</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody className="divide-y">
+                    {stats.recentOrders.map((order) => (
+                      <tr key={order.id} className="hover:bg-gray-50">
+                        <td className="py-2.5 font-mono font-medium text-gray-900">
+                          #{order.id.slice(0, 8).toUpperCase()}
+                        </td>
+                        <td className="py-2.5 text-gray-700">
+                          {order.profiles?.name || "Customer"} ({order.profiles?.phone || "N/A"})
+                        </td>
+                        <td className="py-2.5 text-gray-500">
+                          {new Date(order.created_at).toLocaleString()}
+                        </td>
+                        <td className="py-2.5 font-semibold text-gray-900">
+                          ₹{Number(order.total).toFixed(2)}
+                        </td>
+                        <td className="py-2.5">
+                          <span
+                            className={`px-2 py-0.5 rounded text-[11px] font-semibold ${
+                              order.order_status === "DELIVERED"
+                                ? "bg-green-100 text-green-800"
+                                : order.order_status === "PLACED"
+                                ? "bg-amber-100 text-amber-800"
+                                : order.order_status === "CONFIRMED"
+                                ? "bg-blue-100 text-blue-800"
+                                : "bg-purple-100 text-purple-800"
+                            }`}
+                          >
+                            {order.order_status}
+                          </span>
+                        </td>
+                        <td className="py-2.5 text-right">
+                          <Button variant="ghost" size="sm" asChild className="h-7 text-xs">
+                            <Link href={`/orders/${order.id}`}>Inspect</Link>
+                          </Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
           )}
         </CardContent>
       </Card>

@@ -2,12 +2,14 @@ package com.example.govind.ui.features.profile
 
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.res.painterResource
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
@@ -71,6 +73,23 @@ fun ProfileScreen(
     var phoneInput by remember { mutableStateOf("") }
     var whatsappNotifications by remember { mutableStateOf(true) }
     var selectedLanguage by remember { mutableStateOf("ENG") }
+
+    val notificationPermissionLauncher = androidx.activity.compose.rememberLauncherForActivityResult(
+        androidx.activity.result.contract.ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        // Handle granted/denied
+    }
+
+    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+        LaunchedEffect(Unit) {
+            val prefs = context.getSharedPreferences("session_prefs", android.content.Context.MODE_PRIVATE)
+            val requested = prefs.getBoolean("notif_permission_requested", false)
+            if (!requested) {
+                notificationPermissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+                prefs.edit().putBoolean("notif_permission_requested", true).apply()
+            }
+        }
+    }
 
     LaunchedEffect(Unit) {
         viewModel.loadProfile()
@@ -214,16 +233,16 @@ fun ProfileScreen(
                             ) {
                                 Box(
                                     modifier = Modifier
-                                        .size(60.dp)
+                                        .size(64.dp)
                                         .clip(CircleShape)
-                                        .background(GovindTheme.colors.secondaryContainer),
+                                        .background(Color.White),
                                     contentAlignment = Alignment.Center
                                 ) {
-                                    Text(
-                                        text = uiState.initial,
-                                        style = MaterialTheme.typography.headlineMedium,
-                                        fontWeight = FontWeight.ExtraBold,
-                                        color = GovindTheme.colors.onSecondaryContainer
+                                    Image(
+                                        painter = painterResource(id = com.example.govind.R.drawable.govind_logo_circle),
+                                        contentDescription = "Govind Account Avatar",
+                                        contentScale = androidx.compose.ui.layout.ContentScale.Fit,
+                                        modifier = Modifier.fillMaxSize()
                                     )
                                 }
 

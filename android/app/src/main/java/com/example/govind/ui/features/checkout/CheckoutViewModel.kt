@@ -20,7 +20,7 @@ data class CheckoutUiState(
     val cart: Cart? = null,
     val addresses: List<Address> = emptyList(),
     val selectedAddressId: String? = null,
-    val selectedPaymentMethod: String = "COD",
+    val selectedPaymentMethod: String = "STARPAY_UPI",
     val itemsSubtotal: Double = 0.0,
     val totalSavings: Double = 0.0,
     val deliveryCharge: Double = 0.0,
@@ -31,12 +31,16 @@ data class CheckoutUiState(
     val error: String? = null,
     val paymentNotice: String? = null,
     val needsPhone: Boolean = false,
-    val phoneSaved: Boolean = false
+    val phoneSaved: Boolean = false,
+    val customerName: String = "",
+    val customerEmail: String = "",
+    val customerPhone: String = ""
 )
 
 @HiltViewModel
 class CheckoutViewModel @Inject constructor(
-    private val repository: GovindRepository
+    private val repository: GovindRepository,
+    private val sessionManager: com.example.govind.data.local.SessionManager
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CheckoutUiState())
@@ -119,9 +123,12 @@ class CheckoutViewModel @Inject constructor(
                     val profileResult = repository.getUserProfile()
                     if (profileResult.isSuccess) {
                         val profile = profileResult.getOrNull()
-                        if (profile?.phone.isNullOrBlank()) {
-                            _uiState.value = _uiState.value.copy(needsPhone = true)
-                        }
+                        _uiState.value = _uiState.value.copy(
+                            needsPhone = profile?.phone.isNullOrBlank(),
+                            customerName = profile?.fullName ?: profile?.name ?: "",
+                            customerEmail = sessionManager.userEmail ?: "",
+                            customerPhone = profile?.phone ?: ""
+                        )
                     }
                 } catch (e: Exception) {
                     // Ignore profile fetch failure
@@ -137,17 +144,10 @@ class CheckoutViewModel @Inject constructor(
     }
 
     fun selectPaymentMethod(method: String) {
-        if (method.equals("ONLINE", ignoreCase = true)) {
-            _uiState.value = _uiState.value.copy(
-                paymentNotice = "ONLINE PAYMENT BLOCKED — STARPAY CREDENTIALS/API CONTRACT REQUIRED. Please select Cash on Delivery (COD).",
-                selectedPaymentMethod = "COD"
-            )
-        } else {
-            _uiState.value = _uiState.value.copy(
-                selectedPaymentMethod = method,
-                paymentNotice = null
-            )
-        }
+        _uiState.value = _uiState.value.copy(
+            selectedPaymentMethod = method,
+            paymentNotice = null
+        )
     }
 
     fun dismissPaymentNotice() {
@@ -164,7 +164,12 @@ class CheckoutViewModel @Inject constructor(
             _uiState.value = _uiState.value.copy(isLoading = true)
             val result = repository.updateUserPhone(phone.trim())
             if (result.isSuccess) {
-                _uiState.value = _uiState.value.copy(needsPhone = false, isLoading = false, phoneSaved = true)
+                _uiState.value = _uiState.value.copy(
+                    needsPhone = false,
+                    isLoading = false,
+                    phoneSaved = true,
+                    customerPhone = phone.trim()
+                )
             } else {
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
@@ -174,7 +179,9 @@ class CheckoutViewModel @Inject constructor(
         }
     }
 
-    fun placeOrder() {
+    fun placeOrder(
+        onNavigateToStarPay: (amount: Double, orderId: String, orderRef: String, description: String, customerName: String, customerEmail: String, customerPhone: String) -> Unit = { _, _, _, _, _, _, _ -> }
+    ) {
         val state = _uiState.value
         if (!state.isAuthenticated) {
             _uiState.value = state.copy(error = "Please sign in to place your order.")
@@ -197,12 +204,32 @@ class CheckoutViewModel @Inject constructor(
             val result = repository.placeGlobalOrder(addressId, state.selectedPaymentMethod)
             if (result.isSuccess) {
                 val order = result.getOrNull()
-                _uiState.value = state.copy(
-                    isPlacingOrder = false,
-                    orderPlaced = true,
-                    placedOrder = order,
-                    error = null
-                )
+                if (state.selectedPaymentMethod == "STARPAY_UPI" && order != null) {
+                    _uiState.value = state.copy(
+                        isPlacingOrder = false,
+                        error = null
+                    )
+                    val orderRef = "GOV-${order.id.take(8).uppercase()}"
+                    val selectedAddr = state.addresses.firstOrNull { it.id == addressId }
+                    val phoneToUse = state.customerPhone.ifBlank { selectedAddr?.phone ?: "" }
+                    val nameToUse = state.customerName.ifBlank { selectedAddr?.name ?: "Govind Customer" }
+                    onNavigateToStarPay(
+                        state.grandTotal,
+                        order.id,
+                        orderRef,
+                        "GOVIND Order #$orderRef",
+                        nameToUse,
+                        state.customerEmail,
+                        phoneToUse
+                    )
+                } else {
+                    _uiState.value = state.copy(
+                        isPlacingOrder = false,
+                        orderPlaced = true,
+                        placedOrder = order,
+                        error = null
+                    )
+                }
             } else {
                 _uiState.value = state.copy(
                     isPlacingOrder = false,

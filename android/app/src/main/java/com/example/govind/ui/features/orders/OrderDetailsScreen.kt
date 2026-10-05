@@ -56,6 +56,7 @@ import java.util.Locale
 fun OrderDetailsScreen(
     orderId: String,
     onNavigateBack: () -> Unit,
+    onNavigateToSupport: () -> Unit = {},
     viewModel: OrdersViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -114,8 +115,7 @@ fun OrderDetailsScreen(
                         shape = CircleShape,
                         color = GovindTheme.colors.surfaceContainerHigh,
                         modifier = Modifier.clickable {
-                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://wa.me/919999999999?text=Hi%20Govind%20Support,%20I%20need%20help%20with%20Order%20$orderId"))
-                            context.startActivity(intent)
+                            onNavigateToSupport()
                         }
                     ) {
                         Row(
@@ -668,7 +668,7 @@ fun OrderDetailsScreen(
                         }
                         Button(
                             onClick = {
-                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://wa.me/919999999999?text=Hi%20Govind%20Support,%20I%20need%20help%20with%20Order%20$orderId"))
+                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://wa.me/919810000000?text=Hi%20Govind%20Support,%20I%20need%20help%20with%20Order%20$orderId"))
                                 context.startActivity(intent)
                             },
                             modifier = Modifier.fillMaxWidth().height(48.dp),

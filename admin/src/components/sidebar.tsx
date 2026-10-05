@@ -13,8 +13,9 @@ import {
   Megaphone,
   Settings,
   Menu,
+  Bell,
 } from "lucide-react";
-import { Button } from "./ui/button";
+import Image from "next/image";
 
 const navItems = [
   { name: "Dashboard", href: "/", icon: LayoutDashboard },
@@ -29,6 +30,7 @@ const navItems = [
   { name: "Customers", href: "/customers", icon: Users },
   { name: "Coupons", href: "/coupons", icon: Ticket },
   { name: "Promotions", href: "/promotions", icon: Megaphone },
+  { name: "Notifications", href: "/notifications", icon: Bell },
   { name: "Settings", href: "/settings", icon: Settings },
 ];
 
@@ -37,13 +39,18 @@ export function Sidebar() {
 
   return (
     <div className="flex h-full flex-col border-r bg-white w-64 hidden md:flex">
-      <div className="p-6 border-b">
-        <h1 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-          <span className="bg-green-600 text-white p-1.5 rounded-md">
-            G
-          </span>
-          Govind Admin
-        </h1>
+      <div className="p-5 border-b flex items-center gap-3">
+        <Image
+          src="/brand/govind-logo-circle.png"
+          alt="Govind Logo"
+          width={38}
+          height={38}
+          className="rounded-full shadow-sm object-contain"
+        />
+        <div>
+          <h1 className="text-base font-bold text-gray-900 leading-tight">Govind Admin</h1>
+          <p className="text-[11px] font-medium text-emerald-700">Fresh and Healthy Food</p>
+        </div>
       </div>
       <div className="flex-1 overflow-y-auto py-4">
         <nav className="grid gap-1 px-4">

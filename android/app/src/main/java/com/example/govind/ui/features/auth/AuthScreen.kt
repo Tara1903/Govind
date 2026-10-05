@@ -41,13 +41,12 @@ fun AuthScreen(
         verticalArrangement = Arrangement.Center
     ) {
         Image(
-            painter = painterResource(id = com.example.govind.R.drawable.logo),
+            painter = painterResource(id = com.example.govind.R.drawable.govind_logo_squircle),
             contentDescription = "Govind Logo",
-            modifier = Modifier
-                .size(112.dp)
-                .clip(RoundedCornerShape(24.dp))
+            contentScale = androidx.compose.ui.layout.ContentScale.Fit,
+            modifier = Modifier.size(136.dp)
         )
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(28.dp))
         
         Text(
             text = if (uiState.otpSent) "Verify Your Email" else "Welcome to Govind",

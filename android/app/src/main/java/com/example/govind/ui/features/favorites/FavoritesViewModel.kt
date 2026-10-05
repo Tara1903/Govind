@@ -15,6 +15,7 @@ import javax.inject.Inject
 data class FavoritesUiState(
     val isLoading: Boolean = true,
     val items: List<Product> = emptyList(),
+    val cartQuantities: Map<String, Int> = emptyMap(),
     val error: String? = null
 )
 
@@ -28,6 +29,16 @@ class FavoritesViewModel @Inject constructor(
 
     init {
         loadFavorites()
+        observeCart()
+    }
+
+    private fun observeCart() {
+        viewModelScope.launch {
+            repository.getGlobalCart().collect { cart ->
+                val quantities = cart?.items?.associate { it.product.id to it.quantity } ?: emptyMap()
+                _uiState.value = _uiState.value.copy(cartQuantities = quantities)
+            }
+        }
     }
 
     fun loadFavorites() {
@@ -56,9 +67,21 @@ class FavoritesViewModel @Inject constructor(
         }
     }
 
-    fun addToCart(product: Product) {
+    fun addToCart(product: Product, quantity: Int = 1) {
         viewModelScope.launch {
-            repository.addToCart(product, 1, product.experienceType ?: AppState.currentExperience.value.name)
+            val exp = product.experienceType.ifBlank { AppState.currentExperience.value.name }
+            repository.addToCart(product, quantity, exp)
+        }
+    }
+
+    fun updateQuantity(product: Product, quantity: Int) {
+        viewModelScope.launch {
+            val exp = product.experienceType.ifBlank { AppState.currentExperience.value.name }
+            if (quantity <= 0) {
+                repository.removeFromCart(product.id, exp)
+            } else {
+                repository.updateCartItemQuantity(product.id, exp, quantity)
+            }
         }
     }
 

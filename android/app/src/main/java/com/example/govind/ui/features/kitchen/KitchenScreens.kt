@@ -43,6 +43,7 @@ import com.example.govind.ui.shared.*
 @Composable
 fun KitchenHomeScreen(
     onNavigateToCart: () -> Unit,
+    onNavigateToProfile: () -> Unit = {},
     onNavigateToMenu: () -> Unit = {},
     viewModel: KitchenViewModel = hiltViewModel()
 ) {
@@ -57,7 +58,7 @@ fun KitchenHomeScreen(
                 cartItemCount = totalCartCount,
                 onLocationClick = {},
                 onCartClick = onNavigateToCart,
-                onProfileClick = {}
+                onProfileClick = onNavigateToProfile
             )
         }
     ) { paddingValues ->
@@ -685,20 +686,39 @@ fun KitchenFoodCard(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Column {
-                        if (product.price != null && product.price > product.sellingPrice) {
+                    if (quantityInCart > 0) {
+                        Column(modifier = Modifier.weight(1f, fill = false)) {
                             Text(
-                                text = "₹${product.price.toInt()}",
-                                style = GovindTheme.priceStrikethrough,
-                                color = GovindTheme.colors.textMuted,
-                                textDecoration = TextDecoration.LineThrough
+                                text = "₹${(product.sellingPrice * quantityInCart).toInt()}",
+                                style = GovindTheme.priceDisplay,
+                                color = GovindTheme.colors.brandPrimary,
+                                fontWeight = FontWeight.ExtraBold
+                            )
+                            Text(
+                                text = "$quantityInCart in cart • ₹${product.sellingPrice.toInt()}",
+                                style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+                                color = GovindTheme.colors.secondary,
+                                fontWeight = FontWeight.Bold,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
                         }
-                        Text(
-                            text = "₹${product.sellingPrice.toInt()}",
-                            style = GovindTheme.priceDisplay,
-                            color = GovindTheme.colors.textPrimary
-                        )
+                    } else {
+                        Column {
+                            if (product.price != null && product.price > product.sellingPrice) {
+                                Text(
+                                    text = "₹${product.price.toInt()}",
+                                    style = GovindTheme.priceStrikethrough,
+                                    color = GovindTheme.colors.textMuted,
+                                    textDecoration = TextDecoration.LineThrough
+                                )
+                            }
+                            Text(
+                                text = "₹${product.sellingPrice.toInt()}",
+                                style = GovindTheme.priceDisplay,
+                                color = GovindTheme.colors.textPrimary
+                            )
+                        }
                     }
 
                     if (quantityInCart <= 0) {

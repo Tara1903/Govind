@@ -24,7 +24,9 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
@@ -32,11 +34,13 @@ import com.example.govind.data.model.Product
 import com.example.govind.theme.GovindTheme
 import com.example.govind.ui.shared.GovindDiscountBadge
 import com.example.govind.ui.shared.GovindPrice
+import com.example.govind.ui.shared.GovindQuantityControl
 import com.example.govind.ui.shared.GovindVegIndicator
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchScreen(
+    initialQuery: String? = null,
     viewModel: SearchViewModel = hiltViewModel(),
     onNavigateBack: () -> Unit,
     onNavigateToProduct: (String) -> Unit
@@ -45,8 +49,12 @@ fun SearchScreen(
     val focusRequester = remember { FocusRequester() }
     var selectedFilter by remember { mutableStateOf("All") }
 
-    LaunchedEffect(Unit) {
-        focusRequester.requestFocus()
+    LaunchedEffect(initialQuery) {
+        if (!initialQuery.isNullOrBlank()) {
+            viewModel.updateQuery(initialQuery)
+        } else {
+            focusRequester.requestFocus()
+        }
     }
 
     Scaffold(
@@ -279,7 +287,15 @@ fun SearchScreen(
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         items(filteredResults) { product ->
-                            SearchResultItem(product = product, onClick = onNavigateToProduct)
+                            val qty = uiState.cartQuantities[product.id] ?: 0
+                            SearchResultItem(
+                                product = product,
+                                quantityInCart = qty,
+                                onClick = onNavigateToProduct,
+                                onAddToCart = { viewModel.addToCart(product, 1) },
+                                onIncrement = { viewModel.updateQuantity(product, qty + 1) },
+                                onDecrement = { viewModel.updateQuantity(product, qty - 1) }
+                            )
                         }
                     }
                 }
@@ -289,7 +305,14 @@ fun SearchScreen(
 }
 
 @Composable
-fun SearchResultItem(product: Product, onClick: (String) -> Unit) {
+fun SearchResultItem(
+    product: Product,
+    quantityInCart: Int = 0,
+    onClick: (String) -> Unit,
+    onAddToCart: () -> Unit = {},
+    onIncrement: () -> Unit = onAddToCart,
+    onDecrement: () -> Unit = {}
+) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -371,18 +394,66 @@ fun SearchResultItem(product: Product, onClick: (String) -> Unit) {
                 }
                 Spacer(modifier = Modifier.height(6.dp))
                 Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    GovindPrice(
-                        price = product.sellingPrice,
-                        mrp = if (product.price > product.sellingPrice) product.price else null
-                    )
-                    if (product.price > product.sellingPrice) {
-                        val discountPct = (((product.price - product.sellingPrice) / product.price) * 100).toInt()
-                        if (discountPct > 0) {
-                            GovindDiscountBadge(text = "$discountPct% OFF")
+                    if (quantityInCart > 0) {
+                        Column(modifier = Modifier.weight(1f, fill = false)) {
+                            Text(
+                                text = "₹${(product.sellingPrice * quantityInCart).toInt()}",
+                                style = GovindTheme.priceDisplay,
+                                color = GovindTheme.colors.brandPrimary,
+                                fontWeight = FontWeight.ExtraBold
+                            )
+                            Text(
+                                text = "$quantityInCart in cart • ₹${product.sellingPrice.toInt()}",
+                                style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+                                color = GovindTheme.colors.secondary,
+                                fontWeight = FontWeight.Bold,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
                         }
+                    } else {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            GovindPrice(
+                                price = product.sellingPrice,
+                                mrp = if (product.price > product.sellingPrice) product.price else null
+                            )
+                            if (product.price > product.sellingPrice) {
+                                val discountPct = (((product.price - product.sellingPrice) / product.price) * 100).toInt()
+                                if (discountPct > 0) {
+                                    GovindDiscountBadge(text = "$discountPct% OFF")
+                                }
+                            }
+                        }
+                    }
+
+                    if (quantityInCart <= 0) {
+                        Surface(
+                            color = MaterialTheme.colorScheme.primary,
+                            shape = CircleShape,
+                            modifier = Modifier.clickable { onAddToCart() }
+                        ) {
+                            Text(
+                                text = "+ ADD",
+                                color = Color.White,
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
+                            )
+                        }
+                    } else {
+                        GovindQuantityControl(
+                            quantity = quantityInCart,
+                            onIncrement = onIncrement,
+                            onDecrement = onDecrement,
+                            onAdd = onAddToCart
+                        )
                     }
                 }
             }

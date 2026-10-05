@@ -65,6 +65,7 @@ fun CheckoutScreen(
     onNavigateToAddAddress: () -> Unit,
     onNavigateToAuth: () -> Unit = {},
     onNavigateToOrderDetails: (String) -> Unit = {},
+    onNavigateToStarPay: (amount: Double, orderId: String, orderRef: String, description: String, customerName: String, customerEmail: String, customerPhone: String) -> Unit = { _, _, _, _, _, _, _ -> },
     viewModel: CheckoutViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -758,7 +759,7 @@ fun CheckoutScreen(
                                     isSelected = selectedPaymentTab == "STARPAY_UPI",
                                     onClick = {
                                         selectedPaymentTab = "STARPAY_UPI"
-                                        viewModel.selectPaymentMethod("COD")
+                                        viewModel.selectPaymentMethod("STARPAY_UPI")
                                     }
                                 )
 
@@ -953,7 +954,9 @@ fun CheckoutScreen(
                         }
 
                         Button(
-                            onClick = { viewModel.placeOrder() },
+                            onClick = {
+                                viewModel.placeOrder(onNavigateToStarPay = onNavigateToStarPay)
+                            },
                             enabled = selectedAddress != null && !uiState.isPlacingOrder,
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -978,7 +981,11 @@ fun CheckoutScreen(
                                         modifier = Modifier.size(18.dp)
                                     )
                                     Text(
-                                        text = "Pay with StarPay — ₹${grandTotal.toInt()}",
+                                        text = if (selectedPaymentTab == "STARPAY_UPI") {
+                                            "Pay with StarPay — ₹${grandTotal.toInt()}"
+                                        } else {
+                                            "Place Order (COD) — ₹${grandTotal.toInt()}"
+                                        },
                                         style = MaterialTheme.typography.titleSmall,
                                         fontWeight = FontWeight.Bold,
                                         color = Color.White

@@ -375,10 +375,29 @@ fun GovindProductCard(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                GovindPrice(
-                    price = product.sellingPrice,
-                    mrp = product.price
-                )
+                if (quantityInCart > 0) {
+                    Column(modifier = Modifier.weight(1f, fill = false)) {
+                        Text(
+                            text = "₹${(product.sellingPrice * quantityInCart).toInt()}",
+                            style = GovindTheme.priceDisplay,
+                            color = GovindTheme.colors.brandPrimary,
+                            fontWeight = FontWeight.ExtraBold
+                        )
+                        Text(
+                            text = "$quantityInCart in cart • ₹${product.sellingPrice.toInt()}",
+                            style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+                            color = GovindTheme.colors.secondary,
+                            fontWeight = FontWeight.Bold,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                } else {
+                    GovindPrice(
+                        price = product.sellingPrice,
+                        mrp = product.price
+                    )
+                }
 
                 GovindQuantityControl(
                     quantity = quantityInCart,

@@ -49,6 +49,11 @@ import com.example.govind.ui.shared.*
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WholesaleHomeScreen(
+    onNavigateToCart: () -> Unit = {},
+    onNavigateToProfile: () -> Unit = {},
+    onNavigateToSearch: () -> Unit = {},
+    onNavigateToRateList: () -> Unit = {},
+    onNavigateToProduct: (String) -> Unit = {},
     viewModel: WholesaleViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -68,8 +73,8 @@ fun WholesaleHomeScreen(
                 eta = "B2B",
                 cartItemCount = totalCartCount,
                 onLocationClick = {},
-                onCartClick = {},
-                onProfileClick = {}
+                onCartClick = onNavigateToCart,
+                onProfileClick = onNavigateToProfile
             )
         }
     ) { paddingValues ->
@@ -114,7 +119,7 @@ fun WholesaleHomeScreen(
                 // 4. Search & Scan Bar
                 item {
                     Box(modifier = Modifier.padding(horizontal = Dimens.Margin, vertical = 6.dp)) {
-                        WholesaleSearchBar()
+                        WholesaleSearchBar(onSearchClick = onNavigateToSearch)
                     }
                 }
 
@@ -131,7 +136,15 @@ fun WholesaleHomeScreen(
 
                 // 6. Quick Wholesale Categories (4x2 Bento Grid)
                 item {
-                    WholesaleCategoryGrid(onCategoryClick = {})
+                    WholesaleCategoryGrid(
+                        onCategoryClick = { category ->
+                            if (category.contains("Rate List", ignoreCase = true)) {
+                                onNavigateToRateList()
+                            } else {
+                                onNavigateToSearch()
+                            }
+                        }
+                    )
                 }
 
                 // 7. High-Volume Mandi Arrivals (Tiered Pricing Cards)
@@ -230,10 +243,23 @@ fun WholesaleHomeScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WholesaleCatalogScreen(
+    onNavigateToCart: () -> Unit = {},
+    onNavigateToProfile: () -> Unit = {},
+    onNavigateToSearch: () -> Unit = {},
+    onNavigateToRateList: () -> Unit = {},
+    onNavigateToProduct: (String) -> Unit = {},
     viewModel: WholesaleViewModel = hiltViewModel()
 ) {
-    WholesaleHomeScreen(viewModel = viewModel)
+    WholesaleHomeScreen(
+        onNavigateToCart = onNavigateToCart,
+        onNavigateToProfile = onNavigateToProfile,
+        onNavigateToSearch = onNavigateToSearch,
+        onNavigateToRateList = onNavigateToRateList,
+        onNavigateToProduct = onNavigateToProduct,
+        viewModel = viewModel
+    )
 }
+
 
 // ═════════════════════════════════════════════════════════════
 // SUBCOMPONENTS
@@ -374,12 +400,14 @@ fun LiveMarketStatsRow() {
 }
 
 @Composable
-fun WholesaleSearchBar() {
+fun WholesaleSearchBar(onSearchClick: () -> Unit = {}) {
     Surface(
         shape = CircleShape,
         color = MaterialTheme.colorScheme.surfaceContainerLowest,
         shadowElevation = 1.dp,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onSearchClick)
     ) {
         Row(
             modifier = Modifier
@@ -819,12 +847,37 @@ fun WholesaleTierProductCard(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = "Total: ₹${((if (quantityInCart > 0) quantityInCart else 1) * product.sellingPrice).toInt()}",
-                    style = MaterialTheme.typography.labelMedium,
-                    color = GovindTheme.colors.textPrimary,
-                    fontWeight = FontWeight.Bold
-                )
+                if (quantityInCart > 0) {
+                    Column(modifier = Modifier.weight(1f, fill = false)) {
+                        Text(
+                            text = "₹${(quantityInCart * product.sellingPrice).toInt()}",
+                            style = GovindTheme.priceDisplay,
+                            color = GovindTheme.colors.brandPrimary,
+                            fontWeight = FontWeight.ExtraBold
+                        )
+                        Text(
+                            text = "$quantityInCart in basket • ₹${product.sellingPrice.toInt()}/${product.unit}",
+                            style = MaterialTheme.typography.labelSmall.copy(fontSize = 10.sp),
+                            color = GovindTheme.colors.secondary,
+                            fontWeight = FontWeight.Bold,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                } else {
+                    Column {
+                        Text(
+                            text = "₹${product.sellingPrice.toInt()}",
+                            style = GovindTheme.priceDisplay,
+                            color = GovindTheme.colors.textPrimary
+                        )
+                        Text(
+                            text = "per ${product.unit}",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = GovindTheme.colors.textMuted
+                        )
+                    }
+                }
 
                 if (quantityInCart <= 0) {
                     Button(
@@ -839,7 +892,7 @@ fun WholesaleTierProductCard(
                             modifier = Modifier.size(16.dp)
                         )
                         Spacer(modifier = Modifier.width(6.dp))
-                        Text("Add to Basket", color = Color.White, fontWeight = FontWeight.Bold)
+                        Text("Add • ₹${product.sellingPrice.toInt()}", color = Color.White, fontWeight = FontWeight.Bold)
                     }
                 } else {
                     GovindQuantityControl(

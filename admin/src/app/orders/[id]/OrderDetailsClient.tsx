@@ -18,6 +18,7 @@ import {
   Navigation,
   AlertCircle,
   XCircle,
+  Phone,
 } from "lucide-react";
 
 const CANONICAL_FLOW = [
@@ -171,14 +172,14 @@ export default function OrderDetailsClient({
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
           {order.order_status !== "DELIVERED" && order.order_status !== "CANCELLED" && (
             <>
               {nextStatus && (
                 <Button
                   onClick={() => handleAdvanceStatus()}
                   disabled={isPending}
-                  className="bg-green-700 hover:bg-green-800 text-white font-semibold"
+                  className="min-h-[42px] sm:min-h-0 bg-green-700 hover:bg-green-800 text-white font-semibold text-xs md:text-sm"
                 >
                   {isPending ? "Transitioning..." : `Advance to ${nextStatus.replace(/_/g, " ")}`}
                 </Button>
@@ -187,7 +188,7 @@ export default function OrderDetailsClient({
                 variant="outline"
                 onClick={handleCancelOrder}
                 disabled={isPending}
-                className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
+                className="min-h-[42px] sm:min-h-0 text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200 text-xs md:text-sm"
               >
                 Cancel Order
               </Button>
@@ -267,9 +268,17 @@ export default function OrderDetailsClient({
             </div>
             <div>
               <span className="text-gray-500 block">Phone Contact</span>
-              <span className="font-semibold text-gray-900">
-                {order.customer?.phone || "No phone provided"}
-              </span>
+              {order.customer?.phone ? (
+                <a
+                  href={`tel:${order.customer.phone}`}
+                  className="font-semibold text-emerald-700 hover:underline inline-flex items-center gap-1 mt-0.5"
+                >
+                  <Phone className="h-3.5 w-3.5" />
+                  {order.customer.phone}
+                </a>
+              ) : (
+                <span className="font-semibold text-gray-900">No phone provided</span>
+              )}
             </div>
             <div>
               <span className="text-gray-500 block">Delivery Address (Snapshot)</span>
@@ -373,7 +382,50 @@ export default function OrderDetailsClient({
                 <span className="text-xs text-gray-500 font-medium">({expItems.length} items)</span>
               </div>
 
-              <div className="border rounded-md overflow-hidden">
+              {/* MOBILE VIEW: Ordered Items Cards */}
+              <div className="block md:hidden space-y-2">
+                {expItems.map((item) => {
+                  const unitPrice =
+                    Number(item.effective_unit_price) || Number(item.price) || 0;
+                  const lineTotal =
+                    Number(item.line_total) || item.quantity * unitPrice;
+                  const discount = Number(item.discount || item.bulk_discount || 0);
+
+                  return (
+                    <div
+                      key={item.id}
+                      className="p-3 bg-white rounded-lg border border-gray-200 text-xs space-y-1.5 shadow-sm"
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <span className="font-semibold text-gray-900 text-sm">
+                          {item.product_name}
+                        </span>
+                        <span className="font-mono font-bold text-sm text-gray-900">
+                          ₹{lineTotal.toFixed(2)}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center justify-between text-gray-500 pt-1 border-t border-gray-100">
+                        <span>
+                          Qty: <strong className="text-gray-800">{item.quantity} {item.unit || ""}</strong>
+                        </span>
+                        <span>
+                          Rate: <strong className="font-mono text-gray-800">₹{unitPrice.toFixed(2)}</strong>
+                        </span>
+                      </div>
+
+                      {discount > 0 && (
+                        <div className="text-[11px] text-green-700 font-medium">
+                          Discount: ₹{discount.toFixed(2)} / unit
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* DESKTOP VIEW: Ordered Items Table */}
+              <div className="hidden md:block border rounded-md overflow-hidden">
                 <Table>
                   <TableHeader>
                     <TableRow className="bg-gray-50 text-xs">
@@ -420,7 +472,7 @@ export default function OrderDetailsClient({
 
           {/* Pricing Summary Breakdown */}
           <div className="border-t pt-4 flex justify-end">
-            <div className="w-64 space-y-1.5 text-xs">
+            <div className="w-full sm:w-64 space-y-1.5 text-xs">
               <div className="flex justify-between text-gray-600">
                 <span>Subtotal:</span>
                 <span className="font-mono font-medium">₹{Number(order.subtotal).toFixed(2)}</span>

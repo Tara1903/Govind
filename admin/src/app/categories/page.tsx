@@ -194,14 +194,14 @@ export default function CategoriesPage() {
   );
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div className="space-y-4 md:space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight text-gray-900">Categories</h2>
-          <p className="text-sm text-gray-500">Organize products across Fresh, Kitchen, and Wholesale</p>
+          <h2 className="text-xl md:text-3xl font-bold tracking-tight text-gray-900">Categories</h2>
+          <p className="text-xs md:text-sm text-gray-500">Organize products across Fresh, Kitchen, and Wholesale</p>
         </div>
         {!isEditing && (
-          <Button onClick={handleAdd} className="bg-green-700 hover:bg-green-800 text-white">
+          <Button onClick={handleAdd} className="w-full sm:w-auto min-h-[42px] sm:min-h-0 bg-green-700 hover:bg-green-800 text-white font-semibold text-xs md:text-sm">
             <Plus className="h-4 w-4 mr-1.5" />
             Add Category
           </Button>
@@ -310,11 +310,11 @@ export default function CategoriesPage() {
                 </label>
               </div>
 
-              <div className="flex gap-2 pt-4">
-                <Button type="submit" className="bg-green-700 hover:bg-green-800 text-white">
+              <div className="flex flex-col sm:flex-row gap-2 pt-4">
+                <Button type="submit" className="w-full sm:w-auto min-h-[44px] bg-green-700 hover:bg-green-800 text-white font-semibold">
                   Save Category
                 </Button>
-                <Button type="button" variant="outline" onClick={() => setIsEditing(false)}>
+                <Button type="button" variant="outline" onClick={() => setIsEditing(false)} className="w-full sm:w-auto min-h-[44px]">
                   Cancel
                 </Button>
               </div>
@@ -333,102 +333,179 @@ export default function CategoriesPage() {
                   Live categories synced with the Supabase catalogue
                 </CardDescription>
               </div>
-              <div className="relative">
+              <div className="relative w-full sm:w-56">
                 <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-gray-400" />
                 <input
                   type="text"
                   placeholder="Search categories..."
-                  className="pl-8 pr-3 py-1.5 text-xs border rounded-md w-56 bg-white"
+                  className="pl-8 pr-3 py-1.5 text-xs border rounded-md w-full bg-white"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
               </div>
             </div>
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-3.5 sm:px-6">
             {loading ? (
               <div className="py-8 text-center text-sm text-gray-500">Loading categories...</div>
             ) : filteredCategories.length === 0 ? (
               <div className="py-8 text-center text-sm text-gray-500">No categories found.</div>
             ) : (
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Category Name</TableHead>
-                      <TableHead>Slug</TableHead>
-                      <TableHead>Order</TableHead>
-                      <TableHead>Products Linked</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredCategories.map((cat) => (
-                      <TableRow key={cat.id}>
-                        <TableCell>
-                          <div className="flex items-center gap-2.5">
-                            {cat.image_url ? (
-                              <img
-                                src={cat.image_url}
-                                alt={cat.name}
-                                className="h-8 w-8 object-cover rounded border"
-                              />
-                            ) : (
-                              <div className="h-8 w-8 rounded bg-gray-100 flex items-center justify-center text-gray-400">
-                                <FolderTree className="h-4 w-4" />
-                              </div>
-                            )}
-                            <span className="font-semibold text-xs text-gray-900">{cat.name}</span>
+              <>
+                {/* MOBILE VIEW: Categories Card Feed */}
+                <div className="block md:hidden space-y-3">
+                  {filteredCategories.map((cat) => (
+                    <div
+                      key={cat.id}
+                      className="p-3.5 bg-white rounded-xl border border-gray-200 shadow-sm space-y-3"
+                    >
+                      <div className="flex items-center gap-3">
+                        {cat.image_url ? (
+                          <img
+                            src={cat.image_url}
+                            alt={cat.name}
+                            className="h-12 w-12 object-cover rounded-lg border border-gray-200 shrink-0"
+                          />
+                        ) : (
+                          <div className="h-12 w-12 rounded-lg bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-400 shrink-0">
+                            <FolderTree className="h-5 w-5" />
                           </div>
-                        </TableCell>
-                        <TableCell className="text-xs font-mono text-gray-500">{cat.slug}</TableCell>
-                        <TableCell className="text-xs text-gray-600">{cat.display_order ?? 0}</TableCell>
-                        <TableCell>
-                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-800">
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-semibold text-sm text-gray-900 truncate">
+                            {cat.name}
+                          </h3>
+                          <div className="text-[11px] font-mono text-gray-400 truncate">
+                            /{cat.slug}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-between py-2 border-y border-gray-100 text-xs">
+                        <div className="flex items-center gap-2">
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-gray-100 text-gray-800">
                             {cat.productCount} products
                           </span>
-                        </TableCell>
-                        <TableCell>
-                          <button
-                            type="button"
-                            onClick={() => toggleCategoryActive(cat.id, cat.active)}
-                            className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold transition-all ${
-                              cat.active
-                                ? "bg-green-100 text-green-800 hover:bg-green-200"
-                                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                            }`}
-                          >
-                            {cat.active ? "Active" : "Inactive"}
-                          </button>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex items-center justify-end gap-1">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-7 w-7 p-0"
-                              onClick={() => handleEdit(cat)}
-                              title="Edit Category"
-                            >
-                              <Edit3 className="h-3.5 w-3.5 text-gray-600" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-7 w-7 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
-                              onClick={() => handleDelete(cat)}
-                              title="Delete Category"
-                            >
-                              <Trash2 className="h-3.5 w-3.5" />
-                            </Button>
-                          </div>
-                        </TableCell>
+                          <span className="text-gray-400 text-[11px]">
+                            Order: {cat.display_order ?? 0}
+                          </span>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => toggleCategoryActive(cat.id, cat.active)}
+                          className={`min-h-[34px] px-3 py-1 rounded-full text-xs font-semibold transition-all ${
+                            cat.active
+                              ? "bg-green-100 text-green-800 active:bg-green-200"
+                              : "bg-gray-100 text-gray-600 active:bg-gray-200"
+                          }`}
+                        >
+                          {cat.active ? "Active" : "Inactive"}
+                        </button>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2 pt-0.5">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-10 text-xs font-semibold flex items-center justify-center gap-1.5 border-gray-300"
+                          onClick={() => handleEdit(cat)}
+                        >
+                          <Edit3 className="h-4 w-4" /> Edit
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-10 text-xs font-semibold flex items-center justify-center gap-1.5 text-red-600 border-red-200 active:bg-red-50"
+                          onClick={() => handleDelete(cat)}
+                        >
+                          <Trash2 className="h-4 w-4" /> Delete
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* DESKTOP VIEW: Categories Table */}
+                <div className="hidden md:block overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Category Name</TableHead>
+                        <TableHead>Slug</TableHead>
+                        <TableHead>Order</TableHead>
+                        <TableHead>Products Linked</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead className="text-right">Actions</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
+                    </TableHeader>
+                    <TableBody>
+                      {filteredCategories.map((cat) => (
+                        <TableRow key={cat.id}>
+                          <TableCell>
+                            <div className="flex items-center gap-2.5">
+                              {cat.image_url ? (
+                                <img
+                                  src={cat.image_url}
+                                  alt={cat.name}
+                                  className="h-8 w-8 object-cover rounded border"
+                                />
+                              ) : (
+                                <div className="h-8 w-8 rounded bg-gray-100 flex items-center justify-center text-gray-400">
+                                  <FolderTree className="h-4 w-4" />
+                                </div>
+                              )}
+                              <span className="font-semibold text-xs text-gray-900">{cat.name}</span>
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-xs font-mono text-gray-500">{cat.slug}</TableCell>
+                          <TableCell className="text-xs text-gray-600">{cat.display_order ?? 0}</TableCell>
+                          <TableCell>
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-800">
+                              {cat.productCount} products
+                            </span>
+                          </TableCell>
+                          <TableCell>
+                            <button
+                              type="button"
+                              onClick={() => toggleCategoryActive(cat.id, cat.active)}
+                              className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold transition-all ${
+                                cat.active
+                                  ? "bg-green-100 text-green-800 hover:bg-green-200"
+                                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                              }`}
+                            >
+                              {cat.active ? "Active" : "Inactive"}
+                            </button>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex items-center justify-end gap-1">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-7 w-7 p-0"
+                                onClick={() => handleEdit(cat)}
+                                title="Edit Category"
+                              >
+                                <Edit3 className="h-3.5 w-3.5 text-gray-600" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-7 w-7 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+                                onClick={() => handleDelete(cat)}
+                                title="Delete Category"
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              </>
             )}
           </CardContent>
         </Card>

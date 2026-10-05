@@ -273,12 +273,12 @@ export default function PromotionsPage() {
                 )}
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-semibold text-gray-700 mb-1">Button CTA Text</label>
                   <input
                     type="text"
-                    className="w-full border px-3 py-2 rounded text-sm bg-white"
+                    className="w-full min-h-[42px] border border-gray-300 px-3 py-2 rounded-lg text-sm bg-white focus:ring-2 focus:ring-indigo-600 outline-none"
                     value={formData.cta}
                     onChange={(e) => setFormData({ ...formData, cta: e.target.value })}
                   />
@@ -287,7 +287,7 @@ export default function PromotionsPage() {
                   <label className="block text-xs font-semibold text-gray-700 mb-1">Display Priority</label>
                   <input
                     type="number"
-                    className="w-full border px-3 py-2 rounded text-sm bg-white"
+                    className="w-full min-h-[42px] border border-gray-300 px-3 py-2 rounded-lg text-sm bg-white focus:ring-2 focus:ring-indigo-600 outline-none"
                     value={formData.priority}
                     onChange={(e) => setFormData({ ...formData, priority: e.target.value })}
                   />
@@ -297,7 +297,7 @@ export default function PromotionsPage() {
                   <input
                     required
                     type="date"
-                    className="w-full border px-3 py-2 rounded text-sm bg-white"
+                    className="w-full min-h-[42px] border border-gray-300 px-3 py-2 rounded-lg text-sm bg-white focus:ring-2 focus:ring-indigo-600 outline-none"
                     value={formData.start_date}
                     onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
                   />
@@ -307,7 +307,7 @@ export default function PromotionsPage() {
                   <input
                     required
                     type="date"
-                    className="w-full border px-3 py-2 rounded text-sm bg-white"
+                    className="w-full min-h-[42px] border border-gray-300 px-3 py-2 rounded-lg text-sm bg-white focus:ring-2 focus:ring-indigo-600 outline-none"
                     value={formData.end_date}
                     onChange={(e) => setFormData({ ...formData, end_date: e.target.value })}
                   />
@@ -320,18 +320,18 @@ export default function PromotionsPage() {
                   id="promo_active"
                   checked={formData.active}
                   onChange={(e) => setFormData({ ...formData, active: e.target.checked })}
-                  className="rounded text-indigo-600"
+                  className="h-4 w-4 rounded text-indigo-600 cursor-pointer"
                 />
                 <label htmlFor="promo_active" className="text-xs font-semibold text-gray-700 cursor-pointer">
                   Active (show in customer hero carousel)
                 </label>
               </div>
 
-              <div className="flex gap-2 pt-4">
-                <Button type="submit" className="bg-indigo-600 hover:bg-indigo-700 text-white">
+              <div className="flex gap-2 pt-2">
+                <Button type="submit" className="min-h-[42px] flex-1 sm:flex-initial bg-indigo-600 hover:bg-indigo-700 text-white font-semibold">
                   Save Banner Campaign
                 </Button>
-                <Button type="button" variant="outline" onClick={() => setIsEditing(false)}>
+                <Button type="button" variant="outline" onClick={() => setIsEditing(false)} className="min-h-[42px] flex-1 sm:flex-initial">
                   Cancel
                 </Button>
               </div>
@@ -350,12 +350,12 @@ export default function PromotionsPage() {
                   Active banners stream directly to the Android app and web carousel
                 </CardDescription>
               </div>
-              <div className="relative">
+              <div className="relative w-full sm:w-auto">
                 <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-gray-400" />
                 <input
                   type="text"
                   placeholder="Search campaigns..."
-                  className="pl-8 pr-3 py-1.5 text-xs border rounded-md w-52 bg-white"
+                  className="pl-8 pr-3 py-2 sm:py-1.5 text-xs border rounded-md w-full sm:w-52 bg-white"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
@@ -368,79 +368,164 @@ export default function PromotionsPage() {
             ) : filteredPromos.length === 0 ? (
               <div className="py-8 text-center text-sm text-gray-500">No promotion campaigns registered.</div>
             ) : (
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Banner Preview</TableHead>
-                      <TableHead>Campaign Title</TableHead>
-                      <TableHead>Priority</TableHead>
-                      <TableHead>Active Window</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredPromos.map((promo) => (
-                      <TableRow key={promo.id}>
-                        <TableCell>
-                          <img
-                            src={promo.image}
-                            alt={promo.title}
-                            className="h-10 w-24 object-cover rounded border"
-                            onError={(e) => { (e.target as HTMLElement).style.display = "none"; }}
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <div className="font-semibold text-xs text-gray-900">{promo.title}</div>
-                          {promo.subtitle && <div className="text-[11px] text-gray-500">{promo.subtitle}</div>}
-                        </TableCell>
-                        <TableCell className="text-xs font-semibold text-gray-700">
-                          #{promo.priority || 0}
-                        </TableCell>
-                        <TableCell className="text-xs text-gray-500 whitespace-nowrap">
-                          {new Date(promo.start_date).toLocaleDateString()} – {new Date(promo.end_date).toLocaleDateString()}
-                        </TableCell>
-                        <TableCell>
+              <>
+                {/* Mobile Card Feed (block md:hidden) */}
+                <div className="block md:hidden space-y-3">
+                  {filteredPromos.map((promo) => (
+                    <div
+                      key={`mobile-promo-${promo.id}`}
+                      className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-xs space-y-3"
+                    >
+                      {/* Banner Image Preview */}
+                      <div className="relative w-full h-36 bg-gray-100 border-b border-gray-100">
+                        <img
+                          src={promo.image}
+                          alt={promo.title}
+                          className="w-full h-full object-cover"
+                          onError={(e) => { (e.target as HTMLElement).style.display = "none"; }}
+                        />
+                        <div className="absolute top-2 right-2">
+                          <span className="text-[10px] font-bold bg-black/60 text-white backdrop-blur-xs px-2 py-0.5 rounded-full">
+                            Priority #{promo.priority || 0}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Content Body */}
+                      <div className="p-3.5 pt-0 space-y-3">
+                        <div>
+                          <h3 className="font-semibold text-sm text-gray-900 leading-snug">
+                            {promo.title}
+                          </h3>
+                          {promo.subtitle && (
+                            <p className="text-xs text-gray-500 mt-0.5">{promo.subtitle}</p>
+                          )}
+                        </div>
+
+                        {/* Dates Info */}
+                        <div className="text-[11px] text-gray-500 bg-gray-50 p-2 rounded-lg border border-gray-100 flex items-center justify-between">
+                          <span>Active Period:</span>
+                          <span className="font-medium text-gray-700">
+                            {new Date(promo.start_date).toLocaleDateString()} – {new Date(promo.end_date).toLocaleDateString()}
+                          </span>
+                        </div>
+
+                        {/* Actions Footer */}
+                        <div className="flex items-center justify-between gap-2 pt-1 border-t border-gray-100">
                           <button
                             type="button"
                             onClick={() => togglePromoActive(promo.id, promo.active)}
-                            className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold transition-all ${
+                            className={`min-h-[38px] px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all ${
                               promo.active
-                                ? "bg-green-100 text-green-800 hover:bg-green-200"
-                                : "bg-red-100 text-red-800 hover:bg-red-200"
+                                ? "bg-green-100 text-green-800 border border-green-200"
+                                : "bg-red-100 text-red-800 border border-red-200"
                             }`}
                           >
-                            {promo.active ? "Active" : "Inactive"}
+                            <span className={`w-2 h-2 rounded-full ${promo.active ? "bg-green-600" : "bg-red-600"}`} />
+                            <span>{promo.active ? "Active" : "Inactive"}</span>
                           </button>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex items-center justify-end gap-1">
+
+                          <div className="flex items-center gap-1">
                             <Button
-                              variant="ghost"
+                              variant="outline"
                               size="sm"
-                              className="h-7 w-7 p-0"
+                              className="min-h-[38px] px-3 text-xs flex items-center gap-1 text-gray-700"
                               onClick={() => handleEdit(promo)}
-                              title="Edit Banner"
                             >
-                              <Edit3 className="h-3.5 w-3.5 text-gray-600" />
+                              <Edit3 className="h-3.5 w-3.5" />
+                              <span>Edit</span>
                             </Button>
                             <Button
-                              variant="ghost"
+                              variant="outline"
                               size="sm"
-                              className="h-7 w-7 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+                              className="min-h-[38px] px-3 text-xs flex items-center gap-1 text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
                               onClick={() => handleDelete(promo)}
-                              title="Delete Banner"
                             >
                               <Trash2 className="h-3.5 w-3.5" />
+                              <span>Delete</span>
                             </Button>
                           </div>
-                        </TableCell>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Desktop Table View (hidden md:block) */}
+                <div className="hidden md:block overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Banner Preview</TableHead>
+                        <TableHead>Campaign Title</TableHead>
+                        <TableHead>Priority</TableHead>
+                        <TableHead>Active Window</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead className="text-right">Actions</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
+                    </TableHeader>
+                    <TableBody>
+                      {filteredPromos.map((promo) => (
+                        <TableRow key={promo.id}>
+                          <TableCell>
+                            <img
+                              src={promo.image}
+                              alt={promo.title}
+                              className="h-10 w-24 object-cover rounded border"
+                              onError={(e) => { (e.target as HTMLElement).style.display = "none"; }}
+                            />
+                          </TableCell>
+                          <TableCell>
+                            <div className="font-semibold text-xs text-gray-900">{promo.title}</div>
+                            {promo.subtitle && <div className="text-[11px] text-gray-500">{promo.subtitle}</div>}
+                          </TableCell>
+                          <TableCell className="text-xs font-semibold text-gray-700">
+                            #{promo.priority || 0}
+                          </TableCell>
+                          <TableCell className="text-xs text-gray-500 whitespace-nowrap">
+                            {new Date(promo.start_date).toLocaleDateString()} – {new Date(promo.end_date).toLocaleDateString()}
+                          </TableCell>
+                          <TableCell>
+                            <button
+                              type="button"
+                              onClick={() => togglePromoActive(promo.id, promo.active)}
+                              className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold transition-all ${
+                                promo.active
+                                  ? "bg-green-100 text-green-800 hover:bg-green-200"
+                                  : "bg-red-100 text-red-800 hover:bg-red-200"
+                              }`}
+                            >
+                              {promo.active ? "Active" : "Inactive"}
+                            </button>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex items-center justify-end gap-1">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-7 w-7 p-0"
+                                onClick={() => handleEdit(promo)}
+                                title="Edit Banner"
+                              >
+                                <Edit3 className="h-3.5 w-3.5 text-gray-600" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-7 w-7 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+                                onClick={() => handleDelete(promo)}
+                                title="Delete Banner"
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              </>
             )}
           </CardContent>
         </Card>

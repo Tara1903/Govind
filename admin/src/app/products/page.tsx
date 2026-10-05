@@ -247,13 +247,13 @@ export default function ProductsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight text-gray-900">Products Catalogue</h2>
-          <p className="text-sm text-gray-500">Manage Fresh produce, Kitchen menu, and Wholesale goods</p>
+          <h2 className="text-xl md:text-3xl font-bold tracking-tight text-gray-900">Products Catalogue</h2>
+          <p className="text-xs md:text-sm text-gray-500">Manage Fresh produce, Kitchen menu, and Wholesale goods</p>
         </div>
         {!isEditing && (
-          <Button onClick={handleAdd} className="bg-green-700 hover:bg-green-800 text-white">
+          <Button onClick={handleAdd} className="w-full sm:w-auto bg-green-700 hover:bg-green-800 text-white min-h-[42px] sm:min-h-0 font-semibold text-xs md:text-sm">
             <Plus className="h-4 w-4 mr-1.5" />
             Add New Product
           </Button>
@@ -480,11 +480,11 @@ export default function ProductsPage() {
                 </label>
               </div>
 
-              <div className="flex gap-2 pt-2">
-                <Button type="submit" className="bg-green-700 hover:bg-green-800 text-white">
+              <div className="flex flex-col sm:flex-row gap-2 pt-2">
+                <Button type="submit" className="w-full sm:w-auto min-h-[44px] bg-green-700 hover:bg-green-800 text-white font-semibold">
                   Save Product
                 </Button>
-                <Button type="button" variant="outline" onClick={handleCancel}>
+                <Button type="button" variant="outline" onClick={handleCancel} className="w-full sm:w-auto min-h-[44px]">
                   Cancel
                 </Button>
               </div>
@@ -504,13 +504,13 @@ export default function ProductsPage() {
                 </CardDescription>
               </div>
 
-              <div className="flex flex-wrap items-center gap-2">
-                <div className="relative">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                <div className="relative flex-1 sm:flex-initial">
                   <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-gray-400" />
                   <input
                     type="text"
                     placeholder="Search catalogue..."
-                    className="pl-8 pr-3 py-1.5 text-xs border rounded-md w-48 bg-white"
+                    className="pl-8 pr-3 py-1.5 text-xs border rounded-md w-full sm:w-48 bg-white"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
@@ -535,132 +535,258 @@ export default function ProductsPage() {
             ) : filteredProducts.length === 0 ? (
               <div className="py-8 text-center text-sm text-gray-500">No matching products found.</div>
             ) : (
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Product</TableHead>
-                      <TableHead>Experience</TableHead>
-                      <TableHead>Category</TableHead>
-                      <TableHead>MRP / Selling</TableHead>
-                      <TableHead>Unit</TableHead>
-                      <TableHead>Stock</TableHead>
-                      <TableHead>Fresh Board</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredProducts.map((product) => (
-                      <TableRow key={product.id}>
-                        <TableCell>
-                          <div className="flex items-center gap-2.5">
-                            {product.image_url ? (
-                              <img
-                                src={product.image_url}
-                                alt={product.name}
-                                className="h-9 w-9 object-cover rounded border"
-                              />
-                            ) : (
-                              <div className="h-9 w-9 rounded bg-gray-100 flex items-center justify-center text-xs text-gray-400 font-bold">
-                                {product.name.slice(0, 1)}
+              <>
+                {/* MOBILE VIEW: Touch-Friendly Product Cards */}
+                <div className="block md:hidden space-y-3">
+                  {filteredProducts.map((product) => (
+                    <div
+                      key={product.id}
+                      className="p-3.5 bg-white rounded-xl border border-gray-200 shadow-sm space-y-3"
+                    >
+                      {/* Top: Image, Name, Experience, Category */}
+                      <div className="flex items-start gap-3">
+                        {product.image_url ? (
+                          <img
+                            src={product.image_url}
+                            alt={product.name}
+                            className="h-16 w-16 object-cover rounded-lg border border-gray-200 shrink-0"
+                          />
+                        ) : (
+                          <div className="h-16 w-16 rounded-lg bg-gray-100 border border-gray-200 flex items-center justify-center text-base text-gray-400 font-bold shrink-0">
+                            {product.name.slice(0, 1)}
+                          </div>
+                        )}
+
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <span
+                              className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                                product.experience_type === "KITCHEN"
+                                  ? "bg-orange-100 text-orange-800"
+                                  : product.experience_type === "WHOLESALE"
+                                  ? "bg-blue-100 text-blue-800"
+                                  : "bg-emerald-100 text-emerald-800"
+                              }`}
+                            >
+                              {product.experience_type}
+                            </span>
+                            <span className="text-[11px] text-gray-500 font-medium truncate max-w-[120px]">
+                              {product.category?.name || "General"}
+                            </span>
+                            {product.on_fresh_board && (
+                              <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-green-50 text-green-700 border border-green-200">
+                                Fresh Board
+                              </span>
+                            )}
+                          </div>
+
+                          <h3 className="font-semibold text-sm text-gray-900 mt-1 truncate">
+                            {product.name}
+                          </h3>
+
+                          <div className="flex items-baseline gap-2 mt-0.5">
+                            <span className="text-sm font-bold text-gray-900">
+                              ₹{product.selling_price || product.price}
+                            </span>
+                            {product.selling_price && product.selling_price !== product.price && (
+                              <span className="text-xs text-gray-400 line-through">
+                                ₹{product.price}
+                              </span>
+                            )}
+                            <span className="text-xs text-gray-500 font-medium">/ {product.unit}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Middle: Stock status & Details */}
+                      <div className="flex items-center justify-between py-2 border-y border-gray-100 text-xs">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-gray-500">Stock:</span>
+                          <span
+                            className={`font-bold px-2 py-0.5 rounded-full text-xs ${
+                              product.stock_quantity <= (product.low_stock_threshold || 10)
+                                ? "bg-amber-100 text-amber-800"
+                                : "bg-gray-100 text-gray-800"
+                            }`}
+                          >
+                            {product.stock_quantity} in stock
+                          </span>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => toggleProductActive(product.id, product.active)}
+                          className={`min-h-[34px] px-3 py-1 rounded-full text-xs font-semibold transition-all flex items-center gap-1 ${
+                            product.active
+                              ? "bg-green-100 text-green-800 active:bg-green-200"
+                              : "bg-gray-100 text-gray-600 active:bg-gray-200"
+                          }`}
+                        >
+                          {product.active ? (
+                            <>
+                              <CheckCircle2 className="h-3.5 w-3.5 text-green-600" /> Active
+                            </>
+                          ) : (
+                            <>
+                              <XCircle className="h-3.5 w-3.5 text-gray-500" /> Inactive
+                            </>
+                          )}
+                        </button>
+                      </div>
+
+                      {/* Bottom Actions: Edit & Delete (Touch Friendly min 40px) */}
+                      <div className="grid grid-cols-2 gap-2 pt-0.5">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-10 text-xs font-semibold flex items-center justify-center gap-1.5 text-gray-700 border-gray-300 active:bg-gray-50"
+                          onClick={() => handleEdit(product)}
+                        >
+                          <Edit3 className="h-4 w-4" />
+                          Edit Product
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-10 text-xs font-semibold flex items-center justify-center gap-1.5 text-red-600 border-red-200 active:bg-red-50 hover:bg-red-50"
+                          onClick={() => handleSafeDelete(product)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                          Delete
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* DESKTOP VIEW: Dense Operational Table */}
+                <div className="hidden md:block overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Product</TableHead>
+                        <TableHead>Experience</TableHead>
+                        <TableHead>Category</TableHead>
+                        <TableHead>MRP / Selling</TableHead>
+                        <TableHead>Unit</TableHead>
+                        <TableHead>Stock</TableHead>
+                        <TableHead>Fresh Board</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead className="text-right">Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {filteredProducts.map((product) => (
+                        <TableRow key={product.id}>
+                          <TableCell>
+                            <div className="flex items-center gap-2.5">
+                              {product.image_url ? (
+                                <img
+                                  src={product.image_url}
+                                  alt={product.name}
+                                  className="h-9 w-9 object-cover rounded border"
+                                />
+                              ) : (
+                                <div className="h-9 w-9 rounded bg-gray-100 flex items-center justify-center text-xs text-gray-400 font-bold">
+                                  {product.name.slice(0, 1)}
+                                </div>
+                              )}
+                              <div>
+                                <div className="font-semibold text-xs text-gray-900">{product.name}</div>
+                                <div className="text-[10px] text-gray-400 font-mono">
+                                  {product.product_type || "SINGLE"}
+                                </div>
+                              </div>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <span
+                              className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                                product.experience_type === "KITCHEN"
+                                  ? "bg-orange-100 text-orange-800"
+                                  : product.experience_type === "WHOLESALE"
+                                  ? "bg-blue-100 text-blue-800"
+                                  : "bg-emerald-100 text-emerald-800"
+                              }`}
+                            >
+                              {product.experience_type}
+                            </span>
+                          </TableCell>
+                          <TableCell className="text-xs text-gray-600">
+                            {product.category?.name || "General"}
+                          </TableCell>
+                          <TableCell>
+                            <div className="text-xs font-bold text-gray-900">
+                              ₹{product.selling_price || product.price}
+                            </div>
+                            {product.selling_price && product.selling_price !== product.price && (
+                              <div className="text-[10px] text-gray-400 line-through">
+                                ₹{product.price}
                               </div>
                             )}
-                            <div>
-                              <div className="font-semibold text-xs text-gray-900">{product.name}</div>
-                              <div className="text-[10px] text-gray-400 font-mono">
-                                {product.product_type || "SINGLE"}
-                              </div>
-                            </div>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <span
-                            className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                              product.experience_type === "KITCHEN"
-                                ? "bg-orange-100 text-orange-800"
-                                : product.experience_type === "WHOLESALE"
-                                ? "bg-blue-100 text-blue-800"
-                                : "bg-emerald-100 text-emerald-800"
-                            }`}
-                          >
-                            {product.experience_type}
-                          </span>
-                        </TableCell>
-                        <TableCell className="text-xs text-gray-600">
-                          {product.category?.name || "General"}
-                        </TableCell>
-                        <TableCell>
-                          <div className="text-xs font-bold text-gray-900">
-                            ₹{product.selling_price || product.price}
-                          </div>
-                          {product.selling_price && product.selling_price !== product.price && (
-                            <div className="text-[10px] text-gray-400 line-through">
-                              ₹{product.price}
-                            </div>
-                          )}
-                        </TableCell>
-                        <TableCell className="text-xs text-gray-500">{product.unit}</TableCell>
-                        <TableCell>
-                          <span
-                            className={`text-xs font-semibold ${
-                              product.stock_quantity <= (product.low_stock_threshold || 10)
-                                ? "text-amber-600 font-bold"
-                                : "text-gray-700"
-                            }`}
-                          >
-                            {product.stock_quantity}
-                          </span>
-                        </TableCell>
-                        <TableCell>
-                          {product.on_fresh_board ? (
-                            <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-green-700">
-                              <CheckCircle2 className="h-3.5 w-3.5" /> Yes
+                          </TableCell>
+                          <TableCell className="text-xs text-gray-500">{product.unit}</TableCell>
+                          <TableCell>
+                            <span
+                              className={`text-xs font-semibold ${
+                                product.stock_quantity <= (product.low_stock_threshold || 10)
+                                  ? "text-amber-600 font-bold"
+                                  : "text-gray-700"
+                              }`}
+                            >
+                              {product.stock_quantity}
                             </span>
-                          ) : (
-                            <span className="text-xs text-gray-400">No</span>
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          <button
-                            type="button"
-                            onClick={() => toggleProductActive(product.id, product.active)}
-                            className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold transition-all ${
-                              product.active
-                                ? "bg-green-100 text-green-800 hover:bg-green-200"
-                                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                            }`}
-                          >
-                            {product.active ? "Active" : "Inactive"}
-                          </button>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex items-center justify-end gap-1">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-7 w-7 p-0"
-                              onClick={() => handleEdit(product)}
-                              title="Edit Product"
+                          </TableCell>
+                          <TableCell>
+                            {product.on_fresh_board ? (
+                              <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-green-700">
+                                <CheckCircle2 className="h-3.5 w-3.5" /> Yes
+                              </span>
+                            ) : (
+                              <span className="text-xs text-gray-400">No</span>
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            <button
+                              type="button"
+                              onClick={() => toggleProductActive(product.id, product.active)}
+                              className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold transition-all ${
+                                product.active
+                                  ? "bg-green-100 text-green-800 hover:bg-green-200"
+                                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                              }`}
                             >
-                              <Edit3 className="h-3.5 w-3.5 text-gray-600" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="h-7 w-7 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
-                              onClick={() => handleSafeDelete(product)}
-                              title="Delete or Archive Product"
-                            >
-                              <Trash2 className="h-3.5 w-3.5" />
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
+                              {product.active ? "Active" : "Inactive"}
+                            </button>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex items-center justify-end gap-1">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-7 w-7 p-0"
+                                onClick={() => handleEdit(product)}
+                                title="Edit Product"
+                              >
+                                <Edit3 className="h-3.5 w-3.5 text-gray-600" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-7 w-7 p-0 text-red-600 hover:text-red-700 hover:bg-red-50"
+                                onClick={() => handleSafeDelete(product)}
+                                title="Delete or Archive Product"
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              </>
             )}
           </CardContent>
         </Card>

@@ -46,6 +46,7 @@ interface GovindRepository {
     fun isLoggedIn(): Boolean
     suspend fun getDeliveryPartnerOrders(): Result<List<com.example.govind.data.model.Order>>
     suspend fun updateOrderStatus(orderId: String, status: String): Result<Unit>
+    suspend fun markOrderPaid(orderId: String, upiRef: String?): Result<Unit>
     suspend fun updateDeliveryLocation(orderId: String, lat: Double, lng: Double, accuracy: Float, speed: Float, heading: Float): Result<Unit>
     
     // Cloud Cart Sync

@@ -5,6 +5,7 @@ import { login, verifyOtp, loginWithPassword } from './actions'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { KeyRound, Mail, ShieldCheck, Lock } from 'lucide-react'
+import Image from 'next/image'
 
 export default function LoginPage() {
   const [authMode, setAuthMode] = useState<'otp' | 'password'>('password')
@@ -63,12 +64,19 @@ export default function LoginPage() {
     <div className="flex min-h-screen w-full items-center justify-center bg-gradient-to-br from-green-50 via-gray-50 to-emerald-50 p-4">
       <Card className="w-full max-w-md shadow-xl border-gray-200">
         <CardHeader className="space-y-2 text-center pb-4">
-          <div className="mx-auto w-12 h-12 rounded-xl bg-green-700 flex items-center justify-center text-white font-bold text-2xl shadow-sm">
-            G
+          <div className="mx-auto flex justify-center mb-1">
+            <Image
+              src="/brand/govind-logo-squircle.png"
+              alt="Govind Logo"
+              width={80}
+              height={80}
+              className="rounded-2xl shadow-sm object-contain"
+              priority
+            />
           </div>
           <CardTitle className="text-2xl font-bold text-gray-900">Govind Admin Portal</CardTitle>
           <CardDescription className="text-gray-500 text-xs">
-            Restricted access for store managers and authorized administrators.
+            Fresh and Healthy Food • Restricted Administrative Access
           </CardDescription>
 
           <div className="flex rounded-lg bg-gray-100 p-1 mt-4 text-xs font-medium">

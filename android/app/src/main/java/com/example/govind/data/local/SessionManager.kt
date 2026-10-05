@@ -40,6 +40,10 @@ class SessionManager @Inject constructor(
         get() = prefs.getBoolean("has_completed_onboarding", false)
         set(value) = prefs.edit().putBoolean("has_completed_onboarding", value).apply()
 
+    var hasRequestedNotificationPermission: Boolean
+        get() = prefs.getBoolean("notif_permission_requested", false)
+        set(value) = prefs.edit().putBoolean("notif_permission_requested", value).apply()
+
     var isGuest: Boolean
         get() = prefs.getBoolean("is_guest", false)
         set(value) = prefs.edit().putBoolean("is_guest", value).apply()

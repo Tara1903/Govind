@@ -7,6 +7,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.AddShoppingCart
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Share
@@ -24,6 +25,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import com.example.govind.theme.GovindTheme
+import com.example.govind.ui.shared.GovindQuantityControl
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -31,6 +33,7 @@ fun ProductDetailsScreen(
     productId: String,
     onNavigateBack: () -> Unit,
     onNavigateToAuth: () -> Unit = {},
+    onNavigateToCart: () -> Unit = {},
     viewModel: ProductDetailsViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -52,8 +55,17 @@ fun ProductDetailsScreen(
                     }
                 },
                 actions = {
+                    val context = androidx.compose.ui.platform.LocalContext.current
                     IconButton(
-                        onClick = { },
+                        onClick = {
+                            val sendIntent = android.content.Intent().apply {
+                                action = android.content.Intent.ACTION_SEND
+                                putExtra(android.content.Intent.EXTRA_TEXT, "Check out ${product?.name ?: "this item"} on Govind - Fresh & Healthy Food! https://govind.com/product/${product?.id ?: ""}")
+                                type = "text/plain"
+                            }
+                            val shareIntent = android.content.Intent.createChooser(sendIntent, "Share Product")
+                            context.startActivity(shareIntent)
+                        },
                         modifier = Modifier
                             .padding(end = 8.dp)
                             .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.8f), shape = RoundedCornerShape(50))
@@ -87,37 +99,83 @@ fun ProductDetailsScreen(
                         modifier = Modifier
                             .navigationBarsPadding()
                             .fillMaxWidth()
-                            .padding(horizontal = 24.dp, vertical = 16.dp),
+                            .padding(horizontal = 20.dp, vertical = 14.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Column {
-                            Text(
-                                text = "₹${product.sellingPrice}",
-                                style = MaterialTheme.typography.headlineMedium,
-                                fontWeight = FontWeight.ExtraBold,
-                                color = MaterialTheme.colorScheme.onBackground
-                            )
-                            if (product.price != null && product.price > product.sellingPrice) {
+                        val qty = uiState.quantityInCart
+                        Column(modifier = Modifier.weight(if (qty > 0) 0.9f else 0.7f)) {
+                            if (qty > 0) {
                                 Text(
-                                    text = "MRP ₹${product.price}",
-                                    style = MaterialTheme.typography.bodyMedium.copy(
-                                        textDecoration = TextDecoration.LineThrough
-                                    ),
+                                    text = "₹${(product.sellingPrice * qty).toInt()}",
+                                    style = MaterialTheme.typography.headlineMedium,
+                                    fontWeight = FontWeight.ExtraBold,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                                Text(
+                                    text = "$qty in cart • ₹${product.sellingPrice.toInt()}/${product.unit}",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    fontWeight = FontWeight.Bold,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
+                            } else {
+                                Text(
+                                    text = "₹${product.sellingPrice}",
+                                    style = MaterialTheme.typography.headlineMedium,
+                                    fontWeight = FontWeight.ExtraBold,
+                                    color = MaterialTheme.colorScheme.onBackground
+                                )
+                                if (product.price != null && product.price > product.sellingPrice) {
+                                    Text(
+                                        text = "MRP ₹${product.price}",
+                                        style = MaterialTheme.typography.bodyMedium.copy(
+                                            textDecoration = TextDecoration.LineThrough
+                                        ),
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
                             }
                         }
-                        Button(
-                            onClick = { viewModel.addToCart(1) },
-                            modifier = Modifier
-                                .weight(1f)
-                                .padding(start = 24.dp)
-                                .height(56.dp),
-                            shape = RoundedCornerShape(16.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
-                        ) {
-                            Text("Add to Cart", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+
+                        if (qty <= 0) {
+                            Button(
+                                onClick = { viewModel.addToCart(1) },
+                                modifier = Modifier
+                                    .padding(start = 16.dp)
+                                    .height(54.dp),
+                                shape = RoundedCornerShape(16.dp),
+                                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.AddShoppingCart,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text("Add to Cart • ₹${product.sellingPrice.toInt()}", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                            }
+                        } else {
+                            Row(
+                                modifier = Modifier.padding(start = 8.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(10.dp)
+                            ) {
+                                GovindQuantityControl(
+                                    quantity = qty,
+                                    onIncrement = { viewModel.updateQuantity(qty + 1) },
+                                    onDecrement = { viewModel.updateQuantity(qty - 1) },
+                                    onAdd = { viewModel.addToCart(1) }
+                                )
+                                Button(
+                                    onClick = onNavigateToCart,
+                                    shape = RoundedCornerShape(16.dp),
+                                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                                    modifier = Modifier.height(44.dp),
+                                    contentPadding = PaddingValues(horizontal = 14.dp)
+                                ) {
+                                    Text("View Cart", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
+                                }
+                            }
                         }
                     }
                 }

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="govind_green">#38802A</color>
+    <color name="govind_dark_green">#064520</color>
+    <color name="govind_orange">#F5450D</color>
+    <color name="notification_color">#38802A</color>
+</resources>
